@@ -1,6 +1,6 @@
 中文|[English](README_EN.md)
 
-# 分类网络应用（C++）<a name="ZH-CN_TOPIC_0232337690"></a>  
+# 图像边缘检测（C++）<a name="ZH-CN_TOPIC_0232337690"></a>  
 
 
 本Application支持运行在Atlas 200 DK上，实现了googlenet网络的推理功能并输出带有推理结果标签的图片。 
