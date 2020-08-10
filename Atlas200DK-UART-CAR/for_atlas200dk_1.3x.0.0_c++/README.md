@@ -43,7 +43,7 @@ This application contains the following engines:
     **Figure  1**  Opening the handpose project<a name="en-us_topic_0228461904_en-us_topic_0203223294_fig05481157171918"></a>  
     
 
-    ![](figures/openandselect.png
+    ![](figures/openandselect.png)
 
 2.  Configure project information in the  **src/param\_configure.conf**  file.
 
