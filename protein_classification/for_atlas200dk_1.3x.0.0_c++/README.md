@@ -1,7 +1,7 @@
-# 图像边缘检测（C++）<a name="ZH-CN_TOPIC_0232337690"></a>  
+# 人类蛋白质分类（C++）<a name="ZH-CN_TOPIC_0232337690"></a>  
 
 
-本Application支持运行在Atlas 200 DK上，实现了googlenet网络的推理功能并输出带有推理结果标签的图片。 
+本Application支持运行在Atlas 200 DK上，实现了对人类蛋白质图片进行十种细胞器的十分类并输出概率最大的三种细胞器打印再图片上。 
 
 ## 软件准备<a name="zh-cn_topic_0219108795_section181111827718"></a>
 
@@ -13,7 +13,7 @@
 
     **wget https://c3xcode.obs.cn-east-2.myhuaweicloud.com/code_Ascend/hpa.zip** 
               
-    **unzip classification.zip**  
+    **unzip hpa.zip**  
     
     >![](public_sys-resources/icon-note.gif) **说明：**   
     >- 如果使用wget下载失败，可使用如下命令下载代码。  
@@ -22,9 +22,9 @@
     
 2.  <a name="zh-cn_topic_0219108795_li2074865610364"></a>获取此应用中所需要的原始网络模型。
 
-    参考[表 图像边缘检测应用使用模型](#zh-cn_topic_0219108795_table19942111763710)获取此应用中所用到的原始网络模型及其对应的权重文件，并将其存放到Mind Studio所在Ubuntu服务器的任意目录。
+    参考[表 人类蛋白质分类应用使用模型](#zh-cn_topic_0219108795_table19942111763710)获取此应用中所用到的原始网络模型及其对应的权重文件，并将其存放到Mind Studio所在Ubuntu服务器的任意目录。
 
-    **表 1**  图像边缘检测应用使用模型
+    **表 1**  人类蛋白质分类应用使用模型
 
 <a name="zh-cn_topic_0219108795_table19942111763710"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0219108795_row611318123710"><th class="cellrowborder" valign="top" width="11.959999999999999%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0219108795_p81141820376"><a name="zh-cn_topic_0219108795_p81141820376"></a><a name="zh-cn_topic_0219108795_p81141820376"></a>模型名称</p>
@@ -35,11 +35,11 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="zh-cn_topic_0219108795_row1119187377"><td class="cellrowborder" valign="top" width="11.959999999999999%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0219108795_p4745165253920"><a name="zh-cn_topic_0219108795_p4745165253920"></a><a name="zh-cn_topic_0219108795_p4745165253920"></a>googlenet</p>
+<tbody><tr id="zh-cn_topic_0219108795_row1119187377"><td class="cellrowborder" valign="top" width="11.959999999999999%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0219108795_p4745165253920"><a name="zh-cn_topic_0219108795_p4745165253920"></a><a name="zh-cn_topic_0219108795_p4745165253920"></a>hpa</p>
 </td>
 <td class="cellrowborder" valign="top" width="8.07%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0219108795_p1874515218391"><a name="zh-cn_topic_0219108795_p1874515218391"></a><a name="zh-cn_topic_0219108795_p1874515218391"></a>图片分类推理模型。
 
-是基于Caffe的GoogLeNet模型。</p>
+是基于Caffe的hpa模型。</p>
 </td>
 <td class="cellrowborder" valign="top" width="79.97%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0219108795_p611318163718"><a name="zh-cn_topic_0219108795_p611318163718"></a><a name="zh-cn_topic_0219108795_p611318163718"></a>请参考<a href="https://gitee.com/HuaweiAscend/models/tree/master/computer_vision/classification/hpa" target="_blank" rel="noopener noreferrer">https://gitee.com/HuaweiAscend/models/tree/master/computer_vision/classification/hpa</a>目录中README.md下载原始网络模型文件及其对应的权重文件。</p>
 </td>
@@ -60,21 +60,14 @@
     ![](figures/模型转换3.png "模型转换3")
 
     
-4.  将转换好的模型文件（.om文件）上传到[步骤1](#zh-cn_topic_0228757084_section8534138124114)中源码所在路径下的“**classification/model**”目录下。
+4.  将转换好的模型文件（.om文件）上传到[步骤1](#zh-cn_topic_0228757084_section8534138124114)中源码所在路径下的“**hpa/model**”目录下。
     
-     **cp \\$HOME/modelzoo/googlenet/device/googlenet.om \\$HOME/AscendProjects/classification/model/**  
+     **cp \\$HOME/modelzoo/hpa/device/hpa.om \\$HOME/AscendProjects/hpa/model/**  
   
 
 ## 环境配置   
 
-**注：服务器上已安装OpenCV、PresenterAgent、交叉编译工具可跳过此步骤。**   
-      
-- 安装编译工具  
-  **sudo apt-get install -y g++\-aarch64-linux-gnu g++\-5-aarch64-linux-gnu** 
-
-- 安装OpenCV 
-      
-    请参考 **https://gitee.com/ascend/common/blob/master/install_opencv/for_atlas200dk/README.md**   
+**注：服务器上已安装可跳过此步骤。**    
   
 
 ## 编译<a name="zh-cn_topic_0219108795_section3723145213347"></a>
