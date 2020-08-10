@@ -27,7 +27,7 @@ This application contains the following engines:
 
 <br />**Camera engine** takes frames from the Raspberry Pi camera and sends them to the inference engine. <br /><br />
 **Inference engine** resizes the frames using [DVPP](https://www.huaweicloud.com/intl/en-us/ascend/doc/Atlas200DK/1.32.0.0(beta)/en/en-us_topic_0204324961.html) and then performs inference using the [Offline Model](https://www.huaweicloud.com/intl/en-us/ascend/doc/Atlas200DK/1.32.0.0(beta)/en/en-us_topic_0204328934.html). It then sends the inference results to post process engine.<br /><br />
-**Postprocess engine** computes the keypoint coordinates from the inference output. It then computes an RC command (forward, backward, left, right, stop) from the keypoint coordinates. Finally, it sends the results to [presenter server](https://github.com/Atlas200dk/sdk-presenter) and [I2C](https://github.com/Atlas200dk/hardware_expansion/tree/master/sample-i2c)/[UART](https://github.com/Atlas200dk/hardware_expansion/tree/master/sample-uart).
+**Postprocess engine** computes the keypoint coordinates from the inference output. It then computes an RC command (forward, backward, left, right, stop) from the keypoint coordinates. Finally, it sends the results to presenter server and I2C/UART.
 
 
 ## Deploying the application<a name="en-us_topic_0228461904_section7994174585917"></a>
