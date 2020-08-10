@@ -1,0 +1,14 @@
+{
+    "binFileName":"te_fullyconnection_9e4c92c31c9e8a9a_1",
+    "binFileSuffix":".o",
+    "blockDim":2,
+    "kernelName":"te_fullyconnection_9e4c92c31c9e8a9a_1__kernel0",
+    "magic":"RT_DEV_BINARY_MAGIC_ELF",
+    "parameters":[
+        0,
+        0,
+        0,
+        0
+    ],
+    "sha256":"9d1f2f7c9ee4837a16f7c0a273ef152607fc6c17c6c83fb4cf941b9b8517268c"
+}

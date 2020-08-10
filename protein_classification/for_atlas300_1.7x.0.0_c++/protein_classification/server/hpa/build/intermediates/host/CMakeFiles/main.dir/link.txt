@@ -1,0 +1,1 @@
+/usr/bin/g++      CMakeFiles/main.dir/utils.cpp.o CMakeFiles/main.dir/model_process.cpp.o CMakeFiles/main.dir/sample_process.cpp.o CMakeFiles/main.dir/main.cpp.o  -o /home/HwHiAiUser/HIAI_PROJECTS/hpa/out/main  -L/usr/local/Ascend/acllib/lib64/stub -lascendcl -lstdc++ 

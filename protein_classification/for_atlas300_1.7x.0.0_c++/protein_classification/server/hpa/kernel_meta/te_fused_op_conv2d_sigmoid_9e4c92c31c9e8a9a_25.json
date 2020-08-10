@@ -1,0 +1,15 @@
+{
+    "binFileName":"te_fused_op_conv2d_sigmoid_9e4c92c31c9e8a9a_25",
+    "binFileSuffix":".o",
+    "blockDim":2,
+    "cache_read_mode":0,
+    "kernelName":"te_fused_op_conv2d_sigmoid_9e4c92c31c9e8a9a_25__kernel0",
+    "magic":"RT_DEV_BINARY_MAGIC_ELF",
+    "parameters":[
+        0,
+        0,
+        0,
+        0
+    ],
+    "sha256":"9967fb0a009c061104c8062c9e1deb02b0e989012924023350fdb2d6624b7e08"
+}

@@ -1,0 +1,15 @@
+{
+    "binFileName":"te_fused_op_conv2d_leaky_relu_9e4c92c31c9e8a9a_37",
+    "binFileSuffix":".o",
+    "blockDim":1,
+    "cache_read_mode":1,
+    "kernelName":"te_fused_op_conv2d_leaky_relu_9e4c92c31c9e8a9a_37__kernel0",
+    "magic":"RT_DEV_BINARY_MAGIC_ELF",
+    "parameters":[
+        0,
+        0,
+        0,
+        0
+    ],
+    "sha256":"77acad7428ee421cd863bf38c3d5c8000966767ec30da7e57912cbd76d986dac"
+}

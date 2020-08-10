@@ -1,0 +1,12 @@
+{
+    "binFileName":"te_pooling_9e4c92c31c9e8a9a_2",
+    "binFileSuffix":".o",
+    "blockDim":2,
+    "kernelName":"te_pooling_9e4c92c31c9e8a9a_2__kernel0",
+    "magic":"RT_DEV_BINARY_MAGIC_ELF",
+    "parameters":[
+        0,
+        0
+    ],
+    "sha256":"5848e1661cf2c1caca80c747056a76197bcd5d99a16edd1d7dacbccb2e277b30"
+}

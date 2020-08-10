@@ -1,0 +1,40 @@
+# 定义的网络
+net: "/home/leihouchao/leihouchao/caffeHuaWei/model/train.prototxt"
+test_net : "/home/leihouchao/leihouchao/caffeHuaWei/model/test.prototxt"
+
+# 测试时的batch_size是 16 ,故测试时跑的迭代次数是: 10925 / 16 =683次
+test_iter: 683
+
+# 每训练1000次进行一次测试 
+test_interval: 10000
+test_initialization: false
+
+#初始的学习率
+base_lr: 0.0001
+type : "Adam"
+
+# 每 100个 训练batch 显示一下结果
+display: 100
+
+#学习率的下降策略
+lr_policy: "fixed"
+
+# 训练集迭代的次数： 27540 * 16 = 44069 * 10 即训练10个epochs左右
+max_iter: 27540
+
+power: 1
+#梯度下降策略，90%依赖这次，10%依赖上次
+momentum: 0.9
+
+#正则项的比重
+weight_decay: 0.0005
+
+#迭代多少次保存一次中间的caffemodel
+snapshot: 1000
+
+#caffemodel的前缀
+snapshot_prefix: "saved_model"
+random_seed: 0
+
+# 使用gpu训练
+solver_mode: GPU
