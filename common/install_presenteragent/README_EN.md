@@ -8,10 +8,10 @@ install_presenteragent,Please select the corresponding folder according to your 
 
 #### 使用说明
 
-1. [for_atlas200dk](https://gitee.com/ascend/samples/tree/master/common/install_presenteragent/for_atlas200dk)
+1. [for_atlas200dk](https://github.com/Huawei-Ascend/samples/tree/master/common/install_presenteragent/for_atlas200dk)
 
    Atlas200dk environment installation presenteragent guide document.
 
-2. [for_atlas300](https://gitee.com/ascend/samples/tree/master/common/install_presenteragent/for_atlas300)
+2. [for_atlas300](https://github.com/Huawei-Ascend/samples/tree/master/common/install_presenteragent/for_atlas300)
 
    Atlas300 environment installation presenteragent guide document.

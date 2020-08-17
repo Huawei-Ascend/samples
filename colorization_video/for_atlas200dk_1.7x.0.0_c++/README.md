@@ -38,7 +38,7 @@
     </td>
     <td class="cellrowborder" valign="top" width="8.07%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0219108795_p1874515218391"><a name="zh-cn_topic_0219108795_p1874515218391"></a><a name="zh-cn_topic_0219108795_p1874515218391"></a>黑白图像上色模型</p>
     </td>
-    <td class="cellrowborder" valign="top" width="79.97%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0219108795_p611318163718"><a name="zh-cn_topic_0219108795_p611318163718"></a><a name="zh-cn_topic_0219108795_p611318163718"></a>请参考<a href="https://gitee.com/HuaweiAscend/models/tree/master/computer_vision/object_detect/colorization" target="_blank" rel="noopener noreferrer">https://gitee.com/HuaweiAscend/models/tree/master/computer_vision/object_detect/colorization</a>目录中README.md下载原始网络模型文件及其对应的权重文件。</p>
+    <td class="cellrowborder" valign="top" width="79.97%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0219108795_p611318163718"><a name="zh-cn_topic_0219108795_p611318163718"></a><a name="zh-cn_topic_0219108795_p611318163718"></a>请参考<a href="https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/colorization" target="_blank" rel="noopener noreferrer">https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/colorization</a>目录中README.md下载原始网络模型文件及其对应的权重文件。</p>
     </td>
     </tr>
     </tbody>
@@ -70,10 +70,10 @@
 
 - 安装OpenCV 
       
-    请参考 **https://gitee.com/ascend/samples/tree/master/common/install_opencv/for_atlas200dk**   
+    请参考 **https://github.com/Huawei-Ascend/samples/tree/master/common/install_opencv/for_atlas200dk**   
 
 - 安装PresenterAgent   
-    请参考 **https://gitee.com/ascend/samples/tree/master/common/install_presenteragent/for_atlas200dk**  
+    请参考 **https://github.com/Huawei-Ascend/samples/tree/master/common/install_presenteragent/for_atlas200dk**  
   
 
 ## 编译<a name="zh-cn_topic_0219108795_section3723145213347"></a>

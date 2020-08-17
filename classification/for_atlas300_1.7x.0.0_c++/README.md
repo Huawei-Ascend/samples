@@ -46,7 +46,7 @@
 
 是基于Caffe的GoogLeNet模型。</p>
 </td>
-<td class="cellrowborder" valign="top" width="79.97%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0219108795_p611318163718"><a name="zh-cn_topic_0219108795_p611318163718"></a><a name="zh-cn_topic_0219108795_p611318163718"></a>请参考<a href="https://gitee.com/HuaweiAscend/models/tree/master/computer_vision/classification/googlenet" target="_blank" rel="noopener noreferrer">https://gitee.com/HuaweiAscend/models/tree/master/computer_vision/classification/googlenet</a>目录中README.md下载原始网络模型文件及其对应的权重文件。</p>
+<td class="cellrowborder" valign="top" width="79.97%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0219108795_p611318163718"><a name="zh-cn_topic_0219108795_p611318163718"></a><a name="zh-cn_topic_0219108795_p611318163718"></a>请参考<a href="https://github.com/Ascend-Huawei/models/tree/master/computer_vision/classification/googlenet" target="_blank" rel="noopener noreferrer">https://github.com/Ascend-Huawei/models/tree/master/computer_vision/classification/googlenet</a>目录中README.md下载原始网络模型文件及其对应的权重文件。</p>
 </td>
 </tr>
 </tbody>
@@ -76,7 +76,7 @@
 **注：已安装opencv库和ffmpeg库可跳过此步骤。**  
 
 - 安装opencv和ffmpeg  
-    请参考 **https://gitee.com/ascend/samples/tree/master/common/install_opencv/for_atlas300**
+    请参考 **https://github.com/Huawei-Ascend/samples/tree/master/common/install_opencv/for_atlas300**
 
 ## 编译<a name="zh-cn_topic_0219108795_section3723145213347"></a>
 

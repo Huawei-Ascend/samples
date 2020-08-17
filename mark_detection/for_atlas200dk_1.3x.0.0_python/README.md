@@ -26,7 +26,7 @@
 
     （3）配置完成后，在连接开发者板的虚拟机（或Liunx机器）中执行**ssh HwHiAiUser@192.168.1.2**命令登录开发者板,如下图。
 
-    （4）参考[此文档](https://gitee.com/Atlas200DK/sample-README/blob/master/DK_Environment/Readme.md)在开发者板中进行Python2开发环境的依赖安装。
+    （4）参考[此文档](https://github.com/Atlas200dk/sample-README/blob/master/DK_Environment/Readme.md)在开发者板中进行Python2开发环境的依赖安装。
 
 ## 数据集准备
 按照如下步骤在modelarts上部署数据集。

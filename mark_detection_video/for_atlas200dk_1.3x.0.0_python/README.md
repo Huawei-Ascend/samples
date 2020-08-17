@@ -26,7 +26,7 @@
 
     （3）配置完成后，在连接开发者板的虚拟机（或Liunx机器）中执行**ssh HwHiAiUser@192.168.1.2**命令登录开发者板(192.168.1.2是开发板默认USB网卡ip，如有修改，请以修改后的ip为准)。
 
-    （4）参考[此文档](https://gitee.com/Atlas200DK/sample-README/blob/master/DK_Environment/Readme.md)在开发者板中进行Python3开发环境的依赖安装。
+    （4）参考[此文档](https://github.com/Atlas200dk/sample-README/blob/master/DK_Environment/Readme.md)在开发者板中进行Python3开发环境的依赖安装。
      
      注：可以体验全流程安装工具[ADKInstaller](https://gitee.com/lovingascend/ADKInstaller)
 
@@ -205,7 +205,7 @@
 
 ![](imgs/depoly1.png)
 
-开发板中如果没有安装python3相关依赖和hiai，需要参考[此文档](https://gitee.com/Atlas200DK/sample-README/tree/master/DK_Environment)中python3部分安装对应依赖。如果开发板没有联网，需要参考[此文档](https://gitee.com/Atlas200DK/sample-README/tree/master/DK_NetworkConnect)进行开发板联网配置。
+开发板中如果没有安装python3相关依赖和hiai，需要参考[此文档](https://github.com/Atlas200dk/sample-README/tree/master/DK_Environment)中python3部分安装对应依赖。如果开发板没有联网，需要参考[此文档](https://github.com/Atlas200dk/sample-README/tree/master/DK_NetworkConnect)进行开发板联网配置。
 
 注意：本样例中开发板ip为192.168.158.2，开发板配置虚拟ip为192.168.158.134。如果ip不一致需要自行修改maskdetection-presentserver/mask_detection文件。
 

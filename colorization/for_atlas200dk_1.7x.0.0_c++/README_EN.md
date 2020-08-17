@@ -40,7 +40,7 @@ Before running this sample, you need to obtain the source code package.
     </td>
     <td class="cellrowborder" valign="top" width="8.07%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0219108795_p1874515218391"><a name="zh-cn_topic_0219108795_p1874515218391"></a><a name="zh-cn_topic_0219108795_p1874515218391"></a>Image colorization model</p>
     </td>
-    <td class="cellrowborder" valign="top" width="79.97%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0219108795_p611318163718"><a name="zh-cn_topic_0219108795_p611318163718"></a><a name="zh-cn_topic_0219108795_p611318163718"></a>Download the source model file and its weight file by referring to README.md at <a href="https://gitee.com/HuaweiAscend/models/tree/master/computer_vision/object_detect/colorization" target="_blank" rel="noopener noreferrer">https://gitee.com/HuaweiAscend/models/tree/master/computer_vision/object_detect/colorization</a>.</p>
+    <td class="cellrowborder" valign="top" width="79.97%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0219108795_p611318163718"><a name="zh-cn_topic_0219108795_p611318163718"></a><a name="zh-cn_topic_0219108795_p611318163718"></a>Download the source model file and its weight file by referring to README.md at <a href="https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/colorization" target="_blank" rel="noopener noreferrer">https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/colorization</a>.</p>
     </td>
     </tr>
     </tbody>
@@ -70,7 +70,7 @@ Before running this sample, you need to obtain the source code package.
 
 - Install OpenCV 
       
-    For details, see **https://gitee.com/ascend/samples/tree/master/common/install_opencv/for_atlas200dk**   
+    For details, see **https://github.com/Huawei-Ascend/samples/tree/master/common/install_opencv/for_atlas200dk**   
     
 
 ## Build<a name="zh-cn_topic_0219108795_section3723145213347"></a>

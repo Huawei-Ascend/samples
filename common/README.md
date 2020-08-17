@@ -13,18 +13,18 @@
 
 <details open><summary>install_opencv：opencv安装说明</summary><blockquote>
 
-- [for_atlas200dk](https://gitee.com/ascend/samples/tree/master/common/install_opencv/for_atlas200dk)  
-- [for_atlas300](https://gitee.com/ascend/samples/tree/master/common/install_opencv/for_atlas300)
+- [for_atlas200dk](https://github.com/Huawei-Ascend/samples/tree/master/common/install_opencv/for_atlas200dk)  
+- [for_atlas300](https://github.com/Huawei-Ascend/samples/tree/master/common/install_opencv/for_atlas300)
 </blockquote></details>  
 
 <details open><summary>install_presenteragent：presenteragent安装说明</summary><blockquote>
 
-- [for_atlas200dk](https://gitee.com/ascend/samples/tree/master/common/install_presenteragent/for_atlas200dk)  
-- [for_atlas300](https://gitee.com/ascend/samples/tree/master/common/install_presenteragent/for_atlas300)
+- [for_atlas200dk](https://github.com/Huawei-Ascend/samples/tree/master/common/install_presenteragent/for_atlas200dk)  
+- [for_atlas300](https://github.com/Huawei-Ascend/samples/tree/master/common/install_presenteragent/for_atlas300)
 </blockquote></details>    
 
 <details open><summary>install_python3env：python3环境安装说明</summary><blockquote>
 
-- [for_atlas200dk](https://gitee.com/ascend/samples/tree/master/common/install_python3env/for_atlas200dk)  
-- [for_atlas300](https://gitee.com/ascend/samples/tree/master/common/install_python3env/for_atlas300)
+- [for_atlas200dk](https://github.com/Huawei-Ascend/samples/tree/master/common/install_python3env/for_atlas200dk)  
+- [for_atlas300](https://github.com/Huawei-Ascend/samples/tree/master/common/install_python3env/for_atlas300)
 </blockquote></details>  

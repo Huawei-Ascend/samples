@@ -39,7 +39,7 @@ Before running this sample, obtain the source code package.
     </td>
     <td class="cellrowborder" valign="top" width="8.07%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0219108795_p1874515218391"><a name="zh-cn_topic_0219108795_p1874515218391"></a><a name="zh-cn_topic_0219108795_p1874515218391"></a>Image colorization model</p>
     </td>
-    <td class="cellrowborder" valign="top" width="79.97%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0219108795_p611318163718"><a name="zh-cn_topic_0219108795_p611318163718"></a><a name="zh-cn_topic_0219108795_p611318163718"></a>Download the original model file and weight file by referring to README_en.md at <a href="https://gitee.com/HuaweiAscend/models/blob/master/computer_vision/object_detect/colorization/README_en.md" target="_blank" rel="noopener noreferrer">https://gitee.com/HuaweiAscend/models/blob/master/computer_vision/object_detect/colorization/README_en.md</a>. </p>
+    <td class="cellrowborder" valign="top" width="79.97%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0219108795_p611318163718"><a name="zh-cn_topic_0219108795_p611318163718"></a><a name="zh-cn_topic_0219108795_p611318163718"></a>Download the original model file and weight file by referring to README_en.md at <a href="https://github.com/Ascend-Huawei/models/blob/master/computer_vision/object_detect/colorization/README_en.md" target="_blank" rel="noopener noreferrer">https://github.com/Ascend-Huawei/models/blob/master/computer_vision/object_detect/colorization/README_en.md</a>. </p>
     </td>
     </tr>
     </tbody>
@@ -70,10 +70,10 @@ Before running this sample, obtain the source code package.
 
 - Install OpenCV.
   
-    For details, see **https://gitee.com/ascend/common/blob/master/install_opencv/for_atlas200dk/README.md**.
+    For details, see **https://github.com/Huawei-Ascend/common/blob/master/install_opencv/for_atlas200dk/README.md**.
 
 - Install Presenter Agent  
-    For details, see **https://gitee.com/ascend/common/blob/master/install_presenteragent/for_atlas200dk/README.md**.
+    For details, see **https://github.com/Huawei-Ascend/common/blob/master/install_presenteragent/for_atlas200dk/README.md**.
 
 ## Build<a name="zh-cn_topic_0219108795_section3723145213347"></a>
 
