@@ -54,7 +54,7 @@
     
 4.  将转换好的模型文件（.om文件）上传到[步骤1](#zh-cn_topic_0228757084_section8534138124114)中源码所在路径下的“**facedetection/model**”目录下。
     
-     **cp \\$HOME/modelzoo/face_detection/device/face_detection.om \\$HOME/AscendProjects/facedetection_python/model/**  
+     **cp $HOME/modelzoo/face_detection/device/face_detection.om $HOME/AscendProjects/facedetection_python/model/**  
   
 ## 环境配置<a name="zh-cn_topic_0228757083_section17595135641"></a> 
    - 安装numpy、pillow   
@@ -63,9 +63,9 @@
 
 ## 环境部署<a name="zh-cn_topic_0228757083_section1759513564117"></a>  
 
-1.  以Mind Studio安装用户进入facedetectionapp应用代码所在根目录，如：\\$HOME/AscendProjects/facedetection_python/。  
+1.  以Mind Studio安装用户进入facedetectionapp应用代码所在根目录，如：$HOME/AscendProjects/facedetection_python/。  
      
-    **cd \\$HOME/AscendProjects/facedetection_python/** 
+    **cd $HOME/AscendProjects/facedetection_python/** 
 
 2.  修改配置文件。  
 
@@ -98,7 +98,7 @@
 4.  启动Presenter Server。
     执行如下命令在后台启动人脸检测python应用的Presenter Server主程序。
 
-    **bash \$HOME/AscendProjects/facedetection_python/script/run_presenter_server.sh &**
+    **bash $HOME/AscendProjects/facedetection_python/script/run_presenter_server.sh &**
 
     使用提示的URL登录Presenter Server。如下图所示，表示Presenter Server启动成功。
 
