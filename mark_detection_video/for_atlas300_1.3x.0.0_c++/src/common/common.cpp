@@ -1,3 +1,36 @@
+/**
+ * ============================================================================
+ *
+ * Copyright (C) 2018, Hisilicon Technologies Co., Ltd. All Rights Reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   1 Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *
+ *   2 Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the documentation
+ *     and/or other materials provided with the distribution.
+ *
+ *   3 Neither the names of the copyright holders nor the names of the
+ *   contributors may be used to endorse or promote products derived from this
+ *   software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * ============================================================================
+ */
+
 #include <iostream>
 #include <stdio.h>
 #include "data_type.h"
@@ -87,12 +120,12 @@ std::shared_ptr<void> GetEvbImageInfoDearPtr(const char* ctrl_ptr, const uint32_
 	  image_handle->format = imageinfo->format;
 	  image_handle->channel_id = imageinfo->channel_id;
     image_handle->image_info.path = imageinfo->path;
-    // 对应输入图片的宽高 （在引擎文件中通过opencv获取）
+    // Corresponding to the width and height of the input image (obtained through opencv in the engine file)
     image_handle->image_info.width = imageinfo->width;
     image_handle->image_info.height = imageinfo->height;
   
     image_handle->image_info.size = data_len;
-    // 指定析构器
+    // Specify the destructor
     image_handle->image_info.data.reset((uint8_t*)data_ptr, hiai::Graph::ReleaseDataBuffer);
     return std::static_pointer_cast<void>(image_handle);
 }

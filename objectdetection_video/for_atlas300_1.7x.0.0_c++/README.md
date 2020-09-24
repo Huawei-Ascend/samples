@@ -1,5 +1,7 @@
 中文|[English](Readme_EN.md)
 
+**该案例仅仅用于学习，打通流程，不对效果负责，不支持商用。**
+
 #  检测网络应用视频版（C++）<a name="ZH-CN_TOPIC_0219122211"></a>
 
 本应用支持运行在AI云上加速环境(Atlas300)，实现了对yolov3目标检测网络的推理功能。 
@@ -17,12 +19,12 @@
 
     **cd $HOME/AscendProjects**  
 
-    **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/code_Ascend/objectdetection_video_300.zip** 
+    **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/code_Ascend/objectdetection_video.zip** 
   
-    **unzip objectdetection_video_300**
+    **unzip objectdetection_video**
     >![](public_sys-resources/icon-note.gif) **说明：**   
     >- 如果使用wget下载失败，可使用如下命令下载代码。  
-    **curl -OL https://c7xcode.obs.cn-north-4.myhuaweicloud.com/code_Ascend/objectdetection_video_300.zip** 
+    **curl -OL https://c7xcode.obs.cn-north-4.myhuaweicloud.com/code_Ascend/objectdetection_video.zip** 
     >- 如果curl也下载失败，可复制下载链接到浏览器，手动上传至服务器。
     
 2.  <a name="zh-cn_topic_0219108795_li2074865610364"></a>获取此应用中所需要的原始网络模型。  

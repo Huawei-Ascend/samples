@@ -27,14 +27,13 @@ isReleased_(false){
 
 }
 
-ModelProcess::~ModelProcess() {
+ModelProcess::~ModelProcess(){
     DestroyResource();
 }
 
-void ModelProcess::DestroyResource() {
+void ModelProcess::DestroyResource(){
     if (isReleased_)
         return;
-    
     Unload();
     DestroyDesc();
     DestroyInput();
@@ -42,7 +41,7 @@ void ModelProcess::DestroyResource() {
     isReleased_ = true;
 }
 
-Result ModelProcess::LoadModelFromFileWithMem(const char *modelPath) {
+Result ModelProcess::LoadModelFromFileWithMem(const char *modelPath){
     if (loadFlag_) {
         ERROR_LOG("has already loaded a model");
         return FAILED;
@@ -67,7 +66,7 @@ Result ModelProcess::LoadModelFromFileWithMem(const char *modelPath) {
     }
 
     ret = aclmdlLoadFromFileWithMem(modelPath, &modelId_, modelMemPtr_,
-        modelMemSize_, modelWeightPtr_, modelWeightSize_);
+    modelMemSize_, modelWeightPtr_, modelWeightSize_);
     if (ret != ACL_ERROR_NONE) {
         ERROR_LOG("load model from file failed, model file is %s", modelPath);
         return FAILED;
@@ -78,8 +77,7 @@ Result ModelProcess::LoadModelFromFileWithMem(const char *modelPath) {
     return SUCCESS;
 }
 
-Result ModelProcess::CreateDesc()
-{
+Result ModelProcess::CreateDesc(){
     modelDesc_ = aclmdlCreateDesc();
     if (modelDesc_ == nullptr) {
         ERROR_LOG("create model description failed");
@@ -96,17 +94,15 @@ Result ModelProcess::CreateDesc()
     return SUCCESS;
 }
 
-void ModelProcess::DestroyDesc()
-{
+void ModelProcess::DestroyDesc(){
     if (modelDesc_ != nullptr) {
         (void)aclmdlDestroyDesc(modelDesc_);
         modelDesc_ = nullptr;
     }
 }
 
-Result ModelProcess::CreateInput(void *input1, size_t input1size, 
-                                 void* input2, size_t input2size)
-{
+Result ModelProcess::CreateInput(void *input1, size_t input1size,
+                                 void* input2, size_t input2size){
     input_ = aclmdlCreateDataset();
     if (input_ == nullptr) {
         ERROR_LOG("can't create dataset, create input failed");
@@ -144,8 +140,7 @@ Result ModelProcess::CreateInput(void *input1, size_t input1size,
     return SUCCESS;
 }
 
-void ModelProcess::DestroyInput()
-{
+void ModelProcess::DestroyInput(){
     if (input_ == nullptr) {
         return;
     }
@@ -158,8 +153,7 @@ void ModelProcess::DestroyInput()
     input_ = nullptr;
 }
 
-Result ModelProcess::CreateOutput()
-{
+Result ModelProcess::CreateOutput(){
     if (modelDesc_ == nullptr) {
         ERROR_LOG("no model description, create ouput failed");
         return FAILED;
@@ -202,8 +196,7 @@ Result ModelProcess::CreateOutput()
     return SUCCESS;
 }
 
-void ModelProcess::DestroyOutput()
-{
+void ModelProcess::DestroyOutput(){
     if (output_ == nullptr) {
         return;
     }
@@ -219,8 +212,7 @@ void ModelProcess::DestroyOutput()
     output_ = nullptr;
 }
 
-Result ModelProcess::Execute()
-{
+Result ModelProcess::Execute(){
     aclError ret = aclmdlExecute(modelId_, input_, output_);
     if (ret != ACL_ERROR_NONE) {
         ERROR_LOG("execute model failed, modelId is %u", modelId_);
@@ -264,8 +256,7 @@ void ModelProcess::Unload()
     INFO_LOG("unload model success, modelId is %u", modelId_);
 }
 
-aclmdlDataset *ModelProcess::GetModelOutputData()
-{
+aclmdlDataset *ModelProcess::GetModelOutputData(){
     return output_;
 }
 

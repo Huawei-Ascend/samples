@@ -48,13 +48,14 @@
     更新源。  
     **sudo apt-get update**   
 
-4.  安装pip3    
-     **sudo apt install python3-pip** 
+4.  安装pip3  
+    **sudo apt-get install python3-pip**    
+    **python3 -m pip install pip --user** 
 5.  安装依赖    
     **sudo apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk**
 
 6.  安装 python 库  
-    **pip3 install --upgrade pip**  
+    **pip3 install --upgrade pip --user**  
     **pip3 install pillow --user**  
     **pip3 install protobuf --user**  
     **pip3 install Cython --user**  

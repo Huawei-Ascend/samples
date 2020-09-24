@@ -25,31 +25,23 @@ using namespace std;
 
 DvppJpegD::DvppJpegD(aclrtStream& stream,  acldvppChannelDesc *dvppChannelDesc)
     : stream_(stream), dvppChannelDesc_(dvppChannelDesc),
-      decodeOutBufferDev_(nullptr), decodeOutputDesc_(nullptr)
-{
+      decodeOutBufferDev_(nullptr), decodeOutputDesc_(nullptr){
 }
 
-DvppJpegD::~DvppJpegD()
-{
+DvppJpegD::~DvppJpegD(){
     DestroyDecodeResource();
 }
 
 
-Result DvppJpegD::InitDecodeOutputDesc(ImageData& inputImage)
-{
-    uint32_t decodeOutWidthStride = ALIGN_UP16(inputImage.width);
-    uint32_t decodeOutHeightStride = ALIGN_UP2(inputImage.height);
+Result DvppJpegD::InitDecodeOutputDesc(ImageData& inputImage){
+    uint32_t decodeOutWidthStride = ALIGN_UP128(inputImage.width);
+    uint32_t decodeOutHeightStride = ALIGN_UP16(inputImage.height);
     if (decodeOutWidthStride == 0 || decodeOutHeightStride == 0) {
         ERROR_LOG("InitDecodeOutputDesc AlignmentHelper failed");
         return FAILED;
     }
 
-    /*预测接口要求aclrtMallocHost分配的内存,AI1上运行当前应用中会需要
-	多次拷贝图片内存,暂不用.
-    acldvppJpegPredictDecSize(inputImage.data.get(), inputImage.size,
-    PIXEL_FORMAT_YUV_SEMIPLANAR_420, &decodeOutBufferSize);*/
-    
-	/*分配一块足够大的内存*/
+	/*Allocate a large enough memory*/
     uint32_t decodeOutBufferSize = 
 	    YUV420SP_SIZE(decodeOutWidthStride, decodeOutHeightStride) * 4;
 
@@ -75,12 +67,7 @@ Result DvppJpegD::InitDecodeOutputDesc(ImageData& inputImage)
     return SUCCESS;
 }
 
-Result DvppJpegD::Process(ImageData& dest, ImageData& src)
-{
-    printf("src image width %d, height %d, size %d\n", src.width, src.height, src.size);
-
-
-
+Result DvppJpegD::Process(ImageData& dest, ImageData& src){
     int ret = InitDecodeOutputDesc(src);
     if (ret != SUCCESS) {
         ERROR_LOG("InitDecodeOutputDesc failed");
@@ -102,8 +89,8 @@ Result DvppJpegD::Process(ImageData& dest, ImageData& src)
 
     dest.width = src.width;
     dest.height = src.height;
-    dest.alignWidth = ALIGN_UP16(src.width);
-    dest.alignHeight = ALIGN_UP2(src.height);
+    dest.alignWidth = ALIGN_UP128(src.width);
+    dest.alignHeight = ALIGN_UP16(src.height);
     dest.size = YUV420SP_SIZE(dest.alignWidth, dest.alignHeight);
     dest.data = SHARED_PRT_DVPP_BUF(decodeOutBufferDev_);
     INFO_LOG("convert image success");
@@ -111,8 +98,7 @@ Result DvppJpegD::Process(ImageData& dest, ImageData& src)
     return SUCCESS;
 }
 
-void DvppJpegD::DestroyDecodeResource()
-{
+void DvppJpegD::DestroyDecodeResource(){
     if (decodeOutputDesc_ != nullptr) {
         acldvppDestroyPicDesc(decodeOutputDesc_);
         decodeOutputDesc_ = nullptr;

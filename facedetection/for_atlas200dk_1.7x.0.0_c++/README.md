@@ -1,4 +1,6 @@
-中文|[English](Readme_EN.md)
+中文|[English](README_EN.md)
+
+**该案例仅仅用于学习，打通流程，不对效果负责，不支持商用。**
 
 # 人脸检测（C++）<a name="ZH-CN_TOPIC_0232337690"></a>  
 

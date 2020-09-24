@@ -5,10 +5,13 @@ English|[中文](README.md)
     **cd $HOME**  
     **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/presenteragent/presenteragent.zip --no-check-certificate**  
     **unzip presenteragent.zip** 
-2.  Install the python-tornado package.  
-    **python3.7.5 -m pip install tornado==5.1.0 --user**
-3.  Install the autoconf, automake, and libtool dependencies.  
-    **sudo apt-get install autoconf automake libtool**
+2.  Install the autoconf, automake, and libtool dependencies.  
+    **sudo apt-get install autoconf automake libtool python3-pip**
+3.  Install python packages.  
+    **python3 -m pip install pip --user**  
+    **python3 -m pip install --upgrade pip --user**    
+    **python3 -m pip install tornado==5.1.0 protobuf==3.5.1 numpy==1.14.2 --user**  
+    **python3.7.5 -m pip install tornado==5.1.0 --user** 
 4.  Install Protobuf. (Run the following commands in sequence. Because cross compilation is required, you need to compile Protobuf twice.)  
     **git clone -b 3.8.x https://gitee.com/mirrors/protobufsource.git protobuf**  
     **cd protobuf**  
@@ -40,8 +43,7 @@ For example, if the Toolkit is named Ascend-Toolkit-20.0.RC1-x86_64-linux_gcc7.3
     
     Upload the compiled .so file to the Atlas 200 DK.  
     **scp $HOME/ascend_ddk/arm/lib/libpresenteragent.so HwHiAiUser@192.168.1.2:/home/HwHiAiUser**    
-    **ssh HwHiAiUser@192.168.1.2**  
-    **su root**  
+    **ssh HwHiAiUser@192.168.1.2**   
     **cp /home/HwHiAiUser/libpresenteragent.so /home/HwHiAiUser/ascend_ddk/arm/lib**  
 
 6.  Add environment variables. (If it has been added, please skip this step)  

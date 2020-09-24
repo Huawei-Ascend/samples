@@ -1,5 +1,7 @@
 English|[中文](README.md)
 
+**This case is only used for learning. It is not responsible for the effect and does not support commercial use.**
+
 # Video Object Detection Network Application (C++)<a name="ZH-CN_TOPIC_0219122211"></a>
 
 This application can run on the Atlas 200 DK to detect objects in videos using the YOLOv3 network.
@@ -94,15 +96,15 @@ Before running this sample, obtain the source code package.
 
 2. Change the IP address of Presenter Server.
    
-   - Change the value of **presenter_server_ip** in **script/presentserver/display/config/config.conf** to the virtual NIC IP address of the Ubuntu server where Mind Studio is installed, as shown in [Figure 2 Modifying presenter_server_ip](#zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig1110624110).
+   - Change the value of **presenter_server_ip**  **presenter_view_ip**  **presenter_agent_ip**  in **script/object_detection.conf** to the virtual NIC IP address of the Ubuntu server where Mind Studio is installed, as shown in [Figure 2 Modifying presenter_server_ip](#zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig1110624110).
    
      **Figure 2** Modifying presenter_server_ip<a name="zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig1110624110"></a>  
-     ![](figures/presenter_server_ip.png "Modifying presenter_server_ip")
+     ![输入图片说明](https://images.gitee.com/uploads/images/2020/0922/091925_3bf21858_7401379.png "屏幕截图.png")
    
-   - Change the value of **param.host_ip** in **src/sample_process.cpp** to the virtual NIC IP address of the Ubuntu server where Mind Studio is installed, as shown in [Figure 3 Modifying param_host_ip](#zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig11).
+   - Change the value of **param.host_ip** in **src/object_detect.cpp** to the virtual NIC IP address of the Ubuntu server where Mind Studio is installed, as shown in [Figure 3 Modifying param_host_ip](#zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig11).
    
      **Figure 3** Modifying param_host_ip<a name="zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig11"></a>  
-     ![](figures/param_host_ip.png "Modifying param_host_ip")
+     ![输入图片说明](https://images.gitee.com/uploads/images/2020/0922/091735_9ca0a6c7_7401379.png "屏幕截图.png")
    
     > ![](public_sys-resources/icon-note.gif) NOTE 
     > - Run the **ifconfig** command to view the IP address of the virtual NIC.
@@ -125,14 +127,14 @@ Set **Target OS** to **Centos7.6**, as shown in [Figure 4 Build configuration](#
    
    Open the Terminal window of Mind Studio. Run the following command in the path where the application code is stored to start Presenter Server in the background, as shown in [Figure 6 Starting Presenter Server.](#zh-cn_topic_0228461904_zh-cn_topic_0203223294_fig423515251067)
    
-   **python3 script/presenterserver/presenter_server.py --app=display &**
+   **bash script/run_presenter_server.sh  &**
    
    **Figure 6** Starting Presenter Server <a name="zh-cn_topic_0228461904_zh-cn_topic_0203223294_fig423515251067"></a>  
-   ![](figures/presentserver1.png)
+   ![输入图片说明](https://images.gitee.com/uploads/images/2020/0923/091346_5c8880ea_5395865.png "屏幕截图.png")
    
    Presenter Server is started successfully, as shown in [Figure 7 Presenter Server started successfully](#zh-cn_topic_0228461904_zh-cn_topic_0203223294_fig423).   
    **Figure 7** Presenter Server started successfully <a name="zh-cn_topic_0228461904_zh-cn_topic_0203223294_fig423"></a>  
-   ![](figures/presentserver2.png)
+  ![输入图片说明](https://images.gitee.com/uploads/images/2020/0923/091501_736f9392_5395865.png "屏幕截图.png")
 
 ## Run<a name="zh-cn_topic_0219108795_section1620073406"></a>
 

@@ -1,5 +1,3 @@
-# Copyright (c) Huawei Technologies Co., Ltd. 2019. All rights reserved.
-
 # CMake lowest version requirement
 cmake_minimum_required(VERSION 3.5.1)
 
@@ -32,11 +30,17 @@ else ()
     message(STATUS "env LIB_PATH: ${LIB_PATH}")
 endif()
 
+if (${CMAKE_CXX_COMPILER} MATCHES "aarch")
+    set(ARCH "arm")
+else ()
+    set(ARCH "x86")
+endif()
+
 # Header path
 include_directories(
     ../inc/
-    $ENV{HOME}/ascend_ddk/arm/include/
-    $ENV{HOME}/ascend_ddk/arm/include/opencv4
+    $ENV{HOME}/ascend_ddk/${ARCH}/include/
+    $ENV{HOME}/ascend_ddk/${ARCH}/include/opencv4
     ${INC_PATH}/acllib/include/
 )
 
@@ -45,9 +49,9 @@ include_directories(
 link_directories(
     /usr/local/lib
     ${LIB_PATH}
-    $ENV{HOME}/ascend_ddk/arm/lib/
+    $ENV{HOME}/ascend_ddk/${ARCH}/lib/
+    $ENV{HOME}/Ascend/
     ${INC_PATH}/atc/lib64
-    $ENV{HOME}/Ascend
 )
 
 add_executable(main

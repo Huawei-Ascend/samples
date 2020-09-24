@@ -14,44 +14,77 @@
 * limitations under the License.
 
 * File main.cpp
-* Description: objectdetection video yolov3 sample main func
+* Description: dvpp sample main func
 */
 
 #include <iostream>
 #include <stdlib.h>
 #include <dirent.h>
-#include "sample_process.h"
+
+#include "object_detect.h"
 #include "utils.h"
 using namespace std;
 
-int main(int argc, char *argv[])
-{
-    if(argc<2){
-        ERROR_LOG("please input: ./main videopath");
-	return FAILED;
-    }
+namespace {
+uint32_t kModelWidth = 416;
+uint32_t kModelHeight = 416;
+const char* kModelPath = "../model/yolov3.om";
+const char* kAppConf = "../script/object_detection.conf";
+}
 
-    if(!Utils::IsPathExist(argv[1])){
-        ERROR_LOG("video path %s not found",argv[1]);
-	return FAILED;
+int main(int argc, char *argv[]) {
+    //Check the input when the application executes, which takes the path to the input video file
+    if((argc < 2) || (argv[1] == nullptr)){
+        ERROR_LOG("Please input: ./main <image_dir>");
+        return FAILED;
     }
-
-    SampleProcess processSample;
-    Result ret = processSample.InitResource();
+    //Instantiate the target detection class with the parameters of the classification model path and the required width and height of the model input
+    ObjectDetect detect(kModelPath, kModelWidth, kModelHeight);
+    //Initializes the ACL resource for categorical reasoning, loads the model and requests the memory used for reasoning input
+    Result ret = detect.Init();
     if (ret != SUCCESS) {
-        ERROR_LOG("sample init resource failed");
+        ERROR_LOG("Classification Init resource failed");
         return FAILED;
     }
 
-
-    //input video path
-    string input_path = string(argv[1]);
-
-    ret = processSample.VideoProcess(input_path);
-    if (ret != SUCCESS) {
-        ERROR_LOG("sample model process failed");
+    //Use Opencv to open the video file
+    string videoFile = string(argv[1]);
+    printf("open %s\n", videoFile.c_str());
+    cv::VideoCapture capture(videoFile);
+    if (!capture.isOpened()) {
+        cout << "Movie open Error" << endl;
         return FAILED;
     }
-    INFO_LOG("execute sample success");
+    //Frame by frame reasoning
+    while(1) {
+        //Read a frame of an image
+        cv::Mat frame;
+        if (!capture.read(frame)) {
+            INFO_LOG("Video capture return false");
+            break;
+        }
+        //The frame image is preprocessed
+        Result ret = detect.Preprocess(frame);
+        if (ret != SUCCESS) {
+            ERROR_LOG("Read file %s failed, continue to read next",
+                      videoFile.c_str());
+            continue;
+        }
+        //The preprocessed images are fed into model reasoning and the reasoning results are obtained
+        aclmdlDataset* inferenceOutput = nullptr;
+        ret = detect.Inference(inferenceOutput);
+        if ((ret != SUCCESS) || (inferenceOutput == nullptr)) {
+            ERROR_LOG("Inference model inference output data failed");
+            return FAILED;
+        }
+        //Parses the inference output and sends the inference class, location, confidence, and image to the Presenter Server for display
+        ret = detect.Postprocess(frame, inferenceOutput);
+        if (ret != SUCCESS) {
+            ERROR_LOG("Process model inference output data failed");
+            return FAILED;
+        }
+    }
+
+    INFO_LOG("Execute video object detection success");
     return SUCCESS;
 }

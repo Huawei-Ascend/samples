@@ -1,5 +1,7 @@
 中文|[English](README_EN.md)
 
+**该案例仅仅用于学习，打通流程，不对效果负责，不支持商用。**
+
 #  检测网络应用视频版（C++）<a name="ZH-CN_TOPIC_0219122211"></a>
 
 本Application支持运行在Atlas 200 DK，实现了对yolov3目标检测网络的推理功能。 
@@ -93,15 +95,17 @@
     ![](figures/打开objectdetection_video工程.png "打开objectdetection-video工程")
 
 2.  修改Presenter Server的ip。  
-    -  将**script/presentserver/display/config/config.conf**中的**presenter_server_ip**修改为Mind Studio所在Ubuntu服务器的虚拟网卡的ip地址，如[图 presenter_server_ip](#zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig1110624110)所示。
+    -  将script/object_detection.conf中的presenter_server_ip、presenter_view_ip、presenter_agent_ip修改为Mind Studio所在Ubuntu服务器的虚拟网卡的ip地址，如图所示。
 
-       **图 2**  修改presenter_server_ip<a name="zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig1110624110"></a>  
-       ![](figures/presenter_server_ip.png "修改presenter_server_ip")      
-    -  将**src/sample_process.cpp**中的 **param.host_ip** 修改为Mind Studio所在Ubuntu服务器的虚拟网卡的ip地址，如[图 param_host_ip](#zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig11)所示。
+       **图 2**      
+![ presenter_server_ip](https://images.gitee.com/uploads/images/2020/0914/142219_c7ceeb77_7985487.png "屏幕截图.png") 
+         
 
-       **图 3**  修改param_host_ip<a name="zh-cn_topic_0228461902_zh-cn_topic_0203223265_fig11"></a>  
-       ![](figures/param_host_ip.png "修改param_host_ip")    
+  
+    -  将src/object_detect.cpp中的 param.host_ip 修改为Mind Studio所在Ubuntu服务器的虚拟网卡的ip地址，如图所示。
 
+       **图 3** ![修改param_host_ip](https://images.gitee.com/uploads/images/2020/0914/142642_84c705c2_7985487.png "屏幕截图.png") 
+       
     >![](public_sys-resources/icon-note.gif) **说明：**    
     >-  虚拟网卡的ip地址请通过ifconfig命令查看。    
 3.  开始编译，打开Mind Studio工具，在工具栏中点击**Build \> Edit Build Configuration**。  
@@ -122,16 +126,13 @@
 
     打开Mind Studio工具的Terminal，在应用代码存放路径下，执行如下命令在后台启动objectdetection-video应用的Presenter Server主程序。如[图 启动PresenterServer](#zh-cn_topic_0228461904_zh-cn_topic_0203223294_fig423515251067)所示。
 
-    **python3 script/presenterserver/presenter_server.py --app=display &**
+    **bash script/run_presenter_server.sh &**
 
-    **图 6**  启动PresenterServer<a name="zh-cn_topic_0228461904_zh-cn_topic_0203223294_fig423515251067"></a>  
-    ![](figures/presentserver1.png)
-   
+    **图 6**  启动PresenterServer![输入图片说明](https://images.gitee.com/uploads/images/2020/0923/091220_80e68c0b_5395865.png "屏幕截图.png")
   
-    如[图 启动PresenterServer](#zh-cn_topic_0228461904_zh-cn_topic_0203223294_fig423)所示，表示presenter_server的服务启动成功。  
-    **图 7**  启动PresenterServer<a name="zh-cn_topic_0228461904_zh-cn_topic_0203223294_fig423"></a>    
-    ![](figures/presentserver2.png)
-
+    如图所示，表示presenter_server的服务启动成功。  
+    **图 7**  启动PresenterServer    
+  ![输入图片说明](https://images.gitee.com/uploads/images/2020/0923/091456_1eaa70a4_5395865.png "屏幕截图.png")
 ## 运行<a name="zh-cn_topic_0219108795_section1620073406"></a>
 1.  在Mind Studio工具的工具栏中找到Run按钮，单击  **Run \> Edit Configurations**。  
     在Command Arguments 中添加运行参数 **../data/detection.mp4**（输入视频的路径），之后分别点击Apply、OK。如[图 配置运行](#zh-cn_topic_0203223265_fig93931954162720)所示。   
