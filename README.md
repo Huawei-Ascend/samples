@@ -22,6 +22,19 @@ Ascend sample，请根据自己的需要进入对应文件夹获取应用，或�
 - [for_atlas300_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/classification/for_atlas300_1.7x.0.0_c++)：该分支是运行在ai1环境上基于1.7x.0.0版本的C++样例。使用opencv对图像进行预处理，对预处理后的图像中的物体进行分类，最后通过opencv进行相应后处理。 
 </blockquote></details>  
 
+<details open><summary>classification_dynamicbatch
+：基于googlenet的分类应用，输入为图片，输出为图片。</summary><blockquote>
+
+- [for_atlas200dk_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/classification_dynamicbatch/for_atlas200dk_1.7x.0.0_c++)：该分支是运行在200DK上基于1.7x.0.0版本的C++样例。使用ifstream读取已对图像做好预处理的bin文件，对预处理后的图像中的物体进行分类，最后将推理结果打印屏幕上。    
+- [for_atlas300_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/classification_dynamicbatch/for_atlas300_1.7x.0.0_c++)：该分支是运行在ai1环境上基于1.7x.0.0版本的C++样例。使用ifstream读取已对图像做好预处理的bin文件，对预处理后的图像中的物体进行分类，最后将推理结果打印屏幕上。 
+</blockquote></details>  
+
+<details open><summary>classification_multibatch
+：基于googlenet的分类应用，输入为图片，输出为图片。</summary><blockquote>
+
+- [for_atlas200dk_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/classification_multibatch%20%20%20%20/for_atlas200dk_1.7x.0.0_c++)：该分支是运行在200DK上基于1.7x.0.0版本的C++样例。使用ifstream读取已对图像做好预处理的bin文件，对预处理后的图像中的物体进行分类，最后将推理结果打印屏幕上。    
+- [for_atlas300_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/classification_multibatch%20%20%20%20/for_atlas300_1.7x.0.0_c++)：该分支是运行在ai1环境上基于1.7x.0.0版本的C++样例。使用ifstream读取已对图像做好预处理的bin文件，对预处理后的图像中的物体进行分类，最后将推理结果打印屏幕上。 
+</blockquote></details>  
 
 <details open><summary>classification_video：基于googlenet的分类应用，输入为视频，输出为视频。</summary><blockquote>
 
@@ -51,6 +64,12 @@ Ascend sample，请根据自己的需要进入对应文件夹获取应用，或�
 - [for_atlas300_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/objectdetection/for_atlas300_1.7x.0.0_c++)：该分支是运行在ai1环境上基于1.7x.0.0版本的C++样例。使用opencv对图像进行预处理，对预处理后的图像中的物体进行目标检测，最后通过opencv进行相应后处理。  
 </blockquote></details>
 
+<details open><summary> objectdetection_dynamic_aipp：基于yolov3的目标检测应用，输入为图片，输出为图片。</summary><blockquote>
+
+- [for_atlas200dk_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/objectdetection_dynamic_aipp/for_atlas200dk_1.7x.0.0_c++)：该分支是运行在200DK上基于1.7x.0.0版本的C++样例。使用opencv对图像进行预处理，对预处理后的图像中的物体进行目标检测，最后通过opencv进行相应后处理。  
+- [for_atlas300_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/objectdetection_dynamic_aipp/for_atlas300_1.7x.0.0_c++)：该分支是运行在ai1环境上基于1.7x.0.0版本的C++样例。使用opencv对图像进行预处理，对预处理后的图像中的物体进行目标检测，最后通过opencv进行相应后处理。  
+</blockquote></details>
+
 
 <details open><summary>objectdetection_video：基于yolov3的目标检测应用，输入为视频，输出为视频。</summary><blockquote>
 
@@ -75,3 +94,21 @@ Ascend sample，请根据自己的需要进入对应文件夹获取应用，或�
 - [for_atlas200dk_1.3x.0.0_python](https://github.com/Huawei-Ascend/samples/tree/master/mark_detection_video/for_atlas200dk_1.3x.0.0_python)：该分支是运行在200DK上基于1.3x.0.0版本的python样例。使用opencv对视频帧进行预处理，对预处理后的视频帧进行口罩识别，最后进行相应后处理。
 </blockquote></details>
 
+
+<details open><summary> wav2word：基于test_model.pb的语言转换文字应用，输入为语音，输出为文本。</summary><blockquote>
+
+- [for_atlas200dk_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/wav2word/for_atlas200dk_1.7x.0.0_c++)：该分支是运行在200DK上基于1.7x.0.0版本的C++样例。使用python wave库对音频文件进行特征提取，提取200维的音频特征进行计算输入，之后进行语音信号的预处理分帧，加窗，傅里叶变换等进行预处理，对预处理后语音转换成相应文字，最后通过调用Keras附带的CTC_decode函数库进行解码进行相应后处理。    
+- [for_atlas300_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/wav2word/for_atlas300_1.7x.0.0_c++)：该分支是运行在ai1环境上基于1.7x.0.0版本的C++样例。使用python wave库对音频文件进行特征提取，提取200维的音频特征进行计算输入，之后进行语音信号的预处理分帧，加窗，傅里叶变换等对语音进行预处理，对预处理后语音转换成相应文字，最后通过调用Keras附带的CTC_decode函数库进行解码进行相应后处理。  
+</blockquote></details>     
+
+
+<details open><summary>hardware-peripheral：基于Atlas200DK的各硬件接口使用样例，详细介绍了gpio、i2c、uart使用说明。</summary><blockquote>
+
+- [for_atlas200dk_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/hardware-peripheral%20/for_atlas200dk_1.7x.0.0_c++)：本仓包含Atlas200DK各硬件接口的使用样例，各文件夹对应不同硬件设备的样例，以供用户参考。  
+</blockquote></details>      
+
+<details open><summary>dvpp_samples：Atlas200DK和Atlas300支持的媒体数据处理功能。</summary><blockquote>
+
+- [for_atlas200dk_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/dvpp_samples/for_atlas200dk_1.7x.0.0_c++)：详细介绍了Atlas200dk中venc的功能及约束说明。 
+- [for_atlas300_1.7x.0.0_c++](https://github.com/Huawei-Ascend/samples/tree/master/dvpp_samples/for_atlas200dk_1.7x.0.0_c++)：详细介绍了Atlas300dk中crop、cropandpaste、jpegd、jpege、resize、vdec的功能及约束说明。
+</blockquote></details>

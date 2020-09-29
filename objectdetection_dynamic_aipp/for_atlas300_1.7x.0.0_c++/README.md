@@ -15,6 +15,7 @@
 
     **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/code_Ascend/objectdetection_dynamic_aipp.zip --no-check-certificat**
             
+       **unzip objectdetection_dynamic_aipp.zip** 
     
 2.  <a name="zh-cn_topic_0219108795_li2074865610364"></a>获取此应用中所需要的原始网络模型。    
  
@@ -56,7 +57,7 @@
     
 5.  将转换好的模型文件（.om文件）添加到项目工程：
 
-    **cp yolov3/yolov3.om AscendProjects/objectdetection_dynamic_aipp/model/**
+    **cp \\$HOME/yolov3/yolov3.om \\$HOME/AscendProjects/objectdetection_dynamic_aipp/model/**
 
 ## 环境配置   
 
@@ -91,17 +92,18 @@
     
     之后点击**Build \> Build \> Build Configuration**，如图3 编译操作及生成文件 所示，会在目录下生成build和out文件夹。   
 
-   ![成功编译](https://images.gitee.com/uploads/images/2020/0924/165058_13e12343_7985487.png "屏幕截图.png")
-    **图 3**  编译操作及生成文件<a name="zh-cn_topic_0203223265_fig1741464713019"></a>  
-
+       ![成功编译](https://images.gitee.com/uploads/images/2020/0924/165058_13e12343_7985487.png "屏幕截图.png")
+        **图 3**  编译操作及生成文件<a name="zh-cn_topic_0203223265_fig1741464713019"></a>  
+    
     >![](public_sys-resources/icon-notice.gif) **须知：**   
     >首次编译工程时，**Build \> Build**为灰色不可点击状态。需要点击**Build \> Edit Build Configuration**，配置编译参数后再进行编译。  
+
 ## 运行<a name="zh-cn_topic_0219108795_section1620073406"></a>
 1.  在Mind Studio工具的工具栏中找到Run按钮，单击  **Run \> Edit Configurations**。  
     在Command Arguments 中添加运行参数 **../data**（输入图片的路径），之后分别点击Apply、OK。如图4 配置运行 所示。
    
-    ![配置运行](https://images.gitee.com/uploads/images/2020/0924/210723_367701a4_7985487.png "屏幕截图.png")
-**图 4**  配置运行<a name="zh-cn_topic_0203223265_fig93931954162720"></a>   
+    ![配置运行](https://images.gitee.com/uploads/images/2020/0924/210723_367701a4_7985487.png "屏幕截图.png")  
+    **图 4**  配置运行<a name="zh-cn_topic_0203223265_fig93931954162720"></a>   
  
 2.  单击  **Run \> Run 'objectdetection'**，如图 程序已执行示意图 所示，可执行程序已经在开发者板执行。  
 
