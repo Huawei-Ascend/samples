@@ -6,7 +6,6 @@
 
 ## YOLOV3_coco_detection_picture样例
 
-**注：案例详细介绍请参见[googlenet动态batch_wiki]()。**
 
 功能：使用yolov3模型对输入图片进行预测推理，并将结果打印到输出图片上。
 
@@ -55,7 +54,7 @@
     
     |  **模型名称**  |  **模型说明**  |  **模型下载路径**  |
     |---|---|---|
-    |  yolov3| 图片分类推理模型。是基于Caffe的yolov3模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/yolov3/ATC_yolov3_caffe_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/yolov3/ATC_yolov3_caffe_AE)目录中README.md下载原始模型章节下载模型和权重文件。 |
+    |  yolov3| 基于Caffe-YOLOV3的目标检测模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/yolov3/ATC_yolov3_caffe_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/yolov3/ATC_yolov3_caffe_AE)目录中README.md下载原始模型章节下载模型和权重文件。 |
 
     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
     > - modelzoo中提供了转换好的om模型，此模型匹配当前样例，可以直接使用。    
@@ -94,16 +93,16 @@
 
       **source ~/.bashrc**
         
-      **cd $HOME/samples/python/level2_simple_inference/2_object_detection/YOLOV3_coco_detection_picture/**    
-      **python3 object_detect.py ./data/**
+      **cd $HOME/samples/python/level2_simple_inference/2_object_detection/YOLOV3_coco_detection_picture/src**    
+      **python3.6 object_detect.py ../data/**
 
     - 如果是开发环境与运行环境分离部署，执行以下命令切换目录。
     
-      **cd $HOME/YOLOV3_coco_detection_picture**
+      **cd $HOME/YOLOV3_coco_detection_picture/src**
 
     切换目录后，执行以下命令运行样例。
 
-    **python3.6 src/object_detect.py ./data/**
+    **python3.6 object_detect.py ../data/**
 
 ### 查看结果
 

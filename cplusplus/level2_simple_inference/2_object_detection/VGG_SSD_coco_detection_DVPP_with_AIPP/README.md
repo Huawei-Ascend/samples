@@ -1,190 +1,189 @@
-**本样例为大家学习昇腾软件栈提供参考，非商业目的！**
+English|[中文](README_CN.md)
 
-**本样例适配20.0及以上版本，支持产品为Atlas200DK、Atlas300([ai1s](https://support.huaweicloud.com/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366))。**
+**This sample provides reference for you to learn the Ascend AI Software Stack and is not for commercial purposes.**
 
-**本README只提供命令行方式运行样例的指导，如需在Mindstudio下运行样例，请参考[Mindstudio运行图片样例wiki](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E5%9B%BE%E7%89%87%E6%A0%B7%E4%BE%8B?sort_id=3164874)。**
+**This sample applies to Ascend camera 20.0 and later versions, and supports Atlas 200 DK and Atlas 300 ([AI1s](https://support.huaweicloud.com/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366)).**
 
-## VGG_SSD_coco_detection_DVPP_with_AIPP样例
+**This document provides only guidance for running the sample on the command line. For details about how to run the sample in MindStudio, see the [Wiki of Running Image Samples in MindStudio](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E5%9B%BE%E7%89%87%E6%A0%B7%E4%BE%8B?sort_id=3164874).**
 
-**注：案例详细介绍请参见[googlenet动态batch_wiki]()。**
+## VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP Sample
 
-功能：使用vgg_ssd模型对输入图片进行预测推理，并将结果打印到输出图片上。本案例采用dvpp方式处理输入图片。
+Function: Use the vgg\_ssd model to perform inference on the input images and print the results on the output images. In this case, the DVPP mode is used to process the input images.
 
-样例输入：原始图片jpg文件。
+Input: JPG images
 
-样例输出：带推理结果的jpg文件。
+Output: JPG images with inference results
 
-### 前提条件
+### Prerequisites
 
-部署此Sample前，需要准备好以下环境：
+Before deploying this sample, ensure that:
 
-- 请确认已按照[环境准备和依赖安装](https://github.com/Huawei-Ascend/samples/tree/dev/cplusplus/environment)准备好环境。
+- The environment has been prepared based on [Preparing Environment and Installing Dependencies](https://github.com/Huawei-Ascend/samples/tree/dev/cplusplus/environment).
 
-- 已完成对应产品的开发环境和运行环境安装。
+- The development environment and operating environment of the corresponding product have been installed.
 
-### 软件准备
+### Preparing Software
 
-1. 获取源码包。
-
-   可以使用以下两种方式下载，请选择其中一种进行源码准备。
-
-    - 命令行方式下载（下载时间较长，但步骤简单）。
-
-        开发环境，非root用户命令行中执行以下命令下载源码仓。
-
-       **cd $HOME**
-
-       **git clone https://github.com/Huawei-Ascend/samples.git**
-
-    - 压缩包方式下载（下载时间较短，但步骤稍微复杂）。
-
-        1. samples仓右上角选择 **克隆/下载** 下拉框并选择 **下载ZIP**。
-
-        2. 将ZIP包上传到开发环境中的普通用户家目录中，例如 **$HOME/ascend-samples-master.zip**。
-
-        3. 开发环境中，执行以下命令，解压zip包。
-
-            **cd $HOME**
-
-            **unzip ascend-samples-master.zip**
-
-2. 获取此应用中所需要的原始网络模型。
-
-    参考下表获取此应用中所用到的原始网络模型及其对应的权重文件，并将其存放到开发环境普通用户下的任意目录，例如：$HOME/models/VGG_SSD_coco_detection_DVPP_with_AIPP。
-    
-    |  **模型名称**  |  **模型说明**  |  **模型下载路径**  |
-    |---|---|---|
-    |  vgg_ssd| 图片分类推理模型。是基于Caffe的vgg_ssd模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/vgg_ssd/ATC_vgg_ssd_tf_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/vgg_ssd/ATC_vgg_ssd_tf_AE)目录中README.md下载原始模型章节下载模型和权重文件。 |
-
-    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-    > - modelzoo中提供了转换好的om模型，但此模型不匹配当前样例，所以需要下载原始模型和权重文件后重新进行模型转换。
-
-3. 将原始模型转换为Davinci模型。
-    
-    **注：请确认环境变量已经在[环境准备和依赖安装](https://github.com/Huawei-Ascend/samples/tree/dev/cplusplus/environment)中配置完成**
-
-    1. 设置LD_LIBRARY_PATH环境变量。
-
-        由于LD_LIBRARY_PATH环境变量在转使用atc工具和运行样例时会产生冲突，所以需要在命令行单独设置此环境变量，方便修改。
-
-        **export LD_LIBRARY_PATH=\\${install_path}/atc/lib64**  
-
-    2. 执行以下命令下载aipp配置文件并使用atc命令进行模型转换。
-
-        **cd $HOME/models/VGG_SSD_coco_detection_DVPP_with_AIPP**  
-
-        **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/VGG_SSD_coco_detection_DVPP_with_AIPP/insert_op.cfg**
-
-       
-        **atc --output_type=FP32 --input_shape="data:1,3,300,300" --weight=./vgg_ssd.caffemodel --input_format=NCHW --output=./vgg_ssd --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --save_original_model=false --model=./vgg_ssd.prototxt**
-
-    3. 执行以下命令将转换好的模型复制到样例中model文件夹中。
-
-        **cp ./vgg_ssd.om $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/VGG_SSD_coco_detection_DVPP_with_AIPP/model/**
-
-4. 获取样例需要的测试图片。
-
-    执行以下命令，进入样例的data文件夹中，下载对应的测试图片。
-
-    **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/VGG_SSD_coco_detection_DVPP_with_AIPP/data**
-
-    **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/VGG_SSD_coco_detection_DVPP_with_AIPP/bicycle.jpg**
-
-    **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/VGG_SSD_coco_detection_DVPP_with_AIPP/boat.jpg**
-
-### 样例部署
- 
-1. 开发环境命令行中设置编译依赖的环境变量。
-
-   基于开发环境与运行环境CPU架构是否相同，请仔细看下面的步骤：
-
-   - 当开发环境与运行环境CPU架构相同时，执行以下命令导入环境变量。
-
-     **export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux**
-
-     **export NPU_HOST_LIB=$DDK_PATH/acllib/lib64/stub**
-
-     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 如果是20.0版本，此处 **DDK_PATH** 环境变量中的 **x86_64-linux** 应修改为 **x86_64-linux_gcc7.3.0**。
-        > - 可以在命令行中执行 **uname -a**，查看开发环境和运行环境的cpu架构。如果回显为x86_64，则为x86架构。如果回显为arm64，则为Arm架构。
-
-   - 当开发环境与运行环境CPU架构不同时，执行以下命令导入环境变量。例如开发环境为X86架构，运行环境为Arm架构，由于开发环境上同时部署了X86和Arm架构的开发套件，后续编译应用时需要调用Arm架构开发套件的ACLlib库，所以此处需要导入环境变量为Arm架构的ACLlib库路径。
-
-     **export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux**
-
-     **export NPU_HOST_LIB=$DDK_PATH/acllib/lib64/stub**
-
-     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 如果是20.0版本，此处 **DDK_PATH** 环境变量中的 **arm64-liunx** 应修改为 **arm64-linux_gcc7.3.0**。
-        > - 可以在命令行中执行 **uname -a**，查看开发环境和运行环境的cpu架构。如果回显为x86_64，则为x86架构。如果回显为arm64，则为Arm架构。
-
-2. 切换到VGG_SSD_coco_detection_DVPP_with_AIPP目录，创建目录用于存放编译文件，例如，本文中，创建的目录为 **build/intermediates/host**。
-
-    **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/VGG_SSD_coco_detection_DVPP_with_AIPP**
-
-    **mkdir -p build/intermediates/host**
-
-3. 切换到 **build/intermediates/host** 目录，执行cmake生成编译文件。
-
-    - 当开发环境与运行环境操作系统架构相同时，执行如下命令编译。
-      
-      **cd build/intermediates/host**   
-
-      **make clean**
-
-      **cmake \.\./\.\./\.\./src -DCMAKE_CXX_COMPILER=g++ -DCMAKE_SKIP_RPATH=TRUE**
-
-    - 当开发环境与运行环境操作系统架构不同时，需要使用交叉编译器编译。例如开发环境为X86架构，运行环境为Arm架构，执行以下命令进行交叉编译。
-
-      **cd build/intermediates/host**
-
-      **make clean**
-    
-      **cmake \.\./\.\./\.\./src -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SKIP_RPATH=TRUE**
-
-4. 执行make命令，生成的可执行文件main在 **VGG_SSD_coco_detection_DVPP_with_AIPP/out** 目录下。
-
-    **make**
-
-### 样例运行
-
-**注：开发环境与运行环境合一部署，请跳过步骤1，直接执行[步骤2](#step_2)即可。**   
-
-1. 执行以下命令,将开发环境的 **VGG_SSD_coco_detection_DVPP_with_AIPP** 目录上传到运行环境中，例如 **/home/HwHiAiUser**，并以HwHiAiUser（运行用户）登录运行环境（Host）。
-
-    **scp -r $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/VGG_SSD_coco_detection_DVPP_with_AIPP HwHiAiUser@xxx.xxx.xxx.xxx:/home/HwHiAiUser**
-
-    **ssh HwHiAiUser@xxx.xxx.xxx.xxx**    
-
-    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-    > - **xxx.xxx.xxx.xxx**为运行环境ip，200DK在USB连接时一般为192.168.1.2，300（ai1s）为对应的公网ip。
-
-2. <a name="step_2"></a>运行可执行文件。
-
-    - 如果是开发环境与运行环境合一部署，执行以下命令，设置运行环境变量，并切换目录。
-
-      **export LD_LIBRARY_PATH=**
-
-      **source ~/.bashrc**
+1. Obtain the source code package.
+   
+   You can download the source code in either of the following ways:
+   
+   - Command line (The download takes a long time, but the procedure is simple.)
+     
+     In the development environment, run the following commands as a non-root user to download the source code repository:
+     
+     **cd $HOME**
+     
+     **git clone https://github.com/Huawei-Ascend/samples.git**
+   
+   - Compressed package (The download time is short, but the procedure is complex.)
+     
+     1. Click **Clone or download** in the upper right corner of the samples repository and select **Download ZIP**.
+     
+     2. Upload the .zip package to the home directory of a common user in the development environment, for example, **$HOME/ascend-samples-master.zip**.
+     
+     3. In the development environment, run the following commands to decompress the **.zip** package:
         
-      **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/VGG_SSD_coco_detection_DVPP_with_AIPP/out**
+        **cd $HOME**
+        
+        **unzip ascend-samples-master.zip**
 
-    - 如果是开发环境与运行环境分离部署，执行以下命令切换目录。
-    
-      **cd $HOME/VGG_SSD_coco_detection_DVPP_with_AIPP/out**
+2. Obtain the original model required by the application.
+   
+   Obtain the original model and its weight files used in the application by referring to the following table and save them to any directory of a common user in the development environment, for example, **$HOME/models/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP**.
+   
+   | **Model Name**| **Description**| **How to Obtain**|
+   |----------|----------|----------|
+   | vgg\_ssd| Applies to image classification. It is a vgg\_ssd model based on Caffe.| Download the model and weight file by referring to the section about downloading the original model in the **README.md** file in [https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/vgg\_ssd/ATC\_vgg\_ssd\_tf\_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/vgg_ssd/ATC_vgg_ssd_tf_AE).|
 
-    - 创建结果文件
+   ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+   
+   > - The converted OM model is provided in the ModelZoo. However, the model does not match the current sample. Therefore, you need to download the original model and weight file and convert the model again.
 
-      **mkdir output**
+3. Convert the original model to a Da Vinci model.
+   
+   **Note: Ensure that the environment variables have been configured based on [Preparing Environment and Installing Dependencies](https://github.com/Huawei-Ascend/samples/tree/dev/cplusplus/environment).**
+   
+   1. Set the **LD\_LIBRARY\_PATH** environment variable.
+      
+      The **LD\_LIBRARY\_PATH** environment variable conflicts with the sample when the ATC tool is used. Therefore, you need to set this environment variable separately in the command line to facilitate modification.
+      
+      **export LD\_LIBRARY\_PATH=\\${install\_path}/atc/lib64**
+   
+   2. Run the following commands to download the AIPP configuration file and convert the model:
+      
+      **cd $HOME/models/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP**
+      
+      **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP/insert\_op.cfg**
+      
+      **atc --output\_type=FP32 --input\_shape="data:1,3,300,300" --weight=./vgg\_ssd.caffemodel --input\_format=NCHW --output=./vgg\_ssd --soc\_version=Ascend310 --insert\_op\_conf=./insert\_op.cfg --framework=0 --save\_original\_model=false --model=./vgg\_ssd.prototxt**
+   
+   3. Run the following command to copy the converted model to the **model** folder of the sample:
+      
+      **cp ./vgg\_ssd.om $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP/model/**
 
-    切换目录后，执行以下命令运行样例。
+4. Obtain the test images required by the sample.
+   
+   Run the following commands to go to the \*\*data\*\* folder of the sample and download the corresponding test image:
+   
+   **cd $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP/data**
+   
+   **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP/bicycle.jpg**
+   
+   **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP/boat.jpg**
 
-    **./main**
+### Deploying the Sample
 
-### 查看结果
+1. Set the environment variables for compiling the dependencies on the command line of the development environment.
+   
+   Perform the following step based on the actual situation:
+   
+   - If the CPU architecture of the development environment is the same as that of the operating environment, run the following commands to import environment variables:
+     
+     **export DDK\_PATH=$HOME/Ascend/ascend-toolkit/latest/x86\_64-linux**
+     
+     **export NPU\_HOST\_LIB=$DDK\_PATH/acllib/lib64/stub**
+     
+     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+     
+     > - If the version is 20.0, change **x86\_64-linux** in the **DDK\_PATH** environment variable to **x86\_64-linux\_gcc7.3.0**.
+     > - You can run the **uname -a** command on the command line to view the CPU architecture of the development environment and operating environment. If **x86\_64** is displayed in the command output, the x86 architecture is used. If **arm64** is displayed in the command output, the ARM architecture is used.
+   
+   - If the CPU architecture of the development environment is different from that of the operating environment, run the following commands to import environment variables. If the development environment uses the x86 architecture and the operating environment uses the ARM architecture, the ACLlib of the ARM toolkit needs to be called during application build time because the toolkits of both the x86 and ARM architectures are installed in the development environment. Therefore, you need to import the path of the ARM ACLlib.
+     
+     **export DDK\_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux**
+     
+     **export NPU\_HOST\_LIB=$DDK\_PATH/acllib/lib64/stub**
+     
+     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+     
+     > - If the version is 20.0, change **arm64-linux** in the **DDK\_PATH** environment variable to **arm64-linux\_gcc7.3.0**.
+     > - You can run the **uname -a** command on the command line to view the CPU architecture of the development environment and operating environment. If **x86\_64** is displayed in the command output, the x86 architecture is used. If **arm64** is displayed in the command output, the ARM architecture is used.
 
-运行完成后，会在运行环境的命令行中打印出推理结果。
+2. Go to the **VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP** directory and create a directory for storing compilation files. For example, the created directory in this document is **build/intermediates/host**.
+   
+   **cd $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP**
+   
+   **mkdir -p build/intermediates/host**
 
+3. Go to the **build/intermediates/host** directory and run the **cmake** command.
+   
+   - If the development environment and operating environment have the same OS architecture, run the following commands to perform compilation.
+     
+     **cd build/intermediates/host**
+     
+     **make clean**
+     
+     **cmake ../../../src -DCMAKE\_CXX\_COMPILER=g++ -DCMAKE\_SKIP\_RPATH=TRUE**
+   
+   - When the OS architecture of the development environment is different from that of the operating environment, you need to use the cross compiler for compilation. For example, if the development environment uses the x86 architecture and the operating environment uses the ARM architecture, run the following commands to perform cross compilation:
+     
+     **cd build/intermediates/host**
+     
+     **make clean**
+     
+     **cmake ../../../src -DCMAKE\_CXX\_COMPILER=aarch64-linux-gnu-g++ -DCMAKE\_SKIP\_RPATH=TRUE**
 
+4. Run the **make** command. The generated executable file **main** is stored in the **VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP/out** directory.
+   
+   **make**
 
+### Running the Sample
 
+**Note: If the development environment and operating environment are deployed on the same server, skip step 1 and go to [step 2](#step_2).**
+
+1. Run the following commands to upload the **VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP** directory in the development environment to the operating environment, for example, **/home/HwHiAiUser**, and log in to the operating environment (host) as the **HwHiAiUser** user:
+   
+   **scp -r $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP HwHiAiUser@*xxx.xxx.xxx.xxx*:/home/HwHiAiUser**
+   
+   **ssh HwHiAiUser@*xxx.xxx.xxx.xxx***
+   
+   ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+   
+   > - *xxx.xxx.xxx.xxx* is the IP address of the operating environment, which is **192.168.1.2** when the Atlas 200 DK is connected using the USB, and is the IP address of the corresponding public network for Atlas 300 (AI1s).
+
+2. <a name="step_2"></a>Run the executable file.
+   
+   - If the development environment and operating environment are deployed on the same server, run the following commands to set the operating environment variables and change the directory:
+     
+     **export LD\_LIBRARY\_PATH=**
+     
+     **source ~/.bashrc**
+     
+     **cd $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP/out**
+   
+   - If the development environment and operating environment are deployed on separate servers, run the following command to change the directory:
+     
+     **cd $HOME/VGG\_SSD\_coco\_detection\_DVPP\_with\_AIPP/out**
+   
+   - Create the result folder.
+     
+     **mkdir output**
+   
+   Run the following command to run the sample:
+   
+   **./main**
+
+### Checking the Result
+
+After the execution is complete, the inference results are displayed in the command line of the operating environment.

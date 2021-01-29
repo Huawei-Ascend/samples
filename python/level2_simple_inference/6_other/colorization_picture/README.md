@@ -54,7 +54,7 @@
     
     |  **模型名称**  |  **模型说明**  |  **模型下载路径**  |
     |---|---|---|
-    |  colorization| 黑白图像上色推理模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/colorization/ATC_colorization_caffe_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/colorization/ATC_colorization_caffe_AE)目录中README.md下载原始模型章节下载模型和权重文件。 |
+    |  colorization| 黑白图像上色推理模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/colorization/ATC_colorization_caffe_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/colorization/ATC_colorization_caffe_AE)目录中README.md下载原始模型章节下载模型和权重文件。 |
 
     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
     > - modelzoo中提供了转换好的om模型，但此模型不匹配当前样例，所以需要下载原始模型和权重文件后重新进行模型转换。
@@ -110,17 +110,17 @@
 
       **source ~/.bashrc**
         
-      **cd $HOME/samples/python/level2_simple_inference/6_other/colorization_picture/**    
-      **python3 colorize.py ./data/**
+      **cd $HOME/samples/python/level2_simple_inference/6_other/colorization_picture/src**    
+      **python3.6 colorize.py ../data/**
 
     - 如果是开发环境与运行环境分离部署，执行以下命令切换目录。
     
-      **cd $HOME/colorization_picture**
+      **cd $HOME/colorization_picture/src**
 
     切换目录后，执行以下命令运行样例。
 
-    **python3 colorize.py ./data/**
+    **python3.6 colorize.py ../data/**
 
 ### 查看结果
 
-运行完成后，会在运行环境的命令行中打印出推理结果,并在$HOME/colorization/out/out目录下生成推理后的图片。
+运行完成后，会在运行环境的命令行中打印出推理结果,并在$HOME/colorization/out/目录下生成推理后的图片。

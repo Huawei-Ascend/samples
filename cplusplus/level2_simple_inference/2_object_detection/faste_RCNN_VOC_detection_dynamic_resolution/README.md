@@ -1,87 +1,88 @@
-**本样例为大家学习昇腾软件栈提供参考，非商业目的！**
+English|[中文](README_CN.md)
 
-**本样例适配20.0及以上版本，支持产品为Atlas200DK、Atlas300([ai1s](https://support.huaweicloud.com/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366))。**
+**The following sample provides reference for you to learn the Ascend AI Software Stack and cannot be used for commercial purposes.**
 
-**本README只提供命令行方式运行样例的指导，如需在Mindstudio下运行样例，请参考[Mindstudio运行图片样例wiki](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E5%9B%BE%E7%89%87%E6%A0%B7%E4%BE%8B?sort_id=3164874)。**
+**The sample applies to CANN 20.0 and later versions and supports Atlas 200 DK and Atlas 300 ([AI1s](https://support.huaweicloud.com/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366)).**
 
-## faste_RCNN_VOC_detection_dynamic_resolution样例
+**This README provides only guidance for running samples in command line mode. For details about how to run samples in MindStudio, see [Running Image Samples in MindStudio_wiki](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E5%9B%BE%E7%89%87%E6%A0%B7%E4%BE%8B?sort_id=3164874).**
 
-**注：案例详细介绍请参见[googlenet动态batch_wiki]()。**
+## faste_RCNN_VOC_detection_dynamic_resolution Sample
 
-功能：使用faster_rcnn模型对输入图片进行预测推理，并将结果打印到输出图片上。
+Function: Use the faster_rcnn model to perform prediction and inference on the input image and display the result on the output image.
 
-样例输入：原始图片jpg文件。
+Input: JPG image
 
-样例输出：带推理结果的jpg文件。
+Output: JPG image with the inference result
 
-### 前提条件
+### Prerequisites
 
-部署此Sample前，需要准备好以下环境：
+Before deploying this sample, ensure that:
 
-- 请确认已按照[环境准备和依赖安装](../../../environment)准备好环境。
+- The environment has been prepared according to [Environment Preparation and Dependency Installation](../../../environment).
 
-- 已完成对应产品的开发环境和运行环境安装。
+- The development environment and operating environment of the corresponding product have been installed.
 
-### 软件准备
+### Software Preparation
 
-1. 获取源码包。
+1. Obtain the source code package.
 
-   可以使用以下两种方式下载，请选择其中一种进行源码准备。
+   You can use either of the following methods to download the source code:
 
-    - 命令行方式下载（下载时间较长，但步骤简单）。
+    - Command line (The download takes a long time, but the procedure is simple.)
 
-        开发环境，非root用户命令行中执行以下命令下载源码仓。
+        In the development environment, run the following command as a non-root user to download the source code repository:
 
        **cd $HOME**
 
        **git clone https://github.com/Huawei-Ascend/samples.git**
 
-    - 压缩包方式下载（下载时间较短，但步骤稍微复杂）。
+    - Compressed package (The download time is short, but the procedure is complex.)
 
-        1. samples仓右上角选择 **克隆/下载** 下拉框并选择 **下载ZIP**。
+        1. Click **Clone or download** in the upper right corner of the samples repository and click **Download ZIP**.
 
-        2. 将ZIP包上传到开发环境中的普通用户家目录中，例如 **$HOME/ascend-samples-master.zip**。
+        2. Upload the .zip package to the home directory of a common user in the development environment, for example, **$HOME/ascend-samples-master.zip**.
 
-        3. 开发环境中，执行以下命令，解压zip包。
+        3. In the development environment, run the following commands to decompress the .zip package:
 
             **cd $HOME**
 
             **unzip ascend-samples-master.zip**
 
-2. 获取此应用中所需要的原始网络模型。
+2. Obtain the source network model required by the application.
 
-    参考下表获取此应用中所用到的原始网络模型及其对应的权重文件，并将其存放到开发环境普通用户下的任意目录，例如：$HOME/models/faste_RCNN_VOC_detection_dynamic_resolution。
-    
-    |  **模型名称**  |  **模型说明**  |  **模型下载路径**  |
+    Obtain the original network model and its weight file used in the application by referring to the following table and store them in any directory of a common user in the development environment, for example, **$HOME/models/faste_RCNN_VOC_detection_dynamic_resolution**.
+
+    | **Model Name** | **Description** | **How to Obtain** |
     |---|---|---|
-    |  faster_rcnn| 图片分类推理模型。是基于Caffe的yolov3模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/faster_rcnn/ATC_faster_rcnn_caffe_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/faster_rcnn/ATC_faster_rcnn_caffe_AE)目录中README.md下载原始模型章节下载模型和权重文件。 |
+    |  faster_rcnn| Image classification inference model. It is a YOLOv3 model based on Caffe.   | Download the original model and weight file by referring to [https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/faster_rcnn/ATC_faster_rcnn_caffe_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/faster_rcnn/ATC_faster_rcnn_caffe_AE).  |
 
-    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-    > - modelzoo中提供了转换好的om模型，但此模型不匹配当前样例，所以需要下载原始模型和权重文件后重新进行模型转换。
+    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note**
 
-3. 将原始模型转换为Davinci模型。
-    
-    **注：请确认环境变量已经在[环境准备和依赖安装](../../../environment)中配置完成**
+    > - The converted OM model provided by ModelZoo does not match the current sample. Therefore, you need to download the original model and weight file to convert the model by yourself.
 
-    1. 设置LD_LIBRARY_PATH环境变量。
+3. Convert the original model to a Da Vinci model.
 
-        由于LD_LIBRARY_PATH环境变量在转使用atc工具和运行样例时会产生冲突，所以需要在命令行单独设置此环境变量，方便修改。
+    **Note: Ensure that the environment variables have been configured in [Environment Preparation and Dependency Installation](../../../environment).**
+
+    1. Set the **LD_LIBRARY_PATH** environment variable.
+
+        The **LD_LIBRARY_PATH** environment variable conflicts with the sample when the ATC tool is used. Therefore, you need to set this environment variable in the command line to facilitate modification.
 
         **export LD_LIBRARY_PATH=\\${install_path}/atc/lib64**  
 
-    2. 执行以下命令下载aipp配置文件并使用atc命令进行模型转换。
+    2. Run the following command to download the AIPP configuration file and run the ATC command to convert the model:
 
         **cd $HOME/models/faste_RCNN_VOC_detection_dynamic_resolution**  
 
         **atc --model=faster_rcnn.prototxt --weight=faster_rcnn.caffemodel --framework=0 --output=faster_rcnn --soc_version=Ascend310 --input_shape="data:1,3,-1,-1;im_info:1,3" --dynamic_image_size="512,512;600,600;800,800"**
 
-    3. 执行以下命令将转换好的模型复制到样例中model文件夹中。
+    3. Run the following command to copy the converted model to the **model** folder of the sample.
 
         **cp ./faster_rcnn.om $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/faste_RCNN_VOC_detection_dynamic_resolution/model/**
 
-4. 获取样例需要的测试图片。
+4. Obtain the test images required by the sample.
 
-    执行以下命令，进入样例的data文件夹中，下载对应的测试图片。
+    Run the following command to go to the **data** folder of the sample and download the corresponding test image:
 
     **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/faste_RCNN_VOC_detection_dynamic_resolution/data**
 
@@ -89,97 +90,98 @@
 
     **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/faste_RCNN_VOC_detection_dynamic_resolution/boat.jpg**
 
-### 样例部署
- 
-1. 开发环境命令行中设置编译依赖的环境变量。
+### Sample Deployment
 
-   基于开发环境与运行环境CPU架构是否相同，请仔细看下面的步骤：
+1. Set the environment variables on which compilation depends in the command line of the development environment.
 
-   - 当开发环境与运行环境CPU架构相同时，执行以下命令导入环境变量。
+   Perform the following step based on the actual situation:
+
+   - If the CPU architecture of the development environment is the same as that of the operating environment, run the following commands to import environment variables:
 
      **export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux**
 
      **export NPU_HOST_LIB=$DDK_PATH/acllib/lib64/stub**
 
-     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 如果是20.0版本，此处 **DDK_PATH** 环境变量中的 **x86_64-linux** 应修改为 **x86_64-linux_gcc7.3.0**。
-        > - 可以在命令行中执行 **uname -a**，查看开发环境和运行环境的cpu架构。如果回显为x86_64，则为x86架构。如果回显为arm64，则为Arm架构。
+     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note**
 
-   - 当开发环境与运行环境CPU架构不同时，执行以下命令导入环境变量。例如开发环境为X86架构，运行环境为Arm架构，由于开发环境上同时部署了X86和Arm架构的开发套件，后续编译应用时需要调用Arm架构开发套件的ACLlib库，所以此处需要导入环境变量为Arm架构的ACLlib库路径。
+        > - If the version is 20.0, change **x86_64-linux** in the **DDK_PATH** environment variable to **x86_64-linux_gcc7.3.0**.
+        > - You can run the **uname -a** command in the command line to view the CPU architecture of the development environment and operating environment. If x86_64 is displayed in the command output, the architecture is x86. If arm64 is displayed in the command output, the architecture is ARM.
+
+   - If the CPU architecture of the development environment is different from that of the operating environment, run the following commands to import environment variables. If the development environment uses the x86 architecture and the operating environment uses the ARM architecture, the ACLlib of the ARM Toolkit needs to be called during app build time because the Toolkits of both the x86 and ARM architectures are deployed in the development environment. Therefore, you need to import the path of the ARM ACLlib.
 
      **export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux**
 
      **export NPU_HOST_LIB=$DDK_PATH/acllib/lib64/stub**
 
-     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 如果是20.0版本，此处 **DDK_PATH** 环境变量中的 **arm64-liunx** 应修改为 **arm64-linux_gcc7.3.0**。
-        > - 可以在命令行中执行 **uname -a**，查看开发环境和运行环境的cpu架构。如果回显为x86_64，则为x86架构。如果回显为arm64，则为Arm架构。
+     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note**
 
-2. 切换到faste_RCNN_VOC_detection_dynamic_resolution目录，创建目录用于存放编译文件，例如，本文中，创建的目录为 **build/intermediates/host**。
+        > - If the version is 20.0, change **arm64-linux** in the **DDK_PATH** environment variable to **arm64-linux_gcc7.3.0**.
+        > - You can run the **uname -a** command in the command line to view the CPU architecture of the development environment and operating environment. If x86_64 is displayed in the command output, the architecture is x86. If arm64 is displayed in the command output, the architecture is ARM.
+
+2. Go to the **faste_RCNN_VOC_detection_dynamic_resolution** directory and create a directory for storing build outputs. For example, the directory created in this sample is **build/intermediates/host**.
 
     **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/faste_RCNN_VOC_detection_dynamic_resolution**
 
     **mkdir -p build/intermediates/host**
 
-3. 切换到 **build/intermediates/host** 目录，执行cmake生成编译文件。
+3. Go to the **build/intermediates/host** directory and run the cmake command.
 
-    - 当开发环境与运行环境操作系统架构相同时，执行如下命令编译。
-      
-      **cd build/intermediates/host**   
+    - If the OS architecture of the development environment is the same as that of the operating environment, run the following command to perform compilation.
+
+      **cd build/intermediates/host**
 
       **make clean**
 
       **cmake \.\./\.\./\.\./src -DCMAKE_CXX_COMPILER=g++ -DCMAKE_SKIP_RPATH=TRUE**
 
-    - 当开发环境与运行环境操作系统架构不同时，需要使用交叉编译器编译。例如开发环境为X86架构，运行环境为Arm架构，执行以下命令进行交叉编译。
+    - If the OS architecture of the development environment is different from that of the operating environment, use the cross compiler to perform compilation. If the development environment uses the x86 architecture and the operating environment uses the ARM architecture, run the following command to perform cross compilation:
 
       **cd build/intermediates/host**
 
       **make clean**
-    
+
       **cmake \.\./\.\./\.\./src -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SKIP_RPATH=TRUE**
 
-4. 执行make命令，生成的可执行文件main在 **faste_RCNN_VOC_detection_dynamic_resolution/out** 目录下。
+4. Run the make command to generate an executable file **main** in the **faste_RCNN_VOC_detection_dynamic_resolution/out** directory.
 
     **make**
 
-### 样例运行
+### Sample Running
 
-**注：开发环境与运行环境合一部署，请跳过步骤1，直接执行[步骤2](#step_2)即可。**   
+**Note: If the development environment and operating environment are deployed on the same server, skip step 1 and go to [step 2](#step_2).**
 
-1. 执行以下命令,将开发环境的 **faste_RCNN_VOC_detection_dynamic_resolution** 目录上传到运行环境中，例如 **/home/HwHiAiUser**，并以HwHiAiUser（运行用户）登录运行环境（Host）。
+1. Run the following command to upload the **faste_RCNN_VOC_detection_dynamic_resolution** directory in the development environment to the operating environment, for example, **/home/HwHiAiUser**, and log in to the operating environment (host) as the **HwHiAiUser** user:
 
     **scp -r $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/faste_RCNN_VOC_detection_dynamic_resolution HwHiAiUser@xxx.xxx.xxx.xxx:/home/HwHiAiUser**
 
-    **ssh HwHiAiUser@xxx.xxx.xxx.xxx**    
+    **ssh HwHiAiUser@xxx.xxx.xxx.xxx**
 
-    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-    > - **xxx.xxx.xxx.xxx**为运行环境ip，200DK在USB连接时一般为192.168.1.2，300（ai1s）为对应的公网ip。
+    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note**
 
-2. <a name="step_2"></a>运行可执行文件。
+> - **xxx.xxx.xxx.xxx** indicates the IP address of the operating environment. The IP address of Atlas 200 DK is 192.168.1.2 when it is connected over the USB port, and that of Atlas 300 (AI1s) is the corresponding public IP address.
 
-    - 如果是开发环境与运行环境合一部署，执行以下命令，设置运行环境变量，并切换目录。
+2. <a name="step_2"></a>Run the executable file.
+
+    - If the development environment and operating environment are deployed on the same server, run the following commands to set the operating environment variables and switch the directory:
 
       **export LD_LIBRARY_PATH=**
 
       **source ~/.bashrc**
-        
+
       **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/faste_RCNN_VOC_detection_dynamic_resolution/out**
 
-    - 如果是开发环境与运行环境分离部署，执行以下命令切换目录。
-    
+    - If the development environment and operating environment are deployed on separate servers, run the following command to switch the directory:
+
       **cd $HOME/faste_RCNN_VOC_detection_dynamic_resolution/out**
 
-    - 创建结果文件
+    - Create a result file.
 
       **mkdir output**
 
-    切换目录后，执行以下命令运行样例。
+    Switch to the directory and run the following command to run the sample:
 
     **./main**
 
-### 查看结果
+### Checking the Result
 
-运行完成后，会在运行环境的命令行中打印出推理结果。
-
-
+After the running is complete, the inference result is displayed in the command line of the operating environment.

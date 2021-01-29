@@ -6,9 +6,7 @@
 
 ## 语音转文字样例
 
-**注：案例详细介绍请参见[声音转文字_wiki](https://github.com/Huawei-Ascend/samples/wikis/%E5%9B%BE%E7%89%87googlenet%E5%88%86%E7%B1%BB?sort_id=3164842)。**
-
-功能：使用语音转换模型对输入语音进行推理。。
+功能：使用语音转换模型对输入语音进行推理。
 
 样例输入：由.wav文件转换成的.bin文件。
 
@@ -54,7 +52,7 @@
     
     |  **模型名称**  |  **模型说明**  |  **模型下载路径**  |
     |---|---|---|
-    |  wav2word| 语音转文字推理模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/nlp/wav2word/ATC_wav2word_tf_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/nlp/wav2word/ATC_wav2word_tf_AE)目录中README.md下载原始模型章节下载模型。 |
+    |  wav2word| 语音转文字推理模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/nlp/wav2word/ATC_wav2word_tf_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/nlp/wav2word/ATC_wav2word_tf_AE)目录中README.md下载原始模型章节下载模型。 |
 
     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
     > - modelzoo中提供了转换好的om模型，但此模型不匹配当前样例，所以需要下载原始模型和权重文件后重新进行模型转换。
@@ -142,7 +140,7 @@
     **make**
 5. 执行如下命令将.wav文件转换成.bin文件。
 
-    **cd /home/ascend/samples/cplusplus/level2_simple_inference/5_nlp/WAV_to_word/script**
+    **cd /home/ascend/samples/cplusplus/level2_simple_inference/5_nlp/WAV_to_word/scripts**
 
     **python3 preparedata.py**
 
@@ -187,9 +185,9 @@
 
     **mv output2_0.bin ../**
     
-    在/home/HwHiAiUser/WAV_to_word/script目录下执行如下命令：
+    在/home/HwHiAiUser/WAV_to_word/scripts目录下执行如下命令：
     
-    **cd /home/HwHiAiUser/WAV_to_word/script**
+    **cd /home/HwHiAiUser/WAV_to_word/scripts**
 
     **python3 postprocess.py**
     

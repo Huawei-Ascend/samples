@@ -36,7 +36,7 @@
     
     |  **模型名称**  |  **模型说明**  |  **模型下载路径**  |
     |---|---|---|
-    |  face_detection| 图片分类推理模型。是基于Caffe的yolov3模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/facedetection/ATC_resnet10-SSD_caffe_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/facedetection/ATC_resnet10-SSD_caffe_AE)目录中README.md下载原始模型章节下载模型和权重文件。 |
+    |  face_detection| 是基于Caffe的人脸检测模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/facedetection/ATC_resnet10-SSD_caffe_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/facedetection/ATC_resnet10-SSD_caffe_AE)目录中README.md下载原始模型章节下载模型和权重文件。 |
 
     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
     > - modelzoo中提供了转换好的om模型，但此模型不匹配当前样例，所以需要下载原始模型和权重文件后重新进行模型转换。
@@ -67,10 +67,10 @@
 
 1. 修改present相关配置文件。
 
-    将样例目录下**script/param.conf**中的 presenter_server_ip、presenter_view_ip 修改为开发板的ip地址。
+    将样例目录下**scripts/param.conf**中的 presenter_server_ip、presenter_view_ip 修改为开发板的ip地址。
 
      使用产品为200DK开发者板。     
-        1. 在开发环境中将**script/param.conf**中的 presenter_server_ip、presenter_view_ip 修改为该ip地址。   
+        1. 在开发环境中将**scripts/param.conf**中的 presenter_server_ip、presenter_view_ip 修改为该ip地址。   
         ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
         > - 1.一般使用200dk固定ip，例如192.168.1.2。
 ### 样例运行
@@ -90,15 +90,15 @@
            执行以下命令登录运行环境。      
             **ssh HwHiAiUser@xxx.xxx.xxx.xxx**     
             **cd $HOME/samples/python/level2_simple_inference/2_object_detection/face_detection_camera**   
-            **bash script/run_presenter_server.sh**   
+            **bash scripts/run_presenter_server.sh**   
 
 3. <a name="step_2"></a>运行可执行文件。
 
-      **cd $HOME/face_detection_camera**
+      **cd $HOME/face_detection_camera/src**
 
     切换目录后，执行以下命令运行样例。
 
-    **python3 main.py**
+    **python3.6 main.py**
 
 ### 查看结果
 

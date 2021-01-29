@@ -1,220 +1,226 @@
-**本样例为大家学习昇腾软件栈提供参考，非商业目的！**
+English|[中文](README_CN.md)
 
-**本样例适配20.0及以上版本，支持产品为Atlas200DK、Atlas300([ai1s](https://support.huaweicloud.com/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366))。**
+**This sample provides reference for you to learn the Ascend AI Software Stack and is not for commercial purposes.**
 
-**本README只提供命令行方式运行样例的指导，如需在Mindstudio下运行样例，请参考[Mindstudio运行视频样例wiki](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E8%A7%86%E9%A2%91%E6%A0%B7%E4%BE%8B?sort_id=3170138)。**
+**This sample applies to Ascend camera 20.0 and later versions, and supports Atlas 200 DK and Atlas 300 ([AI1s](https://support.huaweicloud.com/en-us/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366)).**
 
-## 检测视频中物体的样例
+**This document provides only guidance for running the sample in CLI mode. For details about how to run the sample in MindStudio, see [Running Video Samples in MindStudio](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E8%A7%86%E9%A2%91%E6%A0%B7%E4%BE%8B?sort_id=3170138).**
 
-**注：案例详细介绍请参见[视频目标检测](https://github.com/Huawei-Ascend/samples/wikis/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B?sort_id=3170496)。**
+## Video Object Detection Sample
 
-功能：检测视频中出现的物体，并在视频中给出预测结果。
+Function: detect objects that appear in the video and provide prediction results in the video.
 
-样例输入：原始mp4视频。
+Input: original MP4 video
 
-样例输出：presenter界面展现预测结果。
+Output: prediction results displayed on the Presenter page
 
+### Prerequisites
 
-### 前提条件
+Before deploying this sample, ensure that:
 
-部署此Sample前，需要准备好以下环境：
+- The environment has been prepared based on [Preparing Environment and Installing Dependencies](../../../environment).
 
-- 请确认已按照[环境准备和依赖安装](../../../environment)准备好环境。
+- The development environment and operating environment of the corresponding product have been installed.
 
-- 已完成对应产品的开发环境和运行环境安装。
+### Preparing Software
 
-### 软件准备
+1. Obtain the source code package.
+   
+   You can use either of the following methods to download the source code:
+   
+   - Command line (The download takes a long time, but the procedure is simple.)
+In the development environment, run the following commands as a non-root user to download the source code repository:   
+**cd $HOME**  
+**git clone https://github.com/Huawei-Ascend/samples.git**
+   
+   - Compressed package (The download time is short, but the procedure is complex.)
+     
+     1. Click **Clone or download** in the upper right corner of the samples repository and select **Download ZIP**.
+     2. Upload the .zip package to the home directory of a common user in the development environment, for example, **$HOME/ascend-samples-master.zip**.
+     3. In the development environment, run the following commands to decompress the .zip package:   
+**cd $HOME**  
+**unzip ascend-samples-master.zip**
 
-1. 获取源码包。
+2. Obtain the source model required by the application.
+   
+   Obtain the original network model and its weight file used in the application by referring to the following table and store them in any directory of a common user in the development environment, for example, **$HOME/models/YOLOV3\_coco\_detection\_video**.
+   
+   | **Model Name**| **Description**| **How to Obtain**|
+   |----------|----------|----------|
+   | yolov3| Applies to image classification. It is a YOLOv3 model based on Caffe.| Download the model and weight file by referring to the section about downloading the original model in the **README.md** file in [https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/yolov3/ATC\_yolov3\_caffe\_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/yolov3/ATC_yolov3_caffe_AE).|
 
-   可以使用以下两种方式下载，请选择其中一种进行源码准备。
+   ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+   
+   > - The converted OM model is provided in the ModelZoo. However, the model does not match the current sample. Therefore, you need to download the original model and weight file and convert the model again.
 
-    - 命令行方式下载（下载时间较长，但步骤简单）。   
-        开发环境，非root用户命令行中执行以下命令下载源码仓。   
-       **cd $HOME**   
-       **git clone https://github.com/Huawei-Ascend/samples.git**
-
-    - 压缩包方式下载（下载时间较短，但步骤稍微复杂）。   
-        1. samples仓右上角选择 **克隆/下载** 下拉框并选择 **下载ZIP**。   
-        2. 将ZIP包上传到开发环境中的普通用户家目录中，例如 **$HOME/ascend-samples-master.zip**。   
-        3. 开发环境中，执行以下命令，解压zip包。   
-            **cd $HOME**   
-            **unzip ascend-samples-master.zip**
-
-2. 获取此应用中所需要的原始网络模型。
-
-    参考下表获取此应用中所用到的原始网络模型及其对应的权重文件，并将其存放到开发环境普通用户下的任意目录，例如：$HOME/models/YOLOV3_coco_detection_video。
-    
-    |  **模型名称**  |  **模型说明**  |  **模型下载路径**  |
-    |---|---|---|
-    |  yolov3 | 图片分类推理模型。是基于Caffe的yolov3模型。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/yolov3/ATC_yolov3_caffe_AE](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/yolov3/ATC_yolov3_caffe_AE)目录中README.md下载原始模型章节下载模型和权重文件。 |
-
-    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-    > - modelzoo中提供了转换好的om模型，但此模型不匹配当前样例，所以需要下载原始模型和权重文件后重新进行模型转换。
-
-3. 将原始模型转换为Davinci模型。
-    
-    **注：请确认环境变量已经在[环境准备和依赖安装](../../../environment)中配置完成**
-
-    1. 设置LD_LIBRARY_PATH环境变量。
-
-        由于LD_LIBRARY_PATH环境变量在转使用atc工具和运行样例时会产生冲突，所以需要在命令行单独设置此环境变量，方便修改。
-
-        **export LD_LIBRARY_PATH=\\${install_path}/atc/lib64**  
-
-    2. 执行以下命令下载aipp配置文件并使用atc命令进行模型转换。
-
-        **cd $HOME/models/YOLOV3_coco_detection_video**  
-
-        **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/YOLOV3_coco_detection_video/aipp_bgr.cfg**
-
-        **atc --model=./yolov3.prototxt --weight=./yolov3.caffemodel --framework=0 --output=yolov3 --soc_version=Ascend310 --insert_op_conf=./aipp_bgr.cfg**
-
-    3. 执行以下命令将转换好的模型复制到样例中model文件夹中。
-
-        **cp ./yolov3.om $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/YOLOV3_coco_detection_video/model/**
-
-4. 获取样例需要的测试文件。
-
-    执行以下命令，进入样例的data文件夹中，下载对应的测试文件，完成后返回样例文件夹。
-
-    **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/YOLOV3_coco_detection_video/data**
-
-    **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/YOLOV3_coco_detection_video/detection.mp4**
-
-    **cd \.\.**
-
-### 样例部署
-
-1. 修改present相关配置文件。
-
-    将样例目录下**script/param.conf**中的 presenter_server_ip、presenter_view_ip 修改为开发环境中可以ping通运行环境的ip地址，使用以下两种情况举例说明。
-
-     - 使用产品为200DK开发者板。   
-        1. 开发环境中使用ifconfig查看可用ip。   
-        2. 在开发环境中将**script/param.conf**中的 presenter_server_ip、presenter_view_ip 修改为该ip地址。   
-        ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 1.开发环境和运行环境分离部署，一般使用配置的虚拟网卡ip，例如192.168.1.223。
-        > - 2.开发环境和运行环境合一部署，一般使用200dk固定ip，例如192.168.1.2。
-
-    - 使用产品为300加速卡（ai1s云端推理环境）。   
-        1. ECS弹性云服务器控制台中查看ai1s云端环境可用内网ip，例如192.168.0.198。   
-        2. 在开发环境中将**script/param.conf**中的 presenter_server_ip、presenter_view_ip 修改为该ip地址。   
-        ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 也可以在ai1s云端环境中使用ifconfig查看内网ip。
-        > - 登录ai1s云端环境时的ip地址为此环境的公网ip，ai1s云端环境中ifconfig查看到的ip为此环境的内网ip。
- 
-2. 开发环境命令行中设置编译依赖的环境变量。
-
-   可以在命令行中执行 **uname -a**，查看开发环境和运行环境的cpu架构。如果回显为x86_64，则为x86架构。如果回显为arm64，则为Arm架构。基于开发环境与运行环境CPU架构是否相同，请仔细看下面的步骤：
-
-   - 当开发环境与运行环境CPU架构相同时，执行以下命令导入环境变量。
-
-     **export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux**
-
-     **export NPU_HOST_LIB=$DDK_PATH/acllib/lib64/stub**
-
-     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 如果是20.0版本，此处 **DDK_PATH** 环境变量中的 **x86_64-linux** 应修改为 **x86_64-linux_gcc7.3.0**。
-        
-   - 当开发环境与运行环境CPU架构不同时，执行以下命令导入环境变量。例如开发环境为X86架构，运行环境为Arm架构，由于开发环境上同时部署了X86和Arm架构的开发套件，后续编译应用时需要调用Arm架构开发套件的ACLlib库，所以此处需要导入环境变量为Arm架构的ACLlib库路径。 
-  
-     **export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux**  
- 
-     **export NPU_HOST_LIB=$DDK_PATH/acllib/lib64/stub**   
-     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 如果是20.0版本，此处 **DDK_PATH** 环境变量中的 **arm64-liunx** 应修改为 **arm64-linux_gcc7.3.0**。
-
-3. 切换到YOLOV3_coco_detection_video目录，创建目录用于存放编译文件，例如，本文中，创建的目录为 **build/intermediates/host**。
-
-    **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/YOLOV3_coco_detection_video**
-
-    **mkdir -p build/intermediates/host**
-
-4. 切换到 **build/intermediates/host** 目录，执行cmake生成编译文件。
-
-    - 当开发环境与运行环境操作系统架构相同时，执行如下命令编译。   
-      **cd build/intermediates/host**  
-      **make clean**   
-      **cmake \.\./\.\./\.\./src -DCMAKE_CXX_COMPILER=g++ -DCMAKE_SKIP_RPATH=TRUE**
-
-    - 当开发环境与运行环境操作系统架构不同时，需要使用交叉编译器编译。例如开发环境为X86架构，运行环境为Arm架构，执行以下命令进行交叉编译。   
-      **cd build/intermediates/host**   
-      **make clean**   
-      **cmake \.\./\.\./\.\./src -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SKIP_RPATH=TRUE**
-
-5. 执行make命令，生成的可执行文件main在 **YOLOV3_coco_detection_video/out** 目录下。
-
-    **make**
-
-
-### 样例运行
-
-![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-> - 以下出现的**xxx.xxx.xxx.xxx**为运行环境ip，200DK在USB连接时一般为192.168.1.2，300（ai1s）为对应的公网ip。
-
-1. 执行以下命令,将开发环境的 **YOLOV3_coco_detection_video** 目录上传到运行环境中，例如 **/home/HwHiAiUser**。   
-
-    **开发环境与运行环境合一部署，请跳过此步骤！**   
-
-    **scp -r $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/YOLOV3_coco_detection_video HwHiAiUser@xxx.xxx.xxx.xxx:/home/HwHiAiUser**
-
-2. 启动presenterserver并登录运行环境。
-
-    - 使用产品为200DK开发者板。   
-        1. 开发环境中执行以下命令启动presentserver。   
-            **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/YOLOV3_coco_detection_video**   
-            **bash script/run_presenter_server.sh**   
-        2. 执行以下命令登录运行环境。   
-            **开发环境与运行环境合一部署，请跳过此步骤！**   
-            **ssh HwHiAiUser@xxx.xxx.xxx.xxx** 
-
-    - 使用产品为300加速卡（ai1s云端推理环境）。   
-        1. 执行以下命令登录运行环境。   
-           **开发环境与运行环境合一部署，请跳过此步骤！**   
-           **ssh HwHiAiUser@xxx.xxx.xxx.xxx**    
-        2. 运行环境中启动presenterserver。   
-进入工程所在目录（如$HOME/YOLOV3_coco_detection_video），执行以下命令
-            **bash script/run_presenter_server.sh**   
-
-3. <a name="step_2"></a>运行可执行文件。
-
-    - 如果是开发环境与运行环境合一部署，执行以下命令，设置运行环境变量，并切换目录。   
-      **export LD_LIBRARY_PATH=**   
-      **source ~/.bashrc**     
-      **cd $HOME/samples/cplusplus/level2_simple_inference/2_object_detection/YOLOV3_coco_detection_video/out**
-
-    - 如果是开发环境与运行环境分离部署，执行以下命令切换目录。 
-  
-      **cd $HOME/YOLOV3_coco_detection_video/out**
-
-    - 创建结果文件
-
-      **mkdir output**
-
-    切换目录后，执行以下命令运行样例。
-
-    **./main ../data/detection.mp4**
-
-### 查看结果
-
-1. 打开presentserver网页界面。
-
-   - 使用产品为200DK开发者板。
-
-      打开启动Presenter Server服务时提示的URL即可。
+3. Convert the original model to a Da Vinci model.
+   
+   **Note: Ensure that the environment variables have been configured based on [Preparing Environment and Installing Dependencies](../../../environment).**
+   
+   1. Set the **LD\_LIBRARY\_PATH** environment variable.
       
-   - 使用产品为300加速卡（ai1s云端推理环境）。
+      The **LD\_LIBRARY\_PATH** environment variable conflicts with the sample when the ATC tool is used. Therefore, you need to separately set this environment variable in the CLI to facilitate modification.
+      
+      **export LD\_LIBRARY\_PATH=\\${install\_path}/atc/lib64**
+   
+   2. Run the following commands to download the AIPP configuration file and convert the model:
+      
+      **cd $HOME/models/YOLOV3\_coco\_detection\_video**
+      
+      **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/YOLOV3_coco_detection_video/aipp_bgr.cfg**
+      
+      **atc --model=./yolov3.prototxt --weight=./yolov3.caffemodel --framework=0 --output=yolov3 --soc\_version=Ascend310 --insert\_op\_conf=./aipp\_bgr.cfg**
+   
+   3. Run the following command to copy the converted model to the **model** folder of the sample:
+      
+      **cp ./yolov3.om $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/YOLOV3\_coco\_detection\_video/model/**
 
-      **以300加速卡（ai1s）内网ip为192.168.0.194，公网ip为124.70.8.192举例说明。**
+4. Obtain the test file required by the sample.
+   
+   Run the following commands to go to the **data** folder of the sample, download the test file, and return to the sample folder:
+   
+   **cd $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/YOLOV3\_coco\_detection\_video/data**
+   
+   **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/YOLOV3_coco_detection_video/detection.mp4**
+   
+   **cd ..**
 
-      启动Presenter Server服务时提示为Please visit http://192.168.0.194:7009 for display server。
+### Deploying the Sample
 
-      只需要将URL中的内网ip：192.168.0.194替换为公网ip：124.70.8.192，则URL为 http://124.70.8.192:7009。
+1. Modify the Presenter-related configuration file.
+   
+   Change **presenter\_server\_ip** and **presenter\_view\_ip** in the **scripts/param.conf** file in the sample directory to the IP addresses that can be pinged in the development environment. The following two cases are used as examples:
+   
+   - Atlas 200 DK
+     
+     1. In the development environment, run the **ifconfig** command to view available IP addresses.
+     2. In the development environment, change **presenter\_server\_ip** and **presenter\_view\_ip** in the **scripts/param.conf** file to the new IP addresses.  
+![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+     
+     > - 1\. If the development environment and operating environment are deployed on separate servers, the configured virtual NIC IP address is used, for example, **192.168.1.223**.
+     > - 2\. If the development environment and operating environment are deployed on the same server, the fixed IP address of Atlas 200 DK is used, for example, **192.168.1.2**.
+   
+   - Atlas 300 AI accelerator card (AI1s cloud inference environment)
+     
+     1. On the ECS console, check the available intranet IP address in the cloud environment of AI1s, for example, **192.168.0.198**.
+     2. In the development environment, change **presenter\_server\_ip** and **presenter\_view\_ip** in the **scripts/param.conf** file to the new IP addresses.  
+![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+     
+     > - You can also run the **ifconfig** command in the AI1s cloud environment to view the internal IP address.
+     > - The IP address for logging in to the AI1s cloud environment is the public IP address of the environment. The IP address obtained by running the **ifconfig** command in the AI1s cloud environment is the internal IP address of the environment.
 
-      然后在windows下的浏览器中打开URL即可。
+2. Set the environment variables for compiling the dependencies in the command line of the development environment.
+   
+   You can run the **uname -a** command in the command line to view the CPU architecture of the development environment and operating environment. If **x86\_64** is displayed in the command output, the x86 architecture is used. If **arm64** is displayed in the command output, the ARM architecture is used. Perform the following step based on the actual situation:
+   
+   - If the CPU architecture of the development environment is the same as that of the operating environment, run the following commands to import environment variables:
+     
+     **export DDK\_PATH=$HOME/Ascend/ascend-toolkit/latest/x86\_64-linux**
+     
+     **export NPU\_HOST\_LIB=$DDK\_PATH/acllib/lib64/stub**
+     
+     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+     
+     > - If the version is 20.0, change **x86\_64-linux** in the **DDK\_PATH** environment variable to **x86\_64-linux\_gcc7.3.0**.
+   
+   - If the CPU architecture of the development environment is different from that of the operating environment, run the following commands to import environment variables. If the development environment uses the x86 architecture and the operating environment uses the ARM architecture, the ACLlib of the ARM toolkit needs to be called during app build time because the toolkits of both the x86 and ARM architectures are deployed in the development environment. Therefore, you need to import the path of the ARM ACLlib.
+     
+     **export DDK\_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux**
+     
+     **export NPU\_HOST\_LIB=$DDK\_PATH/acllib/lib64/stub**![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif")**Note**:
+     
+     > - If the version is 20.0, change **arm64-linux** in the **DDK\_PATH** environment variable to **arm64-linux\_gcc7.3.0**.
 
-2. 等待Presenter Agent传输数据给服务端，单击“Refresh“刷新，当有数据时相应的Channel 的Status变成绿色。
+3. Go to the **YOLOV3\_coco\_detection\_video** directory and create a directory for storing compilation files. For example, the created directory in this document is **build/intermediates/host**.
+   
+   **cd $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/YOLOV3\_coco\_detection\_video**
+   
+   **mkdir -p build/intermediates/host**
 
-3. 单击右侧对应的View Name链接，查看结果。
+4. Go to the **build/intermediates/host** directory and run the **cmake** command to generate a compilation file.
+   
+   - If the development environment and operating environment have the same OS architecture, run the following commands to perform compilation.   
+**cd build/intermediates/host**  
+**make clean**  
+**cmake ../../../src -DCMAKE\_CXX\_COMPILER=g++ -DCMAKE\_SKIP\_RPATH=TRUE**
+   
+   - When the OS architecture of the development environment is different from that of the operating environment, you need to use the cross compiler for compilation. For example, if the development environment uses the x86 architecture and the operating environment uses the ARM architecture, run the following commands to perform cross compilation:   
+**cd build/intermediates/host**  
+**make clean**  
+**cmake ../../../src -DCMAKE\_CXX\_COMPILER=aarch64-linux-gnu-g++ -DCMAKE\_SKIP\_RPATH=TRUE**
 
+5. Run the **make** command. The generated executable file **main** is stored in the **YOLOV3\_coco\_detection\_video/out** directory.
+   
+   **make**
+
+### Running the Sample
+
+![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+
+> - In the following command, *xxx.xxx.xxx.xxx* indicates the IP address of the operating environment, which is **192.168.1.2** when Atlas 200 DK is connected using the USB, and is the IP address of the corresponding public network for Atlas 300 (AI1s).
+
+1. Run the following command to upload the **YOLOV3\_coco\_detection\_video** directory in the development environment to the operating environment, for example, **/home/HwHiAiUser**.
+   
+   **If the development environment and operating environment are deployed on the same server, skip this step.**
+   
+   **scp -r $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/YOLOV3\_coco\_detection\_video HwHiAiUser@*xxx.xxx.xxx.xxx*:/home/HwHiAiUser**
+
+2. Start the Presenter Server and log in to the operating environment.
+   
+   - Atlas 200 DK
+     
+     1. Run the following commands in the development environment to start the Presenter Server:   
+**cd $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/YOLOV3\_coco\_detection\_video**  
+**bash scripts/run\_presenter\_server.sh**
+     2. Run the following command to log in to the operating environment:   
+**If the development environment and operating environment are deployed on the same server, skip this step.**   
+**ssh HwHiAiUser@*xxx.xxx.xxx.xxx***
+   
+   - Atlas 300 AI accelerator card (AI1s cloud inference environment)
+     
+     1. Run the following command to log in to the operating environment:   
+**If the development environment and operating environment are deployed on the same server, skip this step.**   
+**ssh HwHiAiUser@*xxx.xxx.xxx.xxx***
+     2. Start the Presenter Server in the operating environment.   
+Go to the directory where the project is located (for example, **$HOME/YOLOV3\_coco\_detection\_video**) and run the **bash scripts/run\_presenter\_server.sh** command.
+
+3. Run the executable file.
+   
+   - If the development environment and operating environment are deployed on the same server, run the following commands to set the operating environment variables and change the directory:   
+**export LD\_LIBRARY\_PATH=**  
+**source ~/.bashrc**  
+**cd $HOME/samples/cplusplus/level2\_simple\_inference/2\_object\_detection/YOLOV3\_coco\_detection\_video/out**
+   
+   - If the development environment and operating environment are deployed on separate servers, run the following command to change the directory:
+     
+     **cd $HOME/YOLOV3\_coco\_detection\_video/out**
+   
+   - Create the result folder.
+     
+     **mkdir output**
+   
+   Run the following command to run the sample:
+   
+   **./main ../data/detection.mp4**
+
+### Checking the Result
+
+1. Open the Presenter Server WebUI.
+   
+   - Atlas 200 DK
+     
+     Open the URL that is displayed when the Presenter Server is started.
+   
+   - Atlas 300 AI accelerator card (AI1s cloud inference environment)
+     
+     **For example, the intranet IP address of the Atlas 300 AI accelerator card (AI1s) is 192.168.0.194 and the public IP address is 124.70.8.192.**
+     
+     **Please visit http://192.168.0.194:7009 for display server** is displayed when the Presenter Server is started.
+     
+     You only need to replace the internal IP address **192.168.0.194** in the URL with the public IP address **124.70.8.192**. Then the URL is **http://124.70.8.192:7009**.
+     
+     Open the URL in the browser.
+
+2. Wait for Presenter Agent to transmit data to the server and click **Refresh**. When there is data, the icon in the **Status** column for the corresponding channel turns green.
+
+3. Click a link in the **View Name** column to view the result.

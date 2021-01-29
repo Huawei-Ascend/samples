@@ -1,84 +1,84 @@
-**本样例为大家学习昇腾软件栈提供参考，非商业目的！**
+English|[中文](README_CN.md)
 
-**本样例适配20.0及以上版本，支持产品为Atlas200DK、Atlas300([ai1s](https://support.huaweicloud.com/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366))。**
+**This sample provides reference for you to learn the Ascend AI Software Stack and cannot be used for commercial purposes.**
 
-**本README只提供命令行方式运行样例的指导，如需在Mindstudio下运行样例，请参考[Mindstudio运行图片样例wiki](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E5%9B%BE%E7%89%87%E6%A0%B7%E4%BE%8B?sort_id=3164874)。**
+**This sample applies to CANN 20.0 and later versions, and supports Atlas 200 DK and Atlas 300 ([ai1s](https://support.huaweicloud.com/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366)).**
 
-## 高清图像修复 （python）
+**This document provides only guidance for running the sample in command line (CLI) mode. For details about how to run the sample in MindStudio, see [Running Image Samples in MindStudio](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E5%9B%BE%E7%89%87%E6%A0%B7%E4%BE%8B?sort_id=3164874).**
 
-**注：案例详细介绍请参见[高清图像修复wiki]()。**
+## HD Image Repair (Python)
 
-功能：超高分辨率图像修复。
+Function: repairs ultra-HD images.
 
-样例输入：待修复的jpg图片以及对应的mask图片；
+Input: JPG image to be repaired and the corresponding mask.
 
-样例输出：修复后的图片。
+Output: repaired image.
 
-### 前提条件
+### Prerequisites
 
-部署此Sample前，需要准备好以下环境：
+Before deploying this sample, ensure that:
 
-- 请确认已按照[环境准备和依赖安装](../../../environment)准备好环境。
+- The environment has been set up by referring to [Environment Preparation and Dependency Installation](../../environment).
 
-- 已完成对应产品的开发环境和运行环境安装。
+- The development environment and operating environment of the corresponding product have been installed.
 
-### 软件准备
+### Software Preparation
 
-1. 获取源码包。
+1. Obtain the source code package.
 
-   可以使用以下两种方式下载，请选择其中一种进行源码准备。
+   You can download the source code in either of the following ways:
 
-    - 命令行方式下载（下载时间较长，但步骤简单）。
+    - Command line (The download takes a long time, but the procedure is simple.)
 
-        开发环境，非root用户命令行中执行以下命令下载源码仓。
+        In the development environment, run the following commands as a non-root user to download the source code repository:
 
        **cd $HOME**
 
        **git clone https://github.com/Huawei-Ascend/samples.git**
 
-    - 压缩包方式下载（下载时间较短，但步骤稍微复杂）。
+    - Compressed package (The download takes a short time, but the procedure is complex.)
 
-        1. samples仓右上角选择 **克隆/下载** 下拉框并选择 **下载ZIP**。
+        1. Click **Clone or download** in the upper right corner of the samples repository and select **Download ZIP**.
 
-        2. 将ZIP包上传到开发环境中的普通用户家目录中，例如 **$HOME/ascend-samples-master.zip**。
+        2. Upload the .zip package to the home directory of a common user in the development environment, for example, **$HOME/ascend-samples-master.zip**.
 
-        3. 开发环境中，执行以下命令，解压zip包。
+        3. In the development environment, run the following commands to unzip the package:
 
             **cd $HOME**
 
             **unzip ascend-samples-master.zip**
 
-2. 获取此应用中所需要的单算子Json文件和om模型文件。  
+2. Obtain the single-operator JSON file and .om offline model file required by the application.  
 
      **wget -P ~/imageinpainting_hifill https://c7xcode.obs.myhuaweicloud.com/models/imageinpainting_hifill/matmul_27648.json**   
      **wget -P ~/imageinpainting_hifill https://c7xcode.obs.myhuaweicloud.com/models/imageinpainting_hifill/hifill.om**
     
 
-3. 将单算子Json文件转换为Davinci模型。
+3. Convert the single-operator JSON file into a Da Vinci model.
     
-    **注：请确认环境变量已经在[环境准备和依赖安装](../../../environment)中配置完成**
+    **Note: Ensure that the environment variables have been configured in [Environment Preparation and Dependency Installation](.../../environment).**
 
-    1. 设置LD_LIBRARY_PATH环境变量。
+    1. Set the ***LD_LIBRARY_PATH*** environment variable.
 
-        由于LD_LIBRARY_PATH环境变量在转使用atc工具和运行样例时会产生冲突，所以需要在命令行单独设置此环境变量，方便修改。
+        The ***LD_LIBRARY_PATH*** environment variable conflicts with the sample when the ATC tool is used. Therefore, you need to set this environment variable separately in the CLI to facilitate modification.
 
         **export LD_LIBRARY_PATH=\\${install_path}/atc/lib64**  
 
-    2. 执行以下命令,使用atc命令进行模型转换。  
+    2. Run the following commands to convert the model:  
 
         **cd ~/imageinpainting_hifill** 
 
         **atc --singleop=./matmul_27648.json --output=./0_BatchMatMul_0_0_1_1_1024_1024_0_0_1_1_1024_27648_0_0_1_1_1024_27648 --soc_version=Ascend310**   
 
-    3. 执行以下命令将转换好的模型复制到样例中model文件夹中。
+    3. Run the following commands to copy the converted model to the **model** folder of the sample:
 
         **cp ./hifill.om \$HOME/samples/python/level2_simple_inference/6_other/imageinpainting_hifill/model/** 
  
         **cp ./0_BatchMatMul_0_0_1_1_1024_1024_0_0_1_1_1024_27648_0_0_1_1_1024_27648/*.om \$HOME/samples/python/level2_simple_inference/6_other/imageinpainting_hifill/model/**
 
-4. 获取样例需要的测试图片。
+4. Obtain the test images required by the sample.
 
-    执行以下命令，下载对应的测试图片。
+    Run the following commands to download the test images:
 
     **cd \$HOME/samples/python/level2_simple_inference/6_other/imageinpainting_hifill/data**
 
@@ -90,36 +90,36 @@
 
 
 
-### 样例运行
+### Sample Running
 
-**注：开发环境与运行环境合一部署，请跳过步骤1，直接执行[步骤2](#step_2)即可。**   
+**Note: If the development environment and operating environment are set up on the same server, skip step 1 and go to [step 2](#step_2) directly.**   
 
-1. 执行以下命令,将开发环境的 **googlenet_imagenet_picture** 目录上传到运行环境中，例如 **/home/HwHiAiUser**，并以HwHiAiUser（运行用户）登录运行环境（Host）。
+1. Run the following commands to upload the **googlenet_imagenet_picture** directory in the development environment to any directory in the operating environment, for example, **/home/HwHiAiUser**, and log in to the operating environment (host) as the **HwHiAiUser** user:
 
     **scp -r $HOME/samples/python/level2_simple_inference/6_other/imageinpainting_hifill HwHiAiUser@xxx.xxx.xxx.xxx:/home/HwHiAiUser**
 
     **ssh HwHiAiUser@xxx.xxx.xxx.xxx**    
 
-    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-    > - **xxx.xxx.xxx.xxx**为运行环境ip，200DK在USB连接时一般为192.168.1.2，300（ai1s）为对应的公网ip。
+    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **NOTE**  
+    > - ***xxx.xxx.xxx.xxx*** indicates the IP address of the operating environment, which is generally 192.168.1.2 for Atlas 200 DK when it is connected over the USB port. For Atlas 300 (ai1s), it is the corresponding public IP address.
 
-2. <a name="step_2"></a>运行可执行文件。
+2. <a name="step_2"></a>Run the executable file.
 
-    - 如果是开发环境与运行环境合一部署，执行以下命令，设置运行环境变量，并切换目录。
+    - If the development environment and operating environment are set up on the same server, run the following commands to set the operating environment variables and switch the directory:
 
       **export LD_LIBRARY_PATH=**
 
       **source ~/.bashrc**
         
-      **cd $HOME/samples/edit/dev/python/level2_simple_inference/6_other/imageinpainting_hifill**
+      **cd $HOME/samples/python/level2_simple_inference/6_other/imageinpainting_hifill/src**
 
-    - 如果是开发环境与运行环境分离部署，执行以下命令切换目录。
+    - If the development environment and operating environment are set up on separate servers, run the following command to switch the directory:
     
       **cd $HOME/imageinpainting_hifill/src**      
 
-    切换目录后，执行以下命令运行样例。
+    Run the following command to run the sample:
 
-    **python3 main.py**
-### 查看结果
+    **python3.6 main.py**
+### Result Checking
 
-运行完成后，会在out目录下生成带推理结果的jpg图片。
+After the execution is complete, find the result JPG image in the **out** directory.

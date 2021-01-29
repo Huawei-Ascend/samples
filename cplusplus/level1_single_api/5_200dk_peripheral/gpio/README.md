@@ -1,164 +1,165 @@
-**本样例为大家学习昇腾软件栈提供参考，非商业目的！**
+English|[中文](README_CN.md)
 
-**本样例适配20.0及以上版本，支持产品为Atlas200DK、Atlas300([ai1s](https://support.huaweicloud.com/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366))。**
+**This sample provides reference for you to learn the Ascend software stack and is not for commercial purposes.**
 
-**本README只提供命令行方式运行样例的指导，如需在Mindstudio下运行样例，请参考[Mindstudio运行图片样例wiki](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E5%9B%BE%E7%89%87%E6%A0%B7%E4%BE%8B?sort_id=3164874)。**
+**This sample applies to Ascend camera 20.0 and later versions, and supports Atlas 200 DK and Atlas 300 ([AI1s](https://support.huaweicloud.com/productdesc-ecs/ecs_01_0047.html#ecs_01_0047__section78423209366)).**
 
-## GPIO样例
+**This document provides only guidance for running the sample in CLI mode. For details about how to run the sample in MindStudio, see the [Wiki of Running Image Sample in MindStudio](https://github.com/Huawei-Ascend/samples/wikis/Mindstudio%E8%BF%90%E8%A1%8C%E5%9B%BE%E7%89%87%E6%A0%B7%E4%BE%8B?sort_id=3164874).**
 
-**注：案例详细介绍请参见[gpio_wiki]()。**
+## GPIO Sample
 
-功能：对GPIO的引脚做配置。
+Function: Configure the GPIO pins.
 
-### 前提条件
+### Prerequisites
 
-部署此Sample前，需要准备好以下环境：
+Before deploying this sample, ensure that:
 
-- 请确认已按照[环境准备和依赖安装](https://github.com/Huawei-Ascend/samples/tree/dev/cplusplus/environment)准备好环境。
+- The environment has been prepared based on [Preparing Environment and Installing Dependencies](https://github.com/Huawei-Ascend/samples/tree/dev/cplusplus/environment).
 
-- 已完成对应产品的开发环境和运行环境安装。
+- The development environment and operating environment of the corresponding product have been installed.
 
-### 软件准备
+### Preparing Software
 
-1. 获取源码包。
-
-   可以使用以下两种方式下载，请选择其中一种进行源码准备。
-
-    - 命令行方式下载（下载时间较长，但步骤简单）。
-
-        开发环境，非root用户命令行中执行以下命令下载源码仓。
-
-       **cd $HOME**
-
-       **git clone https://github.com/Huawei-Ascend/samples.git**
-
-    - 压缩包方式下载（下载时间较短，但步骤稍微复杂）。
-
-        1. samples仓右上角选择 **克隆/下载** 下拉框并选择 **下载ZIP**。
-
-        2. 将ZIP包上传到开发环境中的普通用户家目录中，例如 **$HOME/ascend-samples-master.zip**。
-
-        3. 开发环境中，执行以下命令，解压zip包。
-
-            **cd $HOME**
-
-            **unzip ascend-samples-master.zip**
-
-
-
-### 样例部署
- 
-1. 开发环境命令行中设置编译依赖的环境变量。
-
-   基于开发环境与运行环境CPU架构是否相同，请仔细看下面的步骤：
-
-   - 当开发环境与运行环境CPU架构相同时，执行以下命令导入环境变量。
-
-     **export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux**
-
-     **export NPU_HOST_LIB=$DDK_PATH/acllib/lib64/stub**
-
-     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 如果是20.0版本，此处 **DDK_PATH** 环境变量中的 **x86_64-linux** 应修改为 **x86_64-linux_gcc7.3.0**。
-        > - 可以在命令行中执行 **uname -a**，查看开发环境和运行环境的cpu架构。如果回显为x86_64，则为x86架构。如果回显为arm64，则为Arm架构。
-
-   - 当开发环境与运行环境CPU架构不同时，执行以下命令导入环境变量。例如开发环境为X86架构，运行环境为Arm架构，由于开发环境上同时部署了X86和Arm架构的开发套件，后续编译应用时需要调用Arm架构开发套件的ACLlib库，所以此处需要导入环境变量为Arm架构的ACLlib库路径。
-
-     **export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux**
-
-     **export NPU_HOST_LIB=$DDK_PATH/acllib/lib64/stub**
-
-     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 如果是20.0版本，此处 **DDK_PATH** 环境变量中的 **arm64-liunx** 应修改为 **arm64-linux_gcc7.3.0**。
-        > - 可以在命令行中执行 **uname -a**，查看开发环境和运行环境的cpu架构。如果回显为x86_64，则为x86架构。如果回显为arm64，则为Arm架构。
-
-2. 切换到gpio目录，创建目录用于存放编译文件，例如，本文中，创建的目录为 **build/intermediates/host**。
-
-    **cd $HOME/samples/cplusplus/level1_single_api/5_200dk_peripheral/gpio**
-
-    **mkdir -p build/intermediates/host**
-
-3. 切换到 **build/intermediates/host** 目录，执行cmake生成编译文件。
-
-    - 当开发环境与运行环境操作系统架构相同时，执行如下命令编译。
-      
-      **cd build/intermediates/host**   
-
-      **make clean**
-
-      **cmake \.\./\.\./\.\./src -DCMAKE_CXX_COMPILER=g++ -DCMAKE_SKIP_RPATH=TRUE**
-
-    - 当开发环境与运行环境操作系统架构不同时，需要使用交叉编译器编译。例如开发环境为X86架构，运行环境为Arm架构，执行以下命令进行交叉编译。
-
-      **cd build/intermediates/host**
-
-      **make clean**
-    
-      **cmake \.\./\.\./\.\./src -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SKIP_RPATH=TRUE**
-
-4. 执行make命令，生成的可执行文件main在 **gpio/out** 目录下。
-
-    **make**
-
-### 样例运行
-
-
-**注：开发环境与运行环境合一部署，请跳过步骤1，直接执行[步骤3](#step_3)即可。**   
-
-1. 执行以下命令,将开发环境的 **gpio** 目录上传到运行环境中，例如 **/home/HwHiAiUser**，并以HwHiAiUser（运行用户）登录运行环境（Host）。
-
-    **scp -r $HOME/samples/cplusplus/level1_single_api/5_200dk_peripheral/gpio HwHiAiUser@xxx.xxx.xxx.xxx:/home/HwHiAiUser**
-
-    **ssh HwHiAiUser@xxx.xxx.xxx.xxx**    
-
-    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-    > - **xxx.xxx.xxx.xxx**为运行环境ip，200DK在USB连接时一般为192.168.1.2，300（ai1s）为对应的公网ip。
-
-2. 获取 gpio i2c uart等操作权限
-
-   登录运行环境，编辑 /etc/rc.local 
-
-   **ssh HwHiAiUser@xxx.xxx.xxx.xxx**
-
-   **su root，然后输入密码，切换成root用户**
-    
-   **vim /etc/rc.local** 在exit0前增加如下指令
-    ```
-    echo 504 >/sys/class/gpio/export
-    echo 444 >/sys/class/gpio/export
-    chown -R HwHiAiUser /sys/class/gpio/gpio444
-    chown -R HwHiAiUser /sys/class/gpio/gpio504
-    chown -R HwHiAiUser /sys/class/gpio/gpio444/direction
-    chown -R HwHiAiUser /sys/class/gpio/gpio504/direction
-    chown -R HwHiAiUser /sys/class/gpio/gpio444/value
-    chown -R HwHiAiUser /sys/class/gpio/gpio504/value
-    chown -R HwHiAiUser /dev/i2c-1
-    chown -R HwHiAiUser /dev/i2c-2
-    chown -R HwHiAiUser /dev/ttyAMA0
-    chown -R HwHiAiUser /dev/ttyAMA1
-    usermod -aG HwHiAiUser HwHiAiUser
-    ```
+1. Obtain the source code package.
    
-   **重启运行环境**
-
-3. <a name="step_2"></a>运行可执行文件。
-
-    - 如果是开发环境与运行环境合一部署，执行以下命令，设置运行环境变量，并切换目录。
-
-      **export LD_LIBRARY_PATH=**
-
-      **source ~/.bashrc**
+   You can use either of the following methods to download the source code:
+   
+   - Use the CLI. This method takes a long time, but the procedure is simple.
+     
+     In the development environment, run the following commands as a non-root user to download the source code repository:
+     
+     **cd $HOME**
+     
+     **git clone https://github.com/Huawei-Ascend/samples.git**
+   
+   - Download the source code as a compressed package. This method takes a short time, but the procedure is complex.
+     
+     1. Click **Clone or download** in the upper right corner of the samples repository and select **Download ZIP**.
+     
+     2. Upload the ZIP package to the home directory of a common user in the development environment, for example, **$HOME/ascend-samples-master.zip**.
+     
+     3. In the development environment, run the following commands to decompress the **.zip** package:
         
-      **cd $HOME/samples/cplusplus/level1_single_api/5_200dk_peripheral/gpio/out**
+        **cd $HOME**
+        
+        **unzip ascend-samples-master.zip**
 
-    - 如果是开发环境与运行环境分离部署，执行以下命令切换目录。
-    
-      **cd $HOME/gpio/out**
+### Deploying the Sample
 
-    切换目录后，执行以下命令运行样例。
+1. Set the environment variables for compiling the dependencies on the CLI of the development environment.
+   
+   Perform the following step based on the actual situation:
+   
+   - If the CPU architecture of the development environment is the same as that of the operating environment, run the following commands to import environment variables:
+     
+     **export DDK\_PATH=$HOME/Ascend/ascend-toolkit/latest/x86\_64-linux**
+     
+     **export NPU\_HOST\_LIB=$DDK\_PATH/acllib/lib64/stub**
+     
+     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+     
+     > - If the version is 20.0, change **x86\_64-linux** in the **DDK\_PATH** environment variable to **x86\_64-linux\_gcc7.3.0**.
+     > - You can run the **uname -a** command on the CLI to view the CPU architecture of the development environment and operating environment. If **x86\_64** is displayed in the command output, the x86 architecture is used. If **arm64** is displayed in the command output, the ARM architecture is used.
+   
+   - If the CPU architecture of the development environment is different from that of the operating environment, run the following commands to import environment variables. If the development environment uses the x86 architecture and the operating environment uses the ARM architecture, the ACLlib of the ARM toolkit needs to be called during app build time because the toolkits of both the x86 and ARM architectures are deployed in the development environment. Therefore, you need to import the path of the ARM ACLlib.
+     
+     **export DDK\_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux**
+     
+     **export NPU\_HOST\_LIB=$DDK\_PATH/acllib/lib64/stub**
+     
+     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+     
+     > - If the version is 20.0, change **arm64-linux** in the **DDK\_PATH** environment variable to **arm64-linux\_gcc7.3.0**.
+     > - You can run the **uname -a** command on the CLI to view the CPU architecture of the development environment and operating environment. If **x86\_64** is displayed in the command output, the x86 architecture is used. If **arm64** is displayed in the command output, the ARM architecture is used.
 
-    **./main**
+2. Go to the GPIO directory and create a directory for storing compilation files. For example, the created directory in this document is **build/intermediates/host**.
+   
+   **cd $HOME/samples/cplusplus/level1\_single\_api/5\_200dk\_peripheral/gpio**
+   
+   **mkdir -p build/intermediates/host**
 
-### 查看结果
+3. Go to the **build/intermediates/host** directory and run the **cmake** command to generate a compilation file.
+   
+   - If the development environment and operating environment have the same OS architecture, run the following commands to perform compilation.
+     
+     **cd build/intermediates/host**
+     
+     **make clean**
+     
+     **cmake ../../../src -DCMAKE\_CXX\_COMPILER=g++ -DCMAKE\_SKIP\_RPATH=TRUE**
+   
+   - When the OS architecture of the development environment is different from that of the operating environment, you need to use the cross compiler for compilation. For example, if the development environment uses the x86 architecture and the operating environment uses the ARM architecture, run the following commands to perform cross compilation:
+     
+     **cd build/intermediates/host**
+     
+     **make clean**
+     
+     **cmake ../../../src -DCMAKE\_CXX\_COMPILER=aarch64-linux-gnu-g++ -DCMAKE\_SKIP\_RPATH=TRUE**
 
-运行完成后，会在运行环境的命令行中打印出运行结果。
+4. Run the **make** command. The generated executable file **main** is stored in the **gpio/out** directory.
+   
+   **make**
+
+### Running the Sample
+
+**Note: If the development environment and operating environment are deployed together, skip step 1 and go to [step 3](#step_3).**
+
+1. Run the following commands to upload the GPIO directory in the development environment to the operating environment, for example, **/home/HwHiAiUser**, and log in to the operating environment (host) as the **HwHiAiUser** user:
+   
+   **scp -r $HOME/samples/cplusplus/level1\_single\_api/5\_200dk\_peripheral/gpio HwHiAiUser@*xxx.xxx.xxx.xxx*:/home/HwHiAiUser**
+   
+   **ssh HwHiAiUser@*xxx.xxx.xxx.xxx***
+   
+   ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **Note:**
+   
+   > - *xxx.xxx.xxx.xxx* is the IP address of the operating environment, which is **192.168.1.2** when the Atlas 200 DK is connected using the USB, and is the IP address of the corresponding public network for Atlas 300 (AI1s).
+
+2. Obtain the operation permissions of GPIO, I2C, and UART.
+   
+   Log in to the operating environment and edit the **/etc/rc.local** file.
+   
+   **ssh HwHiAiUser@*xxx.xxx.xxx.xxx***
+   
+   **Run the su root command and enter the password to switch to the root user.**
+   
+   Run the **vim /etc/rc.local** command to add the following commands before **exit0**:
+   
+   ```
+   echo 504 >/sys/class/gpio/export
+   echo 444 >/sys/class/gpio/export
+   chown -R HwHiAiUser /sys/class/gpio/gpio444
+   chown -R HwHiAiUser /sys/class/gpio/gpio504
+   chown -R HwHiAiUser /sys/class/gpio/gpio444/direction
+   chown -R HwHiAiUser /sys/class/gpio/gpio504/direction
+   chown -R HwHiAiUser /sys/class/gpio/gpio444/value
+   chown -R HwHiAiUser /sys/class/gpio/gpio504/value
+   chown -R HwHiAiUser /dev/i2c-1
+   chown -R HwHiAiUser /dev/i2c-2
+   chown -R HwHiAiUser /dev/ttyAMA0
+   chown -R HwHiAiUser /dev/ttyAMA1
+   usermod -aG HwHiAiUser HwHiAiUser
+   ```
+   
+   **Restart the operating environment.**
+
+3. <a name="step_2"></a>Run the executable file.
+   
+   - If the development environment and operating environment are deployed together, run the following commands to set the operating environment variables and change the directory:
+     
+     **export LD\_LIBRARY\_PATH=**
+     
+     **source ~/.bashrc**
+     
+     **cd $HOME/samples/cplusplus/level1\_single\_api/5\_200dk\_peripheral/gpio/out**
+   
+   - If the development environment and operating environment are deployed separately, run the following command to change the directory:
+     
+     **cd $HOME/gpio/out**
+   
+   Run the following command to run the sample:
+   
+   **./main**
+
+### Viewing the Results
+
+After the running is complete, the results are displayed in the CLI of the operating environment.

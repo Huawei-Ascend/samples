@@ -1,80 +1,78 @@
-**本样例为大家学习昇腾软件栈提供参考，非商业目的！**
+English|[中文](README_CN.md)
 
-**本样例适配20.0及以上版本，支持产品为AscendBot**
+**This sample provides reference for you to learn the Ascend AI Software Stack and cannot be used for commercial purposes.**
 
-** **
+**This sample applies to CANN 20.0 and later versions. The supported product is AscendBot.**
 
-# 智能小车介绍
-AscendBot是一款面向人工智能及机器人爱好者的开源智能机器人小车，同时也是一个开放的人工智能及机器人开发平台，它具备如下特性：
-- 高性能：基于华为Atlas 200 DK，提供8TOPS@FP16的算力
-- 易学习：从AI算法到应用均提供完整开发教程及示例代码
-- 易上手：开放的硬件清单和搭建教程，开发者可自行动手组装扩展
+# Introduction to AscendBot
+AscendBot is an open-source smart robotic car designed for AI and robot enthusiasts. It is also an open AI and robot development platform with the following features:
+- High performance: Based on Huawei Atlas 200 DK, AscendBot enables 8 TOPS@FP16 compute power.
+- Easy to learn: Complete development tutorials and sample code are available ranging from the AI algorithm level to the application level.
+- Easy to use: A hardware list and a setup tutorial are provided for developers to assemble the hardware by themselves.
 
-**注：智能小车详细介绍请参见[智能小车_wiki]()。**
+## Sample Function
 
-## 样例功能
+AscendBot is remotely controlled by the APK on the mobile phone to implement object tracing, trajectory tracing, and fall protection functions.
 
-智能小车被手机APK遥控，实现物体跟随、车轨道循线、防跌落功能。
+### Prerequisites
 
-### 前提条件
+Before deploying this sample, ensure that:
 
-部署此Sample前，需要准备好以下环境：
+- The environment has been set up by referring to [Environment Preparation and Dependency Installation](../../environment).
 
-- 请确认已按照[环境准备和依赖安装](../../environment)准备好环境。
+- The development environment and operating environment of the corresponding product have been installed.
+- A complete AscendBot car, with the components, battery, router, display, and camera correctly installed, is available.
 
-- 已完成对应产品的开发环境和运行环境安装。
-- 完整的小车，包含各个小车部件，电池，路由器，显示屏，摄像头等都已经正确安装。
+### Software Preparation
 
-### 软件准备
+1. Obtain the source code package.
 
-1. 获取源码包。
+   You can download the source code in either of the following ways:
 
-   可以使用以下两种方式下载，请选择其中一种进行源码准备。
+    - Command line (The download takes a long time, but the procedure is simple.)
 
-    - 命令行方式下载（下载时间较长，但步骤简单）。
-
-        开发环境，非root用户命令行中执行以下命令下载源码仓。
+        In the development environment, run the following commands as a non-root user to download the source code repository:
 
        **cd $HOME**
 
        **git clone https://github.com/Huawei-Ascend-incubator/car.git**
 
-    - 压缩包方式下载（下载时间较短，但步骤稍微复杂）。
+    - Compressed package (The download takes a short time, but the procedure is complex.)
 
-        1. samples仓右上角选择 **克隆/下载** 下拉框并选择 **下载ZIP**。
+        1. Click **Clone or download** in the upper right corner of the samples repository and select **Download ZIP**.
 
-        2. 将ZIP包上传到开发环境中的普通用户家目录中，例如 **$HOME/ascend-incubator-car-master.zip**。
+        2. Upload the .zip package to the home directory of a common user in the development environment, for example, **$HOME/ascend-incubator-car-master.zip**.
 
-        3. 开发环境中，执行以下命令，解压zip包。
+        3. In the development environment, run the following commands to unzip the package:
 
             **cd $HOME**
 
             **unzip ascend-incubator-car-master.zip**
 
-2. 获取此应用中所需要的原始网络模型。
+2. Obtain the source model required by the application.
 
-    参考下表获取此应用中所用到的原始网络模型及其对应的权重文件，并将其存放到开发环境普通用户下的任意目录，例如：$HOME/models/ascbot。
+    Obtain the original model and its weight file used in the application by referring to the following table and save them to any directory of a common user in the development environment, for example, **$HOME/models/ascbot**.
     
-    |  **模型名称**  |  **模型说明**  |  **模型下载路径**  |
+    |  **Model Name**  |  **Description**  |  **How to Obtain**  |
     |---|---|---|
-    |  collision_avoidance_model| 用于智能小车检测前方是否有跌落危险。  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/ascbot/ATC_CollisionAntiDrop_caffe_AE/](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/ascbot/ATC_CollisionAntiDrop_caffe_AE/)目录中README.md下载原始模型章节下载模型和权重文件。 |
-    |  road_following_model  |  用于智能小车检测车道线，实现循道行驶  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/ascbot/ATC_LaneDetection_caffe_AE/](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/ascbot/ATC_LaneDetection_caffe_AE/)目录中README.md下载原始模型章节下载模型和权重文件。  |
-    |  road_object_detection_deploy|  用于选择小车的运行模式：自由形式、循道模式、物体跟随模式  |  请参考[https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/ascbot/ATC_Object_detection_caffe_AE/](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/Research/cv/ascbot/ATC_Object_detection_caffe_AE/)目录中README.md下载原始模型章节下载模型和权重文件。  |
+    | collision_avoidance_model | Detects risks in the forward direction to implement fall avoidance.  | Download the model and weight files by referring to the **README.md** file in [https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/ascbot/ATC_CollisionAntiDrop_caffe_AE/](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/ascbot/ATC_CollisionAntiDrop_caffe_AE/). |
+    | road_following_model | Detects lane lines to implement trajectory tracing. | Download the model and weight file by referring to the **README.md** file in [https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/ascbot/ATC_LaneDetection_caffe_AE/](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/ascbot/ATC_LaneDetection_caffe_AE/).  |
+    | road_object_detection_deploy| Selects the run mode from the free mode, trajectory tracing mode, and object tracing mode. | Download the model and weight file by referring to the **README.md** file in [https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/ascbot/ATC_Object_detection_caffe_AE/](https://github.com/Huawei-Ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/ascbot/ATC_Object_detection_caffe_AE/).  |
 
-    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-    > - modelzoo中提供了转换好的om模型，但此模型不匹配当前样例，所以需要下载原始模型和权重文件后重新进行模型转换。
+    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **NOTE**  
+    > - The converted OM model provided by ModelZoo does not match the current sample. Therefore, you need to download the original model and weight file, and convert the model by yourself.
 
-3. 将原始模型转换为Davinci模型。
+3. Convert the original model to a Da Vinci model.
     
-    **注：请确认环境变量已经在[环境准备和依赖安装](../../environment)中配置完成**
+    **Note: Ensure that the environment variables have been configured in [Environment Preparation and Dependency Installation](.../../environment).**
 
-    1. 设置LD_LIBRARY_PATH环境变量。
+    1. Set the ***LD_LIBRARY_PATH*** environment variable.
 
-        由于LD_LIBRARY_PATH环境变量在转使用atc工具和运行样例时会产生冲突，所以需要在命令行单独设置此环境变量，方便修改。
+        The ***LD_LIBRARY_PATH*** environment variable conflicts with the sample when the ATC tool is used. Therefore, you need to set this environment variable separately in the CLI to facilitate modification.
 
         **export LD_LIBRARY_PATH=\\${install_path}/atc/lib64**  
 
-    2. 执行以下命令下载aipp配置文件并使用atc命令进行模型转换。
+    2. Run the following commands to download the AIPP configuration file and convert the model:
 
         **cd $HOME/models/ascbot**  
 
@@ -91,7 +89,7 @@ AscendBot是一款面向人工智能及机器人爱好者的开源智能机器�
         **atc --model="road_object_detection_deploy.prototxt" --weight="road_object_detection_deploy.caffemodel" --soc_version=Ascend310 --framework=0 --output="road_object_detection_deploy" --insert_op_conf=insert_op_road_object_detection_deploy.cfg**
 
 
-    3. 执行以下命令将转换好的模型复制到样例中model文件夹中。
+    3. Run the following commands to copy the converted model to the **model** folder of the sample:
 
         **cp ./collision_avoidance_model.om $HOME/car/ascbot_c75/model/**
     
@@ -100,59 +98,56 @@ AscendBot是一款面向人工智能及机器人爱好者的开源智能机器�
         **cp ./road_object_detection_deploy.om $HOME/car/ascbot_c75/model/**
 
 
-### 样例部署
+### Sample Deployment
  
-1. 开发环境命令行中设置编译依赖的环境变量。
+1. Set the environment variables for building the dependencies on the command line of the development environment.
 
-   - 当开发环境与运行环境CPU架构不同时，执行以下命令导入环境变量。例如开发环境为X86架构，运行环境为Arm架构，由于开发环境上同时部署了X86和Arm架构的开发套件，后续编译应用时需要调用Arm架构开发套件的ACLlib库，所以此处需要导入环境变量为Arm架构的ACLlib库路径。
+
 
      **export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux**
 
      **export NPU_HOST_LIB=$DDK_PATH/acllib/lib64/stub**
 
-     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-        > - 如果是20.0版本，此处 **DDK_PATH** 环境变量中的 **arm64-liunx** 应修改为 **arm64-linux_gcc7.3.0**。
-        > - 可以在命令行中执行 **uname -a**，查看开发环境和运行环境的cpu架构。如果回显为x86_64，则为x86架构。如果回显为arm64，则为Arm架构。
+     ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **NOTE**  
+        > - If the CANN version is 20.0, change **arm64-linux** in the ***DDK_PATH*** environment variable to **arm64-linux_gcc7.3.0**.    
+        > - You can run the **uname -a** command on the command line to view the CPU architecture of the development environment and operating environment. If **x86_64** is displayed in the command output, the x86 architecture is used. If **arm64** is displayed in the command output, the ARM architecture is used.
 
-2. 切换到ascbot_c75目录，创建目录用于存放编译文件，例如，本文中，创建的目录为 **build/intermediates/host**。
+2. Switch to the **ascbot_c75** directory and create a directory for storing build outputs, for example, **build/intermediates/host** in this sample.
 
     **cd $HOME/car/ascbot_c75**
 
     **mkdir -p build/intermediates/host**
 
-3. 切换到 **build/intermediates/host** 目录，执行cmake生成编译文件。
-
-    - 当开发环境与运行环境操作系统架构不同时，需要使用交叉编译器编译。例如开发环境为X86架构，运行环境为Arm架构，执行以下命令进行交叉编译。
-
+3. Go to the **build/intermediates/host** directory and run the **cmake** command.
       **cd build/intermediates/host**
 
       **make clean**
     
       **cmake \.\./\.\./\.\./src -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SKIP_RPATH=TRUE**
 
-4. 执行make命令，生成的可执行文件main在 **ascbot_c75/out** 目录下。
+4. Run the **make** command and find the generated executable file **main** in the **ascbot_c75/out** directory.
 
     **make**
 
-### 样例运行
+### Sample Running
 
-1. 执行以下命令,将开发环境的 **ascend_bot** 目录上传到运行环境中，例如 **/home/HwHiAiUser**，并以HwHiAiUser（运行用户）登录运行环境（Host）。
+1. Run the following commands to upload the **ascend_bot** directory in the development environment to any directory in the operating environment, for example, **/home/HwHiAiUser**, and log in to the operating environment (host) as the **HwHiAiUser** user:
 
     **scp -r $HOME/car/ascbot_c75 HwHiAiUser@xxx.xxx.xxx.xxx:/home/HwHiAiUser**
 
     **ssh HwHiAiUser@xxx.xxx.xxx.xxx**    
 
-    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **说明：**  
-    > - **xxx.xxx.xxx.xxx**为运行环境ip，200DK在USB连接时一般为192.168.1.2。
+    ![](https://images.gitee.com/uploads/images/2020/1106/160652_6146f6a4_5395865.gif "icon-note.gif") **NOTE**  
+    > - ***xxx.xxx.xxx.xxx*** indicates the IP address of the operating environment, which is generally 192.168.1.2 for Atlas 200 DK when it is connected over the USB port.
 
 
-2. 设置环境
+2. Set up the environment.
 
-    进入/etc/rc.local。
+    Access **/etc/rc.local**.
     
     **vim /etc/rc.local**
 
-    添加以下指令
+    Add the following lines:
     
 """
 
@@ -182,20 +177,20 @@ AscendBot是一款面向人工智能及机器人爱好者的开源智能机器�
     
 """
 
-3. <a name="step_2"></a>运行可执行文件。
+3. Run the executable file.
 
-    - 如果是开发环境与运行环境分离部署，执行以下命令切换目录。
+    - If the development environment and operating environment are set up on separate servers, run the following command to switch the directory:
     
       **cd $HOME/ascbot_c75/out**
 
-    切换目录后，执行以下命令运行样例。
+    Run the following command to run the sample:
 
     **./main**
 
-### 查看结果
+### Result Checking
 
-运行完成后，可下载手机端应用控制小车运行。
-[手机端下载地址](https://share.weiyun.com/5lsbfzF)
+After the execution is complete, you can download the APK on the mobile phone to control the status of the car.
+[APK download link](https://share.weiyun.com/5lsbfzF)
 
 
 

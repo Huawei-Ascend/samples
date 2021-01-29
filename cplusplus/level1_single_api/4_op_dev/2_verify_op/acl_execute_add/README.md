@@ -1,53 +1,53 @@
-# Add算子运行验证<a name="ZH-CN_TOPIC_0302083215"></a>
+# Execution Verification of the Add Operator<a name="EN-US_TOPIC_0302083215"></a>
 
-## 功能描述<a name="section1421916179418"></a>
+## Overview<a name="section1421916179418"></a>
 
-该样例实现了对[自定义算子Add](../../1_custom_op/doc/Add.md)的功能验证，通过将自定义算子转换为单算子离线模型文件，然后通过AscendCL加载单算子模型文件进行运行。
+This sample verifies the function of the  [custom operator Add](../../1_custom_op/doc/Add_EN.md)  by converting the custom operator file into a single-operator offline model file and loading the file using AscendCL for execution. 
 
-说明：单算子模型文件的生成只依赖算子代码实现文件、算子原型定义、算子信息库，不依赖算子适配插件。
+Note: The generation of a single-operator model file depends only on the operator code implementation file, operator prototype definition, and operator information library, but does not depend on the operator adaptation plug-in.
 
-## 目录结构<a name="section8733528154320"></a>
+## Directory Structure<a name="section8733528154320"></a>
 
 ```
-├── inc                           //头文件目录
-│   ├── common.h                  // 声明公共方法类，用于读取二进制文件
-│   ├── operator_desc.h          //算子描述声明文件，包含算子输入/输出，算子类型以及输入描述与输出描述
-│   ├── op_runner.h              //算子运行相关信息声明文件，包含算子输入/输出个数，输入/输出大小等
-├── run                           // 单算子执行需要的文件存放目录
-│   ├── out    // 单算子执行需要的可执行文件存放目录
-│        └── test_data         // 测试数据存放目录
+├── inc                           // Header file directory
+│   ├── common.h                  // Common method class declaration file, used to read binary files
+│   ├── operator_desc.h          // Operator description declaration file, including the operator inputs and outputs, operator type, input description, and output description
+│   ├── op_runner.h              // Operator execution information declaration file, including the numbers and sizes of operator inputs and outputs
+├── run                           // Directory of files required for single-operator execution
+│   ├── out    // Directory of executable files required for single-operator execution
+│        └── test_data         // Directory of test data files
 │           ├── config
-│               └── acl.json       //用于进行~acl初始化，请勿修改此文件
-│               └── add_op.json    // 算子描述文件，用于构造单算子模型文件
+│               └── acl.json       // File for AscendCL initialization, which must not be modified
+│               └── add_op.json    // Operator description file, used to construct a single-operator model file
 │           ├── data
-│               └── generate_data.py    // 生成测试数据的脚本
+│               └── generate_data.py    // Script for generating test data
 ├── src
-│   ├── CMakeLists.txt    // 编译规则文件
-│   ├── common.cpp         // 公共函数，读取二进制文件函数的实现文件  
-│   ├── main.cpp    // 将单算子编译为om文件并加载om文件执行，此文件中包含算子的相关配置，若验证其他单算子，基于此文件修改
-│   ├── operator_desc.cpp     // 构造算子的输入与输出描述
-│   ├── op_runner.cpp   // 单算子编译与运行函数实现文件
+│   ├── CMakeLists.txt    // Build script
+│   ├── common.cpp         // Common function file, used to read binary files
+│   ├── main.cpp    // File containing the operator configuration, used to build the single-operator Add into an OM file and load the OM file for execution. To verify other single-operators, modify the configuration based on this file.
+│   ├── operator_desc.cpp     // File used to construct the input and output description of the operator
+│   ├── op_runner.cpp   // Function implementation file for building and running a single-operator
 ```
 
-## 环境要求<a name="zh-cn_topic_0230709958_section1256019267915"></a>
+## Environment Requirements<a name="en-us_topic_0230709958_section1256019267915"></a>
 
--   操作系统及架构：CentOS x86\_64、CentOS aarch64、Ubuntu 18.04 x86\_64、EulerOS x86\_64、EulerOS aarch64
--   版本：20.2
--   编译器：
-    -   Ascend 310 EP/Ascend 710/Ascend 910编译器：g++
-    -   Atlas 200 DK编译器：aarch64-linux-gnu-g++
+-   OS and architecture: CentOS x86\_64, CentOS AArch64, Ubuntu 18.04 x86\_64, EulerOS x86, EulerOS AArch64
+-   Version: 20.2
+-   Compiler:
+    -   Ascend 310 EP/Ascend 710 EP/Ascend 910: g++
+    -   Atlas 200 DK: AArch64-linux-gnu-g++
 
--   芯片：Ascend310、Ascend710、Ascend910
--   python及依赖的库：python3.7.5
--   已完成昇腾AI软件栈的部署。
--   已参考[custom\_op](../../1_custom_op)完成自定义算子的编译部署。
+-   SoC: Ascend 310 AI Processor, Ascend 710 AI Processor, Ascend 910 AI Processor
+-   Python version and dependency library: Python 3.7.5
+-   Ascend AI Software Stack deployed
+-   The custom operator has been compiled and deployed by referring to  [custom\_op](../../1_custom_op).
 
-## 配置环境变量<a name="section053142383519"></a>
+## Environment Variables<a name="section053142383519"></a>
 
 -   Ascend 310 EP/Ascend 710
-    1.  开发环境上，设置生成单算子离线模型的环境变量。
+    1.  In the development environment, set the environment variables for generating a single-operator offline model.
 
-        环境变量配置示例如下：
+        The following is an example:
 
         ```
         export install_path=$HOME/Ascend/ascend-toolkit/latest
@@ -55,20 +55,20 @@
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-        install\_path为开发套件包Ascend-cann-toolkit的安装路径。
+        **install\_path**  specifies the installation path of  Ascend-cann-toolkit.
 
-    2.  开发环境上，设置环境变量，配置AscendCL单算子验证程序编译依赖的头文件与库文件路径。
+    2.  In the development environment, set environment variables of the header file path and library file path on which the AscendCL single-operator verification program compilation depends.
 
-        编译脚本会按环境变量指向的路径查找编译依赖的头文件和库文件，请将$HOME/Ascend/ascend-toolkit/latest替换为开发套件包Ascend-cann-toolkit的安装路径。
+        The build script looks up for the header files and library files based on the paths specified by those environment variables. Set  **_$HOME/Ascend_**_**/ascend-toolkit/latest**_  to the installation path of  Ascend-cann-toolkit.
 
-        -   当运行环境操作系统架构是x86时，配置示例如下所示：
+        -   Configure environment variables as follows if the OS architecture is x86.
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux
             export NPU_HOST_LIB=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux/acllib/lib64/stub
             ```
 
-        -   当运行环境操作系统架构时arm64时，配置示例如下所示：
+        -   Configure environment variables as follows if the OS architecture is ARM64.
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
@@ -77,14 +77,14 @@
 
 
         ```
-        说明：
-        使用ACLlib组件安装路径下“lib64/stub”目录下的*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件的任何*.so库。
-        编译通过后，在Host上运行应用时，通过配置环境变量，应用会链接到Host上“$HOME/Ascend/nnrt/latest/acllib/lib64”目录下的*.so库，运行时会自动链接到依赖其它组件的*.so库。
+        Note:
+        The .so library files in the lib64/stub directory of the ACLlib installation path are used to build code using AscendCL APIs without depending on any .so library of other components.
+        At run time on the host, the app links to the .so library files in the $HOME/Ascend/nnrt/latest/acllib/lib64 directory on the host through the configured environment variable and automatically links to the .so library files of other components.
         ```
 
-    3.  运行环境上，设置运行应用时依赖AscendCL库文件的环境变量。
+    3.  In the operating environment, set the environment variable of the ACLlib path on which app execution depends.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/nnrt/latest替换为Ascend-cann-nnrt包的实际安装路径。
+        The following is an example only. Replace  **_$HOME/Ascend_**_**/nnrt/latest**_  with the actual Ascend-CANN-NNRT installation path.
 
         ```
         export LD_LIBRARY_PATH=$HOME/Ascend/nnrt/latest/acllib/lib64
@@ -92,9 +92,9 @@
 
 
 -   Ascend 910
-    1.  开发环境上，设置生成单算子离线模型的环境变量。
+    1.  In the development environment, set the environment variables for generating a single-operator offline model.
 
-        环境变量配置示例如下：
+        The following is an example:
 
         ```
         export install_path=/home/HwHiAiUser/Ascend/ascend-toolkit/latest
@@ -102,11 +102,11 @@
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-        install\_path为开发套件包Ascend-cann-toolkit的安装路径。
+        **install\_path**  specifies the installation path of  Ascend-cann-toolkit.
 
-    2.  开发环境上，设置环境变量，配置AscendCL单算子验证程序编译依赖的头文件与库文件路径。
+    2.  In the development environment, set environment variables of the header file path and library file path on which the AscendCL single-operator verification program compilation depends.
 
-        编译脚本会按环境变量指向的路径查找编译依赖的头文件和库文件，请将$HOME/Ascend/ascend-toolkit/latest替换为开发套件包Ascend-cann-toolkit的安装路径。
+        The build script looks up for the header files and library files based on the paths specified by those environment variables. Set  **_$HOME/Ascend_**_**/ascend-toolkit/latest**_  to the installation path of  Ascend-cann-toolkit.
 
         ```
         export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest
@@ -114,15 +114,14 @@
         ```
 
         ```
-        说明：
-        使用FwkACLlib组件安装路径下“lib64/stub”目录下的*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件的任何*.so库。
-        编译通过后，在Host上运行应用时，通过配置环境变量，应用会链接到Host上“$HOME/Ascend/nnae/latest/fwkacllib/lib64”目录下的*.so库，运行时会自动链接到依赖其它组件的*.so库。
+        Note:
+        The .so library files in the lib64/stub directory of the FwkACLlib installation path are used to build code using AscendCL APIs without depending on any .so library of other components.
+        At run time, the app links to the .so library files in the $HOME/Ascend/nnae/latest/fwkacllib/lib64 directory on the host through the configured environment variable and automatically links to the .so library files of other components.
         ```
 
+    3.  In the operating environment, set the environment variable of the ACLlib path on which app execution depends.
 
-    3.  运行环境上，设置运行应用时依赖AscendCL库文件的环境变量。
-
-        如下为设置环境变量的示例，请将$HOME/Ascend/nnae/latest替换为Ascend-cann-nnae包的实际安装路径。
+        The following is an example only. Replace  _**$HOME/Ascend**__**/nnae/latest**_  with the actual Ascend-CANN-NNAE installation path.
 
         ```
         export LD_LIBRARY_PATH=$HOME/Ascend/nnae/latest/fwkacllib/lib64
@@ -130,9 +129,9 @@
 
 
 -   Atlas 200 DK
-    1.  开发环境上，设置生成单算子离线模型的环境变量。
+    1.  In the development environment, set the environment variables for generating a single-operator offline model.
 
-        环境变量配置示例如下：
+        The following is an example:
 
         ```
         export install_path=$HOME/Ascend/ascend-toolkit/latest
@@ -140,11 +139,11 @@
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-        install\_path为开发套件包Ascend-cann-toolkit的安装路径。
+        **install\_path**  specifies the installation path of  Ascend-cann-toolkit.
 
-    2.  开发环境上，设置环境变量，配置AscendCL单算子验证程序编译依赖的头文件与库文件路径。
+    2.  In the development environment, set environment variables of the header file path and library file path on which the AscendCL single-operator verification program compilation depends.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/ascend-toolkit/latest替换为开发套件包Ascend-cann-toolkit的安装路径。
+        The following is an example of setting environment variables. Replace  **_$HOME/Ascend_**_**/ascend-toolkit/latest**_  with the installation path of the  Ascend-cann-toolkit  toolkit.
 
         ```
         export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
@@ -152,55 +151,55 @@
         ```
 
         ```
-        说明：
-        使用ACLlib组件安装路径下“lib64/stub”目录下的*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件的任何*.so库。
-        编译通过后，在板端环境上运行应用时，通过配置环境变量，应用会链接到板端环境上“$HOME/Ascend/acllib/lib64”目录下的*.so库，运行时会自动链接到依赖其它组件的*.so库。
+        Note:
+        The .so library files in the lib64/stub directory of the ACLlib installation path are used to build code using AscendCL APIs without depending on any .so library of other components.
+        In the run time in the board environment, the app links to the .so library files in the $HOME/Ascend/acllib/lib64 directory in the board environment through the configured environment variable and automatically links to the .so library files of other components.
         ```
 
-        运行环境上AscendCL运行时依赖的环境变量LD\_LIBRARY\_PATH在制卡时已配置，此处无需单独配置。
+        The environment variable  **LD\_LIBRARY\_PATH**  on which AscendCL depends has been configured in the bootable SD card preparation phase. You do not need to configure it separately.
 
 
 
-## 编译运行（Ascend 310 EP/Ascend 710/Ascend 910）<a name="section170442411445"></a>
+## Build and Run \(Ascend 310 EP/Ascend 710/Ascend 910\)<a name="section170442411445"></a>
 
-1.  生成Add算子的单算子离线模型文件。
-    1.  以运行用户（例如HwHiAiUser）登录开发环境，并进入样例工程的“acl\_execute\_add/run/out“目录。
-    2.  在out目录下执行如下命令，生成单算子模型文件。
+1.  Generate the single-operator offline model file of the Add operator.
+    1.  Log in to the development environment as a running user \(for example,  **HwHiAiUser**\) and go to the  **acl\_execute\_add/run/out**  directory of the sample project.
+    2.  Run the following command in the  **out**  directory to generate a single-operator model file:
 
         **atc --singleop=test\_data/config/add\_op.json  --soc\_version=_$\{soc\_version\}_  --output=op\_models**
 
-        其中：
+        Specifically,
 
-        -   singleop：算子描述的json文件。
-        -   soc\_version：昇腾AI处理器的型号，请根据实际情况替换。
+        -   **singleop**  specifies the operator description file \(.json\).
+        -   **soc\_version**  specifies the model of the Ascend AI Processor. Replace it with the actual version.
 
-            可从ATC安装路径下的“atc/data/platform\_config”目录或FwkACLlib安装路径下的“fwkacllib/data/platform\_config”目录下查看支持的昇腾AI处理器的类型，对应“\*.ini”文件的名字即为\{soc\_version\}。如果用户根据上述方法仍旧无法确定具体使用的$\{soc\_version\}，则：
+            It is the exact name of the .ini file in  **atc/data/platform\_config**  in the ATC installation path or  **fwkacllib/data/platform\_config**  in the FwkACLlib installation path. If you still cannot determine the  **_$\{sos\_version\}_**  using the preceding method, perform the following operations:
 
-            1.  单击如下手册中的链接并进入该手册，[CANN Ascend-DMI工具用户指南](https://support.huawei.com/enterprise/zh/ascend-computing/atlas-data-center-solution-pid-251167910?category=operation-maintenance)。
-            2.  完成“使用工具\>使用前准备“，然后进入“使用工具\>设备实时状态查询“章节。
-            3.  使用相关命令查看芯片的详细信息，例如使用**ascend-dmi -i -dt**命令查看芯片的详细信息，返回信息中“Chip Name“对应取值即为具体使用的$\{soc\_version\}。
+            1.  Click  [here](https://support.huawei.com/enterprise/en/ascend-computing/atlas-data-center-solution-pid-251167910?category=operation-maintenance)  to download  _CANN Ascend-DMI Tool User Guide_.
+            2.  Complete the operations described in  **Tool Usage Guide**  \>  **Before You Start**, and then proceed to  **Tool Usage Guide**  \>  **Querying Device Real-Time Status**.
+            3.  Run the related command to view the chip details. For example, in the output of the  **ascend-dmi -i -dt**  command,  **Chip Name**  field corresponds to  **_$\{sos\_version\}_**.
 
-        -   --output=op\_models：代表生成的模型文件存储在当前目录下的op\_models文件夹下。
+        -   **--output=op\_models**  indicates that the generated model file is stored in the  **op\_models**  folder in the current directory.
 
-        模型转换成功后，会生成如下文件：
+        After the model conversion is successful, the following files are generated:
 
-        在当前目录的op\_models目录下生成单算子的模型文件**0\_Add\_3\_2\_8\_16\_3\_2\_8\_16\_3\_2\_8\_16.om**，命名规范为：序号+opType + 输入的描述\(dateType\_format\_shape\)+输出的描述。
+        The single-operator model file  **0\_Add\_3\_2\_8\_16\_3\_2\_8\_16\_3\_2\_8\_16.om**  is generated in the  **op\_models**  directory of the current directory. The file is named in the format of No.+opType+input description \(dateType\_format\_shape\)+output description.
 
-        dataType以及format对应枚举值请从ATC或FwkACLlib组件所在目录下的“atc/include/graph/types.h”文件或“fwkacllib/include/graph/types.h”中查看，枚举值从0开始依次递增。
+        View the enumerated values of dataType and format in the  **atc/include/graph/types.h**  or  **fwkacllib/include/graph/types.h**  file in the directory where the fwkACLlib component is located. The enumerated values start from 0 and increase in ascending order.
 
-        **说明:** 模型转换时，会优先去查找自定义算子库去匹配模型文件中的算子。
+        **Note:**  During model conversion, operators in the custom operator library are preferentially searched to match the operators in the model file.
 
 
-2.  生成测试数据。
+2.  Generate test data.
 
-    进入样例工程目录的run/out/test\_data/data目录下，执行如下命令：
+    Go to the  **run/out/test\_data/data**  directory of the sample project and run the following command:
 
     **python3.7.5 generate\_data.py**
 
-    会在当前目录下生成两个shape为\(8, 16\)，数据类型为int32的数据文件input\_0.bin与input\_1.bin，用于进行Add算子的验证。
+    Two data files  **input\_0.bin**  and  **input\_1.bin**  with shape \(8, 16\) and data type of int32 are generated in the current directory for verifying the Add operator.
 
-3.  编译样例工程，生成单算子验证可执行文件。
-    1.  针对Ascend 910，需要修改src/CMakeLists.txt文件中的如下配置段，将“**acllib**”修改为“**fwkacllib**”，Ascend 310与Ascend 710无需执行此步骤。
+3.  Build the sample project to generate an executable file for single-operator verification.
+    1.  For Ascend 910, change  **acllib**  to  **fwkacllib**  in the  **src/CMakeLists.txt**  file. Skip this step for Ascend 310 and Ascend 710.
 
         ```
         # Header path
@@ -210,44 +209,44 @@
         )
         ```
 
-    2.  切换到样例工程根目录acl\_execute\_add，然后在样例工程根目录下执行如下命令创建目录用于存放编译文件，例如，创建的目录为“build/intermediates/host“。
+    2.  Go to the  **acl\_execute\_add**  directory of the sample project and run the following command in this directory to create a directory for storing the generated executable file, for example,  **build/intermediates/host**.
 
         **mkdir -p build/intermediates/host**
 
-    3.  切换到“build/intermediates/host”目录，执行cmake命令生成编译文件。
+    3.  Go to the  **build/intermediates/host**  directory and run the  **cmake**  command.
 
         **cd build/intermediates/host**
 
         **cmake ../../../src -DCMAKE\_CXX\_COMPILER=g++ -DCMAKE\_SKIP\_RPATH=TRUE**
 
-        -   “../../../src”表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
-        -   DCMAKE\_CXX\_COMPILER：编译此应用程序所用的编译器。
-        -   DCMAKE\_SKIP\_RPATH：**请设置为TRUE**，代表不会将rpath信息（即NPU\_HOST\_LIB配置的路径）添加到编译生成的可执行文件中去。
+        -   Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
+        -   **DCMAKE\_CXX\_COMPILER**: specifies the compiler used to build the app.
+        -   **DCMAKE\_SKIP\_RPATH**: If set to  **TRUE**, this parameter indicates that  **rpath**  \(path specified by  **NPU\_HOST\_LIB**\) is not added to the executable file generated after build.
 
-            可执行文件运行时会自动搜索实际设置的LD\_LIBRARY\_PATH（“xxx/acllib/lib64”或“xxx/fwkacllib/lib64”）中的动态链接库。
+            The executable automatically looks up for dynamic libraries in the path \(**_xxx_/acllib/lib64**  or  **_xxx_/fwkacllib/lib64**\) included in  **LD\_LIBRARY\_PATH**.
 
 
-    4.  执行如下命令，生成可执行文件。
+    4.  Run the following command to generate an executable file:
 
         **make**
 
-        会在工程目录的“run/out“目录下生成可执行文件**execute\_add\_op**。
+        The executable file  **execute\_add\_op**  is generated in the  **run/out**  directory of the project.
 
 
-4.  在硬件设备的Host侧执行单算子验证文件。
-    1.  以运行用户（例如HwHiAiUser）拷贝开发环境中样例工程acl\_execute\_add/run/目录下的out文件夹到运行环境（硬件设备Host侧）任一目录，例如上传到/home/HwHiAiUser/HIAI\_PROJECTS/run\_add/目录下。
+4.  Execute the single-operator verification file on the host side of the hardware device.
+    1.  As a running user \(for example,  **HwHiAiUser**\), copy the out folder in the  **acl\_execute\_add/run/**  directory of the sample project in the  development environment  to any directory in the  operating environment  \(host\), for example,  **/home/HwHiAiUser/HIAI\_PROJECTS/run\_add/**.
 
-        **说明:** 若您的开发环境即为硬件设备的Host侧，此拷贝操作可跳过。
+        **Note**: If your development environment is the host side of the hardware device, skip this step.
 
-    2.  在运行环境中执行execute\_add\_op文件，验证单算子模型文件。
+    2.  Execute the  **execute\_add\_op**  file in the  operating environment  to verify the single-operator model file.
 
-        在/home/HwHiAiUser/HIAI\_PROJECTS/run\_add/out目录下执行如下命令：
+        Run the following command in  **/home/HwHiAiUser/HIAI\_PROJECTS/run\_add/out**:
 
         **chmod +x execute\_add\_op**
 
         **./execute\_add\_op**
 
-        会有如下屏显信息（注意：由于数据生成脚本生成的数据文件是随机的，屏显显示的数据会有不同）：
+        The following information is displayed. \(Note: The data file is randomly generated by the data generation script, so the displayed data may be different.\)
 
         ```
         [INFO]  Input[0]:
@@ -284,86 +283,86 @@
         [INFO]  Run op success
         ```
 
-        可见输出结果=输入数据1+输入数据2，Add算子验证结果正确。
+        The output result is the sum of input data 1 and input data 2. The verification result of the Add operator is correct.
 
-        result\_files/output\_0.bin：输出数据的二进制文件。
+        **result\_files/output\_0.bin**: outputs data binary file
 
 
 
-## 编译运行（Atlas 200 DK）<a name="section205496819282"></a>
+## Build and Run \(Atlas 200 DK\)<a name="section205496819282"></a>
 
-1.  生成Add算子的单算子离线模型文件。
-    1.  以运行用户（例如HwHiAiUser）登录开发环境，并进入样例工程的“acl\_execute\_add/run/out“目录。
-    2.  在out目录下执行如下命令，生成单算子模型文件。
+1.  Generate the single-operator offline model file of the Add operator.
+    1.  Log in to the development environment as a running user \(for example,  **HwHiAiUser**\) and go to the  **acl\_execute\_add/run/out**  directory of the sample project.
+    2.  Run the following command in the  **out**  directory to generate a single-operator model file:
 
         **atc --singleop=test\_data/config/add\_op.json  --soc\_version=_$\{soc\_version\}_  --output=op\_models**
 
-        其中：
+        Specifically,
 
-        -   singleop：算子描述的json文件。
-        -   soc\_version：昇腾AI处理器的型号，请根据实际情况替换。
+        -   **singleop**  specifies the operator description file \(.json\).
+        -   **soc\_version**  specifies the model of the Ascend AI Processor. Replace it with the actual version.
 
-            可从ATC安装路径下的“atc/data/platform\_config”目录下查看支持的昇腾AI处理器的类型，对应“\*.ini”文件的名字即为\{soc\_version\}。如果用户根据上述方法仍旧无法确定具体使用的$\{soc\_version\}，则：
+            It is the exact name of the .ini file in  **atc/data/platform\_config**  in the ATC installation path. If you still cannot determine the  **_$\{sos\_version\}_**  using the preceding method, perform the following operations:
 
-            1.  单击如下手册中的链接并进入该手册，[CANN Ascend-DMI工具用户指南](https://support.huawei.com/enterprise/zh/ascend-computing/atlas-data-center-solution-pid-251167910?category=operation-maintenance)。
-            2.  完成“使用工具\>使用前准备“，然后进入“使用工具\>设备实时状态查询“章节。
-            3.  使用相关命令查看芯片的详细信息，例如使用**ascend-dmi -i -dt**命令查看芯片的详细信息，返回信息中“Chip Name“对应取值即为具体使用的$\{soc\_version\}。
+            1.  Click  [here](https://support.huawei.com/enterprise/en/ascend-computing/atlas-data-center-solution-pid-251167910?category=operation-maintenance)  to download  _CANN Ascend-DMI Tool User Guide_.
+            2.  Complete the operations described in  **Tool Usage Guide**  \>  **Before You Start**, and then proceed to  **Tool Usage Guide**  \>  **Querying Device Real-Time Status**.
+            3.  Run the related command to view the chip details. For example, in the output of the  **ascend-dmi -i -dt**  command,  **Chip Name**  field corresponds to  **_$\{sos\_version\}_**.
 
-        -   --output=op\_models：代表生成的模型文件存储在当前目录下的op\_models文件夹下。
+        -   **--output=op\_models**: the generated model file stored in the  **op\_models**  folder in the current directory.
 
-        模型转换成功后，会生成如下文件：
+        After the model conversion is successful, the following files are generated:
 
-        在当前目录的op\_models目录下生成单算子的模型文件**0\_Add\_3\_2\_8\_16\_3\_2\_8\_16\_3\_2\_8\_16.om**，命名规范为：序号+opType + 输入的描述\(dateType\_format\_shape\)+输出的描述。
+        The single-operator model file  **0\_Add\_3\_2\_8\_16\_3\_2\_8\_16\_3\_2\_8\_16.om**  is generated in the  **op\_models**  directory of the current directory. The file is named in the format of No.+opType+input description \(dateType\_format\_shape\)+output description.
 
-        dataType以及format对应枚举值请从ATC组件所在目录下的“atc/include/graph/types.h”文件中查看，枚举值从0开始依次递增。
+        View the enumerated values of dataType and format in the  **atc/include/graph/types.h**  file. The enumerated values start from 0 and increase in ascending order.
 
-        **说明：**模型转换时，会优先去查找自定义算子库去匹配模型文件中的算子。
+        **Note:**  During model conversion, operators in the custom operator library are preferentially searched to match the operators in the model file.
 
 
-2.  生成测试数据。
+2.  Generate test data.
 
-    进入样例工程目录的run/out/test\_data/data目录下，执行如下命令：
+    Go to the  **run/out/test\_data/data**  directory of the sample project and run the following command:
 
     **python3.7.5 generate\_data.py**
 
-    会在当前目录下生成两个shape为\(8, 16\)，数据类型为int32的数据文件input\_0.bin与input\_1.bin，用于进行Add算子的验证。
+    Two data files  **input\_0.bin**  and  **input\_1.bin**  with shape \(8, 16\) and data type of int32 are generated in the current directory for verifying the Add operator.
 
-3.  编译样例工程，生成单算子验证可执行文件。
-    1.  切换到样例工程根目录acl\_execute\_add，然后在样例工程根目录下执行如下命令创建目录用于存放编译文件，例如，创建的目录为“build/intermediates/host“。
+3.  Build the sample project to generate an executable file for single-operator verification.
+    1.  Go to the  **acl\_execute\_add**  directory of the sample project and run the following command in this directory to create a directory for storing the generated executable file, for example,  **build/intermediates/host**.
 
         **mkdir -p build/intermediates/host**
 
-    2.  切换到“build/intermediates/host”目录，执行cmake命令生成编译文件。
+    2.  Go to the  **build/intermediates/host**  directory and run the  **cmake**  command.
 
         **cd build/intermediates/host**
 
         **cmake ../../../src -DCMAKE\_CXX\_COMPILER=aarch64-linux-gnu-g++ -DCMAKE\_SKIP\_RPATH=TRUE**
 
-        -   “../../../src”表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
-        -   DCMAKE\_CXX\_COMPILER：编译此应用程序所用的编译器。
-        -   DCMAKE\_SKIP\_RPATH：**请设置为TRUE**，代表不会将rpath信息（即NPU\_HOST\_LIB配置的路径）添加到编译生成的可执行文件中去。
+        -   Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
+        -   **DCMAKE\_CXX\_COMPILER**: specifies the compiler used to build the app.
+        -   **DCMAKE\_SKIP\_RPATH**: If set to  **TRUE**, this parameter indicates that  **rpath**  \(path specified by  **NPU\_HOST\_LIB**\) is not added to the executable file generated after build.
 
-            可执行文件运行时会自动搜索实际设置的LD\_LIBRARY\_PATH（“xxx/acllib/lib64”）中的动态链接库。
+            The executable automatically looks up for dynamic libraries in the path \(**_xxx_/acllib/lib64**\) included in  **LD\_LIBRARY\_PATH**.
 
 
-    3.  执行如下命令，生成可执行文件。
+    3.  Run the following command to generate an executable file:
 
         **make**
 
-        会在工程目录的“run/out“目录下生成可执行文件**execute\_add\_op**。
+        The executable file  **execute\_add\_op**  is generated in the  **run/out**  directory of the project.
 
 
-4.  在运行环境上执行单算子验证文件。
-    1.  以运行用户（例如HwHiAiUser）拷贝开发环境中样例工程acl\_execute\_add/run/目录下的out文件夹到板端环境任一目录，例如上传到/home/HwHiAiUser/HIAI\_PROJECTS/run\_add/目录下。
-    2.  在板端环境中执行execute\_add\_op文件，验证单算子模型文件。
+4.  Execute the single-operator verification file in the operating environment.
+    1.  As a running user \(for example,  **HwHiAiUser**\), copy the out folder in the  **acl\_execute\_add/run/**  directory of the sample project in the development environment to any directory in the board environment, for example,  **/home/HwHiAiUser/HIAI\_PROJECTS/run\_add/**.
+    2.  Execute the  **execute\_add\_op**  file in the  board environment  to verify the single-operator model file.
 
-        在/home/HwHiAiUser/HIAI\_PROJECTS/run\_add/out目录下执行如下命令：
+        Run the following command in  **/home/HwHiAiUser/HIAI\_PROJECTS/run\_add/out**:
 
         **chmod +x execute\_add\_op**
 
         **./execute\_add\_op**
 
-        会有如下屏显信息（注意：由于数据生成脚本生成的数据文件是随机的，屏显显示的数据会有不同）：
+        The following information is displayed. \(Note: The data file is randomly generated by the data generation script, so the displayed data may be different.\)
 
         ```
         [INFO]  Input[0]:
@@ -400,9 +399,9 @@
         [INFO]  Run op success
         ```
 
-        可见输出结果=输入数据1+输入数据2，Add算子验证结果正确。
+        The output result is the sum of input data 1 and input data 2. The verification result of the Add operator is correct.
 
-        result\_files/output\_0.bin：输出数据的二进制文件。
+        **result\_files/output\_0.bin**: outputs data binary file
 
 
 

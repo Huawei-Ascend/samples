@@ -50,7 +50,7 @@
     
     |  **模型名称**  |  **模型说明**  |  **模型下载路径**  |
     |---|---|---|
-    |  mask_detection.pb | 图片分类推理模型。是基于Caffe的GoogLeNet模型。  |  请参考[https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/mask_detection](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/mask_detection)目录中README.md下载原始模型章节下载模型和权重文件。 |    
+    |  mask_detection.pb | 基于TensorFlow-YOLOV3的口罩检测模型。  |  请参考[https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/mask_detection](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/mask_detection)目录中README.md下载原始模型章节下载模型和权重文件。 |    
 
 3. 将原始模型转换为Davinci模型。
     
@@ -79,7 +79,7 @@
 
     **cd $HOME/samples/python/level2_simple_inference/2_object_detection/YOLOV3_mask_detection/data**
 
-    **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/YOLOV3_mask_detection-python/mask.jpg**
+    **wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/YOLOV3_mask_detection_picture-python/mask.jpg**
 
 
 ### 样例运行
@@ -103,16 +103,16 @@
 
       **source ~/.bashrc**
         
-      **cd $HOME/samples/python/level2_simple_inference/2_object_detection/YOLOV3_mask_detection**     
-      **python3 mask_detect.py**
+      **cd $HOME/samples/python/level2_simple_inference/2_object_detection/YOLOV3_mask_detection/src**     
+      **python3.6 mask_detect.py**
 
     - 如果是开发环境与运行环境分离部署，执行以下命令切换目录。
     
-      **cd $HOME/YOLOV3_mask_detection**
+      **cd $HOME/YOLOV3_mask_detection/src**
 
-      **python3 mask_detect.py** 
+      **python3.6 mask_detect.py** 
 ​       
 
 ### 查看结果
 
-运行完成后，会在outputs目录下生成带推理结果的jpg图片。
+运行完成后，会在out目录下生成带推理结果的jpg图片。
