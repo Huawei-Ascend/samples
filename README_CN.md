@@ -1,4 +1,4 @@
-中文|[English](README_EN.md)
+中文|[English](README.md)
 
 ## 昇腾CANN样例仓介绍
    
@@ -14,6 +14,7 @@ CANN AscendCL（Ascend Computing Language）提供Device管理、Context管理�
 | CANN版本 | cann-samples仓是否维护 | cann-samples获取方式 |
 |---|---|---|
 | [20.0-20.1](https://ascend.huawei.com/#/software/cann/download) | 是 | Release 0.1.0发行版，[点击跳转](https://github.com/Huawei-Ascend/samples/releases/v0.1.0) |
+| [20.2](https://ascend.huawei.com/#/software/cann/download) | 是 | Release 0.2.0发行版，[点击跳转](https://github.com/Huawei-Ascend/samples/releases/v0.2.0) |
 
 ## 目录结构与说明
 
@@ -82,7 +83,6 @@ CANN AscendCL（Ascend Computing Language）提供Device管理、Context管理�
 | [colorization](./cplusplus/level2_simple_inference/6_other/colorization) |  c++ |20.0/20.1  | A200DK/A300 | 使用colorization模型对输入的黑白图片进行上色推理。| 
 | [colorization<br>_video](./cplusplus/level2_simple_inference/6_other/colorization_video) |  c++ |20.0/20.1  | A200DK/A300 | 使用黑白图像上色模型对输入的黑白视频进行推理。|
 | [YOLOV3_coco_detection<br>_multi_thread_VENC](./cplusplus/level2_simple_inference/n_performance/1_multi_process_thread/YOLOV3_coco_detection_multi_thread_VENC) |  c++ |20.0/20.1  | A200DK/A300 | 使用yolov3模型对输入视频进行分类推理。（多线程处理）|
-| [face_recognition<br>_camera](./cplusplus/level2_simple_inference/n_performance/1_multi_process_thread/face_recognition_camera) |  c++ |20.1  | A200DK| 通过摄像头对视频中的人脸信息进行预测，与已注册的人脸进行比对，预测出最可能的用户。|
 | [googlenet_imagenet<br>_multi_batch](./python/level2_simple_inference/1_classification/googlenet_imagenet_multi_batch) |  python |20.0/20.1  | A200DK/A300 | 使用googlenet模型对输入图片进行分类推理。（多batch）|
 | [googlenet_imagenet<br>_picture](./python/level2_simple_inference/1_classification/googlenet_imagenet_picture) | python |20.0/20.1  | A200DK/A300 | 使用googlenet模型对输入图片进行分类推理。|
 | [YOLOV3_coco_detection<br>_picture](./python/level2_simple_inference/2_object_detection/YOLOV3_coco_detection_picture) | python |20.0/20.1  | A200DK/A300 | 使用yolov3模型对输入图片进行预测推理，并将结果打印到输出图片上。|

@@ -1,102 +1,102 @@
-# 实现矩阵-矩阵乘运算<a name="ZH-CN_TOPIC_0302603657"></a>
+# Matrix-Matrix Multiplication<a name="EN-US_TOPIC_0302603657"></a>
 
-## 功能描述<a name="section14302794244"></a>
+## Overview<a name="section14302794244"></a>
 
-该样例主要实现矩阵-矩阵相乘的运算：C = αAB + βC，A、B、C都是16\*16的矩阵，矩阵乘的结果是一个16\*16的矩阵。
+This example implements matrix-matrix multiplication and outputs a 16 x 16 matrix: C = αAB + βC, where, A, B, and C are all 16 x 16 matrices.
 
-## 原理介绍<a name="section1934715933412"></a>
+## Principles<a name="section1934715933412"></a>
 
-在该样例中，涉及的关键功能点，如下所示：
+The following lists the key functions involved in this sample.
 
--   **初始化**
-    -   调用aclInit接口初始化AscendCL配置。
-    -   调用aclFinalize接口实现AscendCL去初始化。
+-   Initialization
+    -   **aclInit**: initializes AscendCL.
+    -   **aclFinalize**: deinitializes AscendCL.
 
--   **Device管理**
-    -   调用aclrtSetDevice接口指定用于运算的Device。
-    -   调用aclrtGetRunMode接口获取昇腾AI软件栈的运行模式，根据运行模式的不同，内部处理流程不同。
-    -   调用aclrtResetDevice接口复位当前运算的Device，回收Device上的资源。
+-   Device management
+    -   **aclrtSetDevice**: sets the compute device.
+    -   **aclrtGetRunMode**: obtains the run mode of the  Ascend AI Software Stack. The internal processing varies with the run mode.
+    -   **aclrtResetDevice**: resets the compute device and cleans up all resources associated with the device.
 
--   **Stream管理**
-    -   调用aclrtCreateStream接口创建Stream。
-    -   调用aclrtDestroyStream接口销毁Stream。
-    -   调用aclrtSynchronizeStream接口阻塞程序运行，直到指定stream中的所有任务都完成。
+-   Stream management
+    -   **aclrtCreateStream**: creates a stream.
+    -   **aclrtDestroyStream**: destroys a stream.
+    -   **aclrtSynchronizeStream**: waits for stream tasks to complete.
 
--   **内存管理**
-    -   调用aclrtMallocHost接口申请Host上内存。
-    -   调用aclrtFreeHost释放Host上的内存。
-    -   调用aclrtMalloc接口申请Device上的内存。
-    -   调用aclrtFree接口释放Device上的内存。
+-   Memory management
+    -   **aclrtMallocHost**: allocates host memory.
+    -   **aclrtFreeHost**: frees host memory.
+    -   **aclrtMalloc**: allocates device memory.
+    -   **aclrtFree**: frees device memory.
 
--   **数据传输**
-    -   调用aclrtMemcpy接口通过内存复制的方式实现数据传输。
+-   Data transfer
+    -   **aclrtMemcpy**: copies memory.
 
--   **单算子调用**
-    -   调用aclblasGemmEx接口实现矩阵-矩阵相乘的运算，由用户指定矩阵中元素的数据类型。在aclblasGemmEx接口内部封装了系统内置的矩阵乘算子GEMM。
-    -   使用ATC（Ascend Tensor Compiler）工具将内置的矩阵乘算子GEMM的算子描述信息（包括输入输出Tensor描述、算子属性等）编译成适配昇腾AI处理器的离线模型（\*.om文件），用于验证矩阵乘算子GEMM的运行结果。
+-   Single-operator execution
+    -   **aclblasGemmEx**: implements matrix-matrix multiplication. You can specify the data types of the elements in the matrices. A matrix-matrix multiplication operator GEMM has been encapsulated in the  **aclblasGEMMEx**  API.
+    -   Ascend Tensor Compiler \(ATC\): builds the GEMM operator description \(including the input and output tensor description and operator attributes\) into an offline model \(.om file\) that adapts to the Ascend AI Processor, to verify the GEMM execution result.
 
 
-## 目录结构<a name="section1338083213243"></a>
+## Directory Structure<a name="section1338083213243"></a>
 
-样例代码结构如下所示。
+The sample directory is organized as follows:
 
 ```
 ├── inc                                 
-│   ├── common.h                    //定义公共函数（例如：文件读取函数）的头文件
-│   ├── gemm_runner.h               //定义矩阵乘运算相关函数的头文件
+│   ├── common.h                    //Header file that declares common functions (such as file reading function)
+│   ├── gemm_runner.h               //Header file that declares the functions related to matrix multiplication
                  
 ├── run
 │   ├── out  
 │   │   ├──test_data
 │   │   │   ├── config                           
-│   │   │   │     ├── acl.json           //系统初始化的配置文件
-│   │   │   │     ├── gemm.json          //矩阵乘算子的算子描述信息
+│   │   │   │     ├── acl.json           //Configuration file for system initialization
+│   │   │   │     ├── gemm.json          //Description information file of the matrix multiplication operator
 │   │   │   ├── data                           
-│   │   │   │     ├── generate_data.py   //用于生成矩阵A、矩阵B的数据
+│   │   │   │     ├── generate_data.py   //Data used to generate matrix A and matrix B
 
 ├── src
-│   ├── CMakeLists.txt             //编译脚本
-│   ├── common.cpp                 //公共函数（例如：文件读取函数）的实现文件
-│   ├── gemm_main.cpp              //主函数的实现文件                         
-│   ├── gemm_runner.cpp            //执行矩阵乘运算相关函数的实现文件
+│   ├── CMakeLists.txt             //Build script
+│   ├── common.cpp                 //Implementation file of common functions (such as the file reading function)
+│   ├── gemm_main.cpp              //Implementation file of the main function
+│   ├── gemm_runner.cpp            //Implementation file for executing functions related to matrix multiplication
 ```
 
-## 环境要求<a name="section3833348101215"></a>
+## Environment Requirements<a name="section3833348101215"></a>
 
--   操作系统及架构：CentOS 7.6 x86\_64、CentOS aarch64、Ubuntu 18.04 x86\_64
--   版本：20.2
--   编译器：
-    -   Ascend310 EP/Ascend710形态编译器：g++
-    -   Atlas 200 DK：aarch64-linux-gnu-g++
+-   OS and architecture: CentOS 7.6 x86\_64, CentOS AArch64, or Ubuntu 18.04 x86\_64
+-   Version: 20.2
+-   Compiler:
+    -   Ascend 310 EP/Ascend 710: g++
+    -   Atlas 200 DK: aarch64-linux-gnu-g++
 
--   芯片：Ascend310、Ascend710
--   python及依赖的库：python3.7.5
--   已在环境上部署昇腾AI软件栈。
+-   SoC: Ascend 310 AI Processor or Ascend 710 AI Processor
+-   Python version and dependency library: Python 3.7.5
+-   Ascend AI Software Stack deployed
 
-## 配置环境变量<a name="section4721588588"></a>
+## Environment Variables<a name="section4721588588"></a>
 
--   **Ascend310 EP/Ascend710：**
-    1.  开发环境上，设置模型转换依赖的环境变量。
+-   **Ascend 310 EP/Ascend 710:**
+    1.  In the development environment, set the environment variables on which model conversion depends.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit所在的路径。
+        Replace  _**$\{install\_path\}**_  with the actual  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    2.  开发环境上，设置环境变量，编译脚本src/CMakeLists.txt通过环境变量所设置的头文件、库文件的路径来编译代码。
+    2.  Set the header file path and library file path environment variables for the  **src/CMakeLists.txt**  build script in the development environment.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_替换为开发套件包Ascend-cann-toolkit下对应架构的ACLlib的路径。
+        The following is an example. Replace  ****_$HOME/Ascend_**_**/ascend-toolkit/latest**_/_\{os\_arch\}_**  with the ACLlib path under the  Ascend-CANN-Toolkit  directory of the corresponding architecture.
 
-        -   当运行环境操作系统架构为x86时，执行以下命令：
+        -   x86 operating environment:
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux
             export NPU_HOST_LIB=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux/acllib/lib64/stub
             ```
 
-        -   当运行环境操作系统架构为Arm时，执行以下命令：
+        -   ARM operating environment:
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
@@ -104,97 +104,97 @@
             ```
 
 
-        使用“$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_/acllib/lib64/stub”目录下的\*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件（例如Driver）的任何\*.so库。编译通过后，在Host上运行应用时，通过配置环境变量，应用会链接到Host上“$HOME/Ascend/nnrt/latest/acllib/lib64”目录下的\*.so库，运行时会自动链接到依赖其它组件的\*.so库。
+        Use the .so library files in the  ****_$HOME/Ascend_**_**/ascend-toolkit/latest**_/_\{os\_arch\}_/acllib/lib64/stub**  directory to build the code logic using AscendCL APIs, without depending on any .so library files of other components \(such as Driver\). At run time on the host, the app links to the .so library files in the  ****_$HOME/Ascend_**_**/nnrt/latest**_/acllib/lib64**  directory on the host through the configured environment variable and automatically links to the .so library files of other components.
 
-    3.  运行环境上，设置环境变量，运行应用时需要根据环境变量找到对应的库文件。
+    3.  Set the library path environment variable in the operating environment for app execution.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/nnrt/latest替换为ACLlib的路径。
+        The following is an example. Replace  ****_$HOME/Ascend_**_**/nnrt/latest**_**  with the ACLlib path.
 
         ```
         export LD_LIBRARY_PATH=$HOME/Ascend/nnrt/latest/acllib/lib64
         ```
 
 
--   **Atlas 200 DK：**
+-   **Atlas 200 DK:**
 
-    仅需在开发环境上设置环境变量，运行环境上的环境变量在制卡时已配置，此处无需单独配置。
+    You only need to set environment variables in the development environment. Environment variables in the operating environment have been set in the phase of preparing a bootable SD card.
 
-    1.  开发环境上，设置模型转换依赖的环境变量。
+    1.  In the development environment, set the environment variables on which model conversion depends.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit所在的路径。
+        Replace  _**$\{install\_path\}**_  with the actual  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    2.  开发环境上，设置环境变量，编译脚本src/CMakeLists.txt通过环境变量所设置的头文件、库文件的路径来编译代码。
+    2.  Set the header file path and library file path environment variables for the  **src/CMakeLists.txt**  build script in the development environment.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/ascend-toolkit/latest/arm64-linux替换为开发套件包Ascend-cann-toolkit下Arm架构的ACLlib的路径。
+        The following is an example. Replace  ****_$HOME/Ascend_**_**/ascend-toolkit/latest**_/arm64-linux**  with the ACLlib path under the ARM  Ascend-CANN-Toolkit  directory.
 
         ```
         export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
         export NPU_HOST_LIB=$HOME/Ascend/ascend-toolkit/latest/arm64-linux/acllib/lib64/stub
         ```
 
-        使用“$HOME/Ascend/ascend-toolkit/latest/arm64-linux/acllib/lib64/stub”目录下的\*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件（例如Driver）的任何\*.so库。编译通过后，在板端环境上运行应用时，通过配置环境变量，应用会链接到板端环境上“$HOME/Ascend/acllib/lib64”目录下的\*.so库，运行时会自动链接到依赖其它组件的\*.so库。
+        The .so library files in the  **_$HOME/Ascend_**_**/ascend-toolkit/latest**_**/arm64-linux/acllib/lib64/stub**  directory are required to build code using AscendCL APIs, without depending on any .so library files of other components \(such as Driver\). At run time in the  board environment, the app links to the .so library files in the  **$HOME/Ascend/acllib/lib64**  directory in the open-form ACLlib installation path in the  board environment  through the configured environment variable and automatically links to the .so library files of other components.
 
 
 
-## 编译运行（Ascend310 EP/Ascend710）<a name="section105241721131111"></a>
+## Build and Run \(Ascend310 EP/Ascend 710\)<a name="section105241721131111"></a>
 
-1.  模型转换。
-    1.  以运行用户登录开发环境。
-    2.  设置环境变量。
+1.  Convert your model.
+    1.  Log in to the  development environment  as the running user.
+    2.  Set environment variables.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit所在的路径。
+        Replace  _**$\{install\_path\}**_  with the actual  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    3.  将矩阵乘算子的算子描述信息（\*.json文件）编译成适配昇腾AI处理器的离线模型（\*.om文件），运行矩阵乘算子时使用。
+    3.  Build the operator description information \(.json file\) of the matrix-matrix multiplication operator into an offline model \(.om file\) that adapts to the Ascend AI Processor.
 
-        切换到acl\_execute\_gemm目录，执行如下命令：
+        Run the following command in the  **acl\_execute\_gemm**  directory:
 
         ```
         atc --singleop=run/out/test_data/config/gemm.json --soc_version=${soc_version} --output=run/out/op_models
         ```
 
-        -   --singleop：单算子定义文件（\*.json文件）。
-        -   --soc\_version：Ascend310芯片，此处配置为Ascend310；Ascend710芯片，此处配置为Ascend710。
-        -   --output：生成的om文件必须放在“run/out/op\_models“目录下。
+        -   **--singleop**: directory of the single-operator definition file \(.json\)
+        -   **--soc\_version**: SoC version, either  **Ascend310**  or  **Ascend710**.
+        -   **--output**: directory for storing the generated .om file, that is, the  **run/out/op\_models**  directory.
 
 
-2.  编译代码。
-    1.  以运行用户登录开发环境。
-    2.  切换到“样例目录/run/out/test\_data/data“目录下，执行generate\_data.py脚本，在“run/out/test\_data/data“目录下生成矩阵A的数据文件matrix\_a.bin、矩阵B的数据文件matrix\_b.bin、矩阵C的数据文件matrix\_c.bin。
+2.  Build the code.
+    1.  Log in to the  development environment  as the running user.
+    2.  Go to the  **/run/out/test\_data/data**  directory under the sample directory and run the  **generate\_data.py**  script. The data files  **matrix\_a.bin**  of matrix A,  **matrix\_b.bin**  of matrix B, and  **matrix\_c.bin**  of matrix C are generated to the  **run/out/test\_data/data**  directory.
 
         ```
         python3.7.5 generate_data.py
         ```
 
-        “run/out/test\_data/data“目录下生成的output.bin文件，其中的数据是generate\_data.py脚本中直接通过公式计算出来的矩阵乘结果，不作为该样例的输入数据。
+        Data in the  **output.bin**  file generated in the  **run/out/test\_data/data**  directory is the matrix-matrix multiplication result calculated using the formula in the  **generate\_data.py**  script and is not used as the input data of this sample.
 
-    3.  切换到样例目录下，创建目录用于存放编译文件，例如，本文中，创建的目录为“build/intermediates/host“。
+    3.  Go to the sample directory and create a directory for storing build outputs. For example, the directory created in this sample is  **build/intermediates/device**.
 
         ```
         mkdir -p build/intermediates/host
         ```
 
-    4.  切换到“build/intermediates/host“目录，执行**cmake**生成编译文件。
+    4.  Go to the  **build/intermediates/host**  directory and run the  **cmake**  command.
 
-        “../../../src“表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
+        Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
 
-        -   当开发环境与运行环境操作系统架构相同时，执行如下命令编译。
+        -   If the development environment and operating environment have the same OS architecture, run the following commands to perform compilation.
 
             ```
             cd build/intermediates/host
             cmake ../../../src -DCMAKE_CXX_COMPILER=g++ -DCMAKE_SKIP_RPATH=TRUE
             ```
 
-        -   当开发环境与运行环境操作系统架构不同时，执行以下命令进行交叉编译。
+        -   If development environment and operating environment have different OS architectures, run the following commands to perform cross compilation.
 
             ```
             cd build/intermediates/host
@@ -202,106 +202,106 @@
             ```
 
 
-    5.  执行**make**命令，生成的可执行文件execute\_gemm\_op在“样例目录/run/out“目录下。
+    5.  Run the  **make **command. The  **execute\_gemm\_op**  executable file is generated in  **/out**  under the sample directory.
 
         ```
         make
         ```
 
 
-3.  运行应用。
-    1.  以运行用户将开发环境的样例目录及目录下的文件上传到运行环境（Host），例如“$HOME/acl\_execute\_gemm”。
-    2.  以运行用户登录运行环境（Host）。
-    3.  切换到可执行文件execute\_gemm\_op所在的目录，例如“$HOME/acl\_execute\_gemm/out”，给该目录下的execute\_gemm\_op文件加执行权限。
+3.  Run the app.
+    1.  As the running user, upload the sample folder in the  development environment  to the  operating environment  \(host\), for example,  **$HOME/acl\_execute\_gemm**.
+    2.  Log in to the  operating environment  \(host\) as the running user.
+    3.  Go to the directory where the executable file  **execute\_gemm\_op**  is located \(for example,  **$HOME/acl\_execute\_gemm/out**\) and grant execute permission on the  **execute\_gemm\_op**  file in the directory.
 
         ```
         chmod +x execute_gemm_op
         ```
 
-    4.  切换到可执行文件execute\_gemm\_op所在的目录，例如“$HOME/acl\_execute\_gemm/run/out”，运行可执行文件。
+    4.  Go to the directory where the executable file  **execute\_gemm\_op**  is located \(for example,  **$HOME/acl\_execute\_gemm/out**\) and run the executable file.
 
         ```
         ./execute_gemm_op
         ```
 
-        执行成功后，会直接在终端窗口显示矩阵A的数据、矩阵B的数据以及矩阵乘的结果，同时在“result\_files“目录下，生成存放矩阵乘结果的matrix\_c.bin文件。
+        After the command is executed successfully, the data of matrix A and matrix B, and the matrix-matrix multiplication result are displayed in the terminal window. In addition, a  **matrix\_c.bin**  file that stores the matrix-matrix multiplication result is generated in the  **result\_files**  directory.
 
 
 
-## 编译运行（Atlas 200 DK）<a name="section7393133582419"></a>
+## Build and Run \(Atlas 200 DK\)<a name="section7393133582419"></a>
 
-1.  模型转换。
-    1.  以运行用户登录开发环境。
-    2.  设置环境变量。
+1.  Convert your model.
+    1.  Log in to the  development environment  as the running user.
+    2.  Set environment variables.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit的安装路径。
+        Replace  _**$\{install\_path\}**_  with the  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    3.  将矩阵乘算子的算子描述信息（\*.json文件）编译成适配昇腾AI处理器的离线模型（\*.om文件），运行矩阵乘算子时使用。
+    3.  Build the operator description information \(.json file\) of the matrix-matrix multiplication operator into an offline model \(.om file\) that adapts to the Ascend AI Processor.
 
-        切换到acl\_execute\_gemm目录，执行如下命令：
+        Run the following command in the  **acl\_execute\_gemm**  directory:
 
         ```
         atc --singleop=run/out/test_data/config/gemm.json --soc_version=${soc_version} --output=run/out/op_models
         ```
 
-        -   --singleop：单算子定义文件（\*.json文件）。
-        -   --soc\_version：Ascend310芯片，此处配置为Ascend310；Ascend710芯片，此处配置为Ascend710。
-        -   --output：生成的om文件必须放在“run/out/op\_models“目录下。
+        -   **--singleop**: directory of the single-operator definition file \(.json\)
+        -   **--soc\_version**: SoC version, either  **Ascend310**  or  **Ascend710**.
+        -   **--output**: directory for storing the generated .om file, that is, the  **run/out/op\_models**  directory.
 
 
-2.  编译代码。
-    1.  以运行用户登录开发环境。
-    2.  切换到“样例目录/run/out/test\_data/data“目录下，执行generate\_data.py脚本，在“run/out/test\_data/data“目录下生成矩阵A的数据文件matrix\_a.bin、矩阵B的数据文件matrix\_b.bin、矩阵C的数据文件matrix\_c.bin。
+2.  Build the code.
+    1.  Log in to the development environment as the running user.
+    2.  Go to the  **/run/out/test\_data/data**  directory under the sample directory and run the  **generate\_data.py**  script. The data files  **matrix\_a.bin**  of matrix A,  **matrix\_b.bin**  of matrix B, and  **matrix\_c.bin**  of matrix C are generated to the  **run/out/test\_data/data**  directory.
 
         ```
         python3.7.5 generate_data.py
         ```
 
-        “run/out/test\_data/data“目录下生成的output.bin文件，其中的数据是generate\_data.py脚本中直接通过公式计算出来的矩阵乘结果，不作为该样例的输入数据。
+        Data in the  **output.bin**  file generated in the  **run/out/test\_data/data**  directory is the matrix-matrix multiplication result calculated using the formula in the  **generate\_data.py**  script and is not used as the input data of this sample.
 
-    3.  切换到样例目录，创建目录用于存放编译文件，例如，本文中，创建的目录为“build/intermediates/minirc“。
+    3.  Go to the sample directory and create a directory for storing build outputs. For example, the directory created in this sample is  **build/intermediates/minirc**.
 
         ```
         mkdir -p build/intermediates/minirc
         ```
 
-    4.  切换到“build/intermediates/minirc“目录，执行**cmake**生成编译文件。
+    4.  Go to the  **build/intermediates/minirc**  directory and run the  **cmake**  command.
 
-        “../../../src“表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
+        Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
 
         ```
         cd build/intermediates/minirc
         cmake ../../../src -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SKIP_RPATH=TRUE
         ```
 
-    5.  执行**make**命令，生成的可执行文件execute\_gemm\_op在“样例目录/run/out“目录下。
+    5.  Run the  **make **command. The  **execute\_gemm\_op**  executable file is generated in  **/out**  under the sample directory.
 
         ```
         make
         ```
 
 
-3.  运行应用。
-    1.  以运行用户将开发环境的样例目录及目录下的文件上传到板端环境，例如“$HOME/acl\_execute\_gemm”。
-    2.  以运行用户登录板端环境。
-    3.  切换到可执行文件execute\_gemm\_op所在的目录，例如“$HOME/acl\_execute\_gemm/out”，给该目录下的execute\_gemm\_op文件加执行权限。
+3.  Run the app.
+    1.  As the running user, upload the sample folder in the  development environment  to the  board environment, for example,  **$HOME/acl\_execute\_gemm**.
+    2.  Log in to the  board environment  as the running user.
+    3.  Go to the directory where the executable file  **execute\_gemm\_op**  is located \(for example,  **$HOME/acl\_execute\_gemm/out**\) and grant execute permission on the  **execute\_gemm\_op**  file in the directory.
 
         ```
         chmod +x execute_gemm_op
         ```
 
-    4.  切换到可执行文件execute\_gemm\_op所在的目录，例如“$HOME/acl\_execute\_gemm/run/out”，运行可执行文件。
+    4.  Go to the directory where the executable file  **execute\_gemm\_op**  is located \(for example,  **$HOME/acl\_execute\_gemm/out**\) and run the executable file.
 
         ```
         ./execute_gemm_op
         ```
 
-        执行成功后，会直接在终端窗口显示矩阵A的数据、矩阵B的数据以及矩阵乘的结果，同时在“result\_files“目录下，生成存放矩阵乘结果的matrix\_c.bin文件。
+        After the command is executed successfully, the data of matrix A and matrix B, and the matrix-matrix multiplication result are displayed in the terminal window. In addition, a  **matrix\_c.bin**  file that stores the matrix-matrix multiplication result is generated in the  **result\_files**  directory.
 
 
 

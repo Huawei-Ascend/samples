@@ -1,116 +1,116 @@
-# 基于Caffe YOLOv3网络实现目标检测（动态Batch/动态分辨率）<a name="ZH-CN_TOPIC_0302603644"></a>
+# Object Detection with Caffe YOLOv3 \(Dynamic Batch/Image Size\)<a name="EN-US_TOPIC_0302603644"></a>
 
-## 功能描述<a name="section340311417417"></a>
+## Overview<a name="section340311417417"></a>
 
-该样例主要是基于Caffe YOLOv3网络、在动态Batch或动态多分辨率场景下实现目标检测的功能。
+This sample implements object detection based on the Caffe YOLOv3 network in the dynamic batch/image size scenario.
 
-将Caffe  YOLOv3网络的模型文件转换为适配昇腾AI处理器的离线模型（\*.om文件），转换命令中需要设置不同档位的Batch数（样例中batch档位分为1，2，4，8）或不同档位的分辨率（样例中分辨率档位分为416, 416；832，832；1248，1248），在应用中加载该om文件，通过传参设置选择不同档位的Batch数或者分辨率进行推理，并将推理结果保存到文件中。
+The Caffe YOLOv3 network is converted into an .om offline model that adapts to the Ascend AI Processor. In the conversion command, you need to set the batch size choices \(for example,  **1**,  **2**,  **4**, and  **8**\) or set the image size choices \(for example,  **416**,  **416**,  **832**,  **832**,  **1248**, and  **1248**\). In your app, load the .om file, select the batch/image size for inference by passing the corresponding argument, and output the inference result to a file.
 
-## 原理介绍<a name="section3558105154116"></a>
+## Principles<a name="section3558105154116"></a>
 
-在该Sample中，涉及的关键功能点，如下所示：
+This sample involves the following key functions:
 
--   **初始化**
-    -   调用aclInit接口初始化AscendCL配置。
-    -   调用aclFinalize接口实现AscendCL去初始化。
+-   Initialization
+    -   **aclInit**: initializes AscendCL.
+    -   **aclFinalize**: deinitializes AscendCL.
 
--   **Device管理**
-    -   调用aclrtSetDevice接口指定用于运算的Device。
-    -   调用aclrtGetRunMode接口获取昇腾AI软件栈的运行模式，根据运行模式的不同，内部处理流程不同。
-    -   调用aclrtResetDevice接口复位当前运算的Device，回收Device上的资源。
+-   Device management
+    -   **aclrtSetDevice**: sets the compute device.
+    -   **aclrtGetRunMode**: obtains the run mode of the  Ascend AI Software Stack. The internal processing varies with the run mode.
+    -   **aclrtResetDevice**: resets the compute device and cleans up all resources associated with the device.
 
--   **Context管理**
-    -   调用aclrtCreateContext接口创建Context。
-    -   调用aclrtDestroyContext接口销毁Context。
+-   **Context management**
+    -   **aclrtCreateContext**: creates a context.
+    -   **aclrtDestroyContext**: destroys a context.
 
--   **Stream管理**
-    -   调用aclrtCreateStream接口创建Stream。
-    -   调用aclrtDestroyStream接口销毁Stream。
+-   Stream management
+    -   **aclrtCreateStream**: creates a stream.
+    -   **aclrtDestroyStream**: destroys a stream.
 
--   **内存管理**
-    -   调用aclrtMalloc接口申请Device上的内存。
-    -   调用aclrtFree接口释放Device上的内存。
+-   Memory management
+    -   **aclrtMalloc**: allocates device memory.
+    -   **aclrtFree**: frees device memory.
 
--   **数据传输**
+-   Data transfer
 
-    调用aclrtMemcpy接口通过内存复制的方式实现数据传输。
+    **aclrtMemcpy**: copies memory.
 
--   **模型推理**
-    -   调用aclmdlLoadFromFileWithMem接口从\*.om文件加载模型。
-    -   调用aclmdlSetDynamicBatchSize设置Batch数或者调用aclmdlSetDynamicHWSize设置分辨率。
-    -   调用aclmdlExecute接口执行模型推理，同步接口。
-    -   调用aclmdlUnload接口卸载模型。
+-   Model inference
+    -   **aclmdlLoadFromFileWithMem**: loads a model from an .om file.
+    -   **aclmdlSetDynamicBatchSize**  or  **aclmdlSetDynamicHWSize**: sets the batch or image size choices.
+    -   **aclmdlExecute**: performs synchronous model inference.
+    -   **aclmdlUnload**: unloads a model.
 
--   **数据后处理**
+-   Data postprocessing
 
-    样例中提供了自定义接口DumpModelOutputResult，用于将模型推理的结果写入文件（运行可执行文件后，推理结果文件在运行环境上的应用可执行文件的同级目录下）：
+    **DumpModelOutputResult**: outputs the model inference result to a file. \(After the executable file is executed, the inference result file is stored in the same directory in the  operating environment  as the executable file of the app.\)
 
     ```
     processModel.DumpModelOutputResult();
     ```
 
 
-## 目录结构<a name="section14723181815424"></a>
+## Directory Structure<a name="section14723181815424"></a>
 
-样例代码结构如下所示。
+The sample directory is organized as follows:
 
 ```
 ├── data
-│   ├── tools_generate_data.py            //测试数据生成脚本
+│   ├── tools_generate_data.py            //Script for generating test data
 
 ├── inc
-│   ├── model_process.h               //声明模型处理相关函数的头文件
-│   ├── sample_process.h              //声明资源初始化/销毁相关函数的头文件                   
-│   ├── utils.h                       //声明公共函数（例如：文件读取函数）的头文件
+│   ├── model_process.h              //Header file that declares functions related to model processing
+│   ├── sample_process.h              //Header file that declares functions related to resource initialization and destruction
+│   ├── utils.h                       //Header file that declares common functions (such as file reading function)
 
 ├── src
-│   ├── acl.json         //系统初始化的配置文件
-│   ├── CMakeLists.txt         //编译脚本
-│   ├── main.cpp               //主函数，图片分类功能的实现文件
-│   ├── model_process.cpp      //模型处理相关函数的实现文件
-│   ├── sample_process.cpp     //资源初始化/销毁相关函数的实现文件                                          
-│   ├── utils.cpp              //公共函数（例如：文件读取函数）的实现文件
+│   ├── acl.json         //Configuration file for system initialization
+│   ├── CMakeLists.txt         //Build script
+│   ├── main.cpp               //Main function, which is the implementation file of image classification
+│   ├── model_process.cpp      //Implementation file of model processing functions
+│   ├── sample_process.cpp     //Implementation file of functions related to resource initialization and destruction
+│   ├── utils.cpp              //Implementation file of common functions (such as the file reading function)
 
-├── .project     //工程信息文件，包含工程类型、工程描述、运行目标设备类型等
-├── CMakeLists.txt    //编译脚本，调用src目录下的CMakeLists文件
+├── .project     //Project information file, including the project type, project description, and type of the target device
+├── CMakeLists.txt    //Build script that calls the CMakeLists file in the src directory
 ```
 
-## 环境要求<a name="section3833348101215"></a>
+## Environment Requirements<a name="section3833348101215"></a>
 
--   操作系统及架构：CentOS 7.6 x86\_64、CentOS aarch64、Ubuntu 18.04 x86\_64
--   版本：20.2
--   编译器：
-    -   Ascend310 EP/Ascend710形态编译器：g++
-    -   Atlas 200 DK编译器：aarch64-linux-gnu-g++
+-   OS and architecture: CentOS 7.6 x86\_64, CentOS AArch64, or Ubuntu 18.04 x86\_64
+-   Version: 20.2
+-   Compiler:
+    -   Ascend 310 EP/Ascend 710: g++
+    -   Atlas 200 DK: aarch64-linux-gnu-g++
 
--   芯片：Ascend310、Ascend710
--   python及依赖的库：python3.7.5
--   已完成昇腾AI软件栈在开发环境、运行环境上的部署。
+-   SoC: Ascend 310 AI Processor or Ascend 710 AI Processor
+-   Python version and dependency library: Python 3.7.5
+-   Ascend AI Software Stack deployed
 
-## 配置环境变量<a name="section9202202861519"></a>
+## Environment Variables<a name="section9202202861519"></a>
 
--   **Ascend310 EP/Ascend710：**
-    1.  开发环境上，设置模型转换依赖的环境变量。
+-   **Ascend 310 EP/Ascend 710:**
+    1.  In the development environment, set the environment variables on which model conversion depends.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit所在的路径。
+        Replace  _**$\{install\_path\}**_  with the actual  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    2.  开发环境上，设置环境变量，编译脚本src/CMakeLists.txt通过环境变量所设置的头文件、库文件的路径来编译代码。
+    2.  Set the header file path and library file path environment variables for the  **src/CMakeLists.txt**  build script in the development environment.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_替换为开发套件包Ascend-cann-toolkit下对应架构的ACLlib的路径。
+        The following is an example. Replace  ****_$HOME/Ascend_**_**/ascend-toolkit/latest**_/_\{os\_arch\}_**  with the ACLlib path under the  Ascend-CANN-Toolkit  directory of the corresponding architecture.
 
-        -   当运行环境操作系统架构为x86时，执行以下命令：
+        -   x86 operating environment:
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux
             export NPU_HOST_LIB=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux/acllib/lib64/stub
             ```
 
-        -   当运行环境操作系统架构为Arm时，执行以下命令：
+        -   ARM operating environment:
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
@@ -118,80 +118,79 @@
             ```
 
 
-        使用“$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_/acllib/lib64/stub”目录下的\*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件（例如Driver）的任何\*.so库。编译通过后，在Host上运行应用时，通过配置环境变量，应用会链接到Host上“$HOME/Ascend/nnrt/latest/acllib/lib64”目录下的\*.so库，运行时会自动链接到依赖其它组件的\*.so库。
+        Use the .so library files in the  ****_$HOME/Ascend_**_**/ascend-toolkit/latest**_/_\{os\_arch\}_/acllib/lib64/stub**  directory to build the code logic using AscendCL APIs, without depending on any .so library files of other components \(such as Driver\). At run time on the host, the app links to the .so library files in the  ****_$HOME/Ascend_**_**/nnrt/latest**_/acllib/lib64**  directory on the host through the configured environment variable and automatically links to the .so library files of other components.
 
-    3.  运行环境上，设置环境变量，运行应用时需要根据环境变量找到对应的库文件。
+    3.  Set the library path environment variable in the operating environment for app execution.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/nnrt/latest替换为ACLlib的路径。
+        The following is an example. Replace  ****_$HOME/Ascend_**_**/nnrt/latest**_**  with the ACLlib path.
 
         ```
         export LD_LIBRARY_PATH=$HOME/Ascend/nnrt/latest/acllib/lib64
         ```
 
 
--   **Atlas 200 DK：**
+-   **Atlas 200 DK:**
 
-    仅需在开发环境上设置环境变量，运行环境上的环境变量在制卡时已配置，此处无需单独配置。
+    You only need to set environment variables in the development environment. Environment variables in the operating environment have been set in the phase of preparing a bootable SD card.
 
-    1.  开发环境上，设置模型转换依赖的环境变量。
+    1.  In the development environment, set the environment variables on which model conversion depends.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit所在的路径。
+        Replace  _**$\{install\_path\}**_  with the actual  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    2.  开发环境上，设置环境变量，编译脚本src/CMakeLists.txt通过环境变量所设置的头文件、库文件的路径来编译代码。
+    2.  Set the header file path and library file path environment variables for the  **src/CMakeLists.txt**  build script in the development environment.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/ascend-toolkit/latest/arm64-linux替换为开发套件包Ascend-cann-toolkit下Arm架构的ACLlib的路径。
+        The following is an example. Replace  ****_$HOME/Ascend_**_**/ascend-toolkit/latest**_/arm64-linux**  with the ACLlib path under the ARM  Ascend-CANN-Toolkit  directory.
 
         ```
         export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
         export NPU_HOST_LIB=$HOME/Ascend/ascend-toolkit/latest/arm64-linux/acllib/lib64/stub
         ```
 
-        使用“$HOME/Ascend/ascend-toolkit/latest/arm64-linux/acllib/lib64/stub”目录下的\*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件（例如Driver）的任何\*.so库。编译通过后，在板端环境上运行应用时，通过配置环境变量，应用会链接到板端环境上“$HOME/Ascend/acllib/lib64”目录下的\*.so库，运行时会自动链接到依赖其它组件的\*.so库。
+        The .so library files in the  **_$HOME/Ascend_**_**/ascend-toolkit/latest**_**/arm64-linux/acllib/lib64/stub**  directory are required to build code using AscendCL APIs, without depending on any .so library files of other components \(such as Driver\). At run time in the  board environment, the app links to the .so library files in the  **$HOME/Ascend/acllib/lib64**  directory in the open-form ACLlib installation path in the  board environment  through the configured environment variable and automatically links to the .so library files of other components.
 
 
 
-## 编译运行（Ascend310 EP/Ascend710）<a name="section17151737173112"></a>
+## Build and Run \(Ascend310 EP/Ascend 710\)<a name="section17151737173112"></a>
 
-1.  模型转换。
-    1.  以运行用户登录开发环境。
-    2.  参考《ATC工具使用指南》中的“使用入门”，执行“准备动作“，包括获取工具、设置环境变量。
-    3.  准备数据。
+1.  Convert your model.
+    1.  Log in to the  development environment  as the running user.
+    2.  Complete  **Preparations**, including obtaining the tool and setting environment variables, as described in "Getting Started with ATC" in  _ATC Tool Instructions_.
+    3.  Prepare data.
 
-        您可以从以下链接中获取yolov3网络的模型文件（*.prototxt）、预训练模型文件（*.caffemodel），并以运行用户将获取的文件上传至开发环境的“样例目录/caffe_model“目录下。如果目录不存在，需要自行创建。
+        Download the .prototxt model file and .caffemodel pre-trained model file of the YOLOv3 network and upload the files to  **/caffe\_model**  under the sample directory in the  development environment  as the running user. If the directory does not exist, create it.
 
-        -   https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/yolov3
-        -   https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/yolov3     
-  
-            获取*.prototxt文件，再查看README*.md，查找获取*.caffemodel文件的链接
+        [https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/object\_detect/yolov3](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/yolov3)
 
-    4.  切换到样例目录，将yolov3网络转换为适配昇腾AI处理器的离线模型（\*.om文件）。
+        Find the download link in the  **README\_en.md**  file.
 
-        如果模型推理的输入数据是动态Batch的，执行如下命令转换模型：
+    4.  Go to the sample directory and convert the YOLOv3 network into an .om offline model that adapts to the Ascend AI Processor.
+
+        If the input for model inference allows a dynamic batch size, run the following command to convert the model:
 
         ```
         atc --model=caffe_model/yolov3.prototxt --weight=caffe_model/yolov3.caffemodel --framework=0 --input_shape="data:-1,3,416,416" --input_format=NCHW --dynamic_batch_size="1,2,4,8" --soc_version=${soc_version} --output=model/yolov3_dynamic_batch 
         ```
 
-        如果模型推理的输入数据是动态分辨率的，执行如下命令转换模型：
+        If the input for model inference allows a dynamic image size, run the following command to convert the model:
 
         ```
         atc --model=caffe_model/yolov3.prototxt --weight=caffe_model/yolov3.caffemodel --framework=0 --input_shape="data:1,3,-1,-1" --input_format=NCHW --dynamic_image_size="416,416;832,832;1248,1248" --soc_version=${soc_version} --output=model/yolov3_dynamic_hw 
         ```
 
-        -   --model：原始模型文件路径。
-        -   --weight：权重文件路径。
-        -   --framework：原始框架类型。0：表示Caffe；1：表示MindSpore；3：表示TensorFlow；5：表示ONNX。
-        -   --input\_shape：模型输入数据的Shape。
-        -   --input\_format：模型输入数据的Format。
-        -   --dynamic\_batch\_size：设置动态Batch档位参数，适用于执行推理时，每次处理图片数量不固定的场景。
-        -   --dynamic\_image\_size：设置输入图片的动态分辨率参数，适用于执行推理时，每次处理图片宽和高不固定的场景。
-        -   --soc\_version：Ascend310芯片，此处配置为Ascend310；Ascend710芯片，此处配置为Ascend710。
-        -   --output：生成的yolov3\_dynamic\_batch.om或者yolov3\_dynamic\_hw.om文件存放在“样例目录/model“目录下。建议使用命令中的默认设置，否则在编译代码前，您还需要修改sample\_process.cpp中的omModelPath参数值。
+        -   **--model**: directory of the source model file.
+        -   **--weight**: directory of the weight file.
+        -   **--framework**: source framework type, selected from  **0**  \(Caffe\),  **1**  \(MindSpore\),  **3**  \(TensorFlow\), and  **5**  \(ONNX\).
+        -   **--input\_shape**: input shape.
+        -   **--input\_format**: input format.
+        -   **--dynamic\_batch\_size**: dynamic batch size choices. Applies to the scenario where image count per inference batch is unfixed.
+        -   **--dynamic\_image\_size**: dynamic image size choices. Applies to the scenario where image size per inference batch is unfixed.
+        -   **--soc\_version**: SoC version, either  **Ascend310**  or  **Ascend710**.
+        -   **--output**: directory for storing the generated  **yolov3\_dynamic\_batch.om**  or  **yolov3\_dynamic\_hw.om**  file, that is,  **/model**  under the sample directory. The default path in the command example is recommended. To specify another path, you need to change the value of  **omModelPath**  in  **sample\_process.cpp**  before building the code.
 
             ```
             string omModelPath = "../model/yolov3_dynamic_batch.om";
@@ -201,41 +200,41 @@
 
 
 
-2.  编译代码。
-    1.  以运行用户登录开发环境。
-    2.  切换到“样例目录/data“目录下，执行tools\_generate\_data.py脚本，可以在“样例目录/data“目录下生成各种不同Batch或者不同分辨率场景下的的测试bin文件。
+2.  Build the code.
+    1.  Log in to the  development environment  as the running user.
+    2.  Run the  **tools\_generate\_data.py **script in  **/data**  under the sample directory. The test bin files corresponding to different batch sizes or image sizes are generated in  **/data**  under the sample directory.
 
-        示例命令如下，可以生成Batch数为1，通道数为3，宽、高都为416像素，数据类型是float32的bin文件input\_float32\_1x3x416x416.bin.in。
+        For example, run the following command to generate the  **input\_float32\_1x3x416x416.bin.in**  file for: batch size = 1, channel number = 3, image size = 416 x 416 pixels, and data type = float32.
 
         ```
         python3.7 tools_generate_data.py input -s [1,3,416,416] -r [2,3] -d float32
         ```
 
-        tools\_generate\_data.py脚本参数说明如下：
+        The configuration options in  **tools\_generate\_data.py**  are described as follows:
 
-        -   input：bin文件前缀名。
-        -   s：输入数据的Shape信息。
-        -   r：每个通道像素取值范围，该取值范围中的最小值、最大值必须在\[0,255\]范围。执行tools\_generate\_data.py脚本，会在-r参数指定的取值范围内随机生成每个通道的像素值。
-        -   d：数据格式，支持int8、uint8、float16、float32、int32、uint32。
+        -   **input**: prefix of the .bin file name.
+        -   **s**: shape of the input data.
+        -   **r**: pixel value range of each channel. The value range is \[0, 255\]. After the  **tools\_generate\_data.py**  script is executed, the pixel value of each channel is randomly generated within the value range specified by the  **-r**  argument.
+        -   **d**: data format, selected from  **int8**,  **uint8**,  **float16**,  **float32**,  **int32**, and  **uint32**.
 
-    3.  切换到样例目录，创建目录用于存放编译文件，例如，本文中，创建的目录为“build/intermediates/host“。
+    3.  Go to the sample directory and create a directory for storing build outputs. For example, the directory created in this sample is  **build/intermediates/host**.
 
         ```
         mkdir -p build/intermediates/host
         ```
 
-    4.  切换到“build/intermediates/host“目录，执行**cmake**生成编译文件。
+    4.  Go to the  **build/intermediates/host**  directory and run the  **cmake**  command.
 
-        “../../../src“表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
+        Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
 
-        -   当开发环境与运行环境操作系统架构相同时，执行如下命令编译。
+        -   If the development environment and operating environment have the same OS architecture, run the following commands to perform compilation.
 
             ```
             cd build/intermediates/host
             cmake ../../../src -DCMAKE_CXX_COMPILER=g++ -DCMAKE_SKIP_RPATH=TRUE
             ```
 
-        -   当开发环境与运行环境操作系统架构不同时，执行以下命令进行交叉编译。
+        -   If development environment and operating environment have different OS architectures, run the following commands to perform cross compilation.
 
             ```
             cd build/intermediates/host
@@ -243,30 +242,30 @@
             ```
 
 
-    5.  执行**make**命令，生成的可执行文件main在“样例目录/out“目录下。
+    5.  Run the  **make **command. The  **main**  executable file is generated in  **/out**  under the sample directory.
 
         ```
         make
         ```
 
 
-3.  运行应用。
-    1.  以运行用户将开发环境的样例目录及目录下的文件上传到运行环境（Host），例如“$HOME/acl\_yolov3\_dynamic\_batch”。
-    2.  以运行用户登录运行环境（Host）。
-    3.  切换到可执行文件main所在的目录，例如“$HOME/acl\_yolov3\_dynamic\_batch/out”，给该目录下的main文件加执行权限。
+3.  Run the app.
+    1.  As the running user, upload the sample folder in the  development environment  to the  operating environment  \(host\), for example,  **$HOME/acl\_yolov3\_dynamic\_batch**.
+    2.  Log in to the  operating environment  \(host\) as the running user.
+    3.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_yolov3\_dynamic\_batch/out**\) and grant execute permission on the  **main**  file in the directory.
 
         ```
         chmod +x main
         ```
 
-    4.  切换到可执行文件main所在的目录，例如“$HOME/acl\_yolov3\_dynamic\_batch/out”，运行可执行文件。
-        -   动态Batch场景下，执行如下命令，可执行程序的入参需替换为实际的Batch数，必须为模型转换时通过--dynamic\_batch\_size参数指定的其中一档Batch数：
+    4.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_yolov3\_dynamic\_batch/out**\) and run the executable file.
+        -   In the dynamic batch size scenario, run the following command. Replace the input argument with the actual batch size, which should be among the choices specified by the  **--dynamic\_batch\_size**  argument in the model conversion command.
 
             ```
             ./main 1
             ```
 
-            执行成功后，在屏幕上的关键提示信息示例如下：
+            The following messages indicate that the file is successfully executed.
 
             ```
             [INFO]  1: ./main [param], [param] is dynamic batch. It should be 1,2,4 or 8. For example: ./main 8;
@@ -283,16 +282,16 @@
             [INFO]  set dynamic batch size[1] success.
             [INFO]  model input num[2], output num[3].
             [INFO]  start to print input tensor desc:
-            [INFO]  index[0]: name[data], inputSize[16613376], fotmat[0], dataType[0]
+            [INFO]  index[0]: name[data], inputSize[16613376], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[-1][3][416][416]
-            [INFO]  index[1]: name[ascend_mbatch_shape_data], inputSize[8], fotmat[2], dataType[9]
+            [INFO]  index[1]: name[ascend_mbatch_shape_data], inputSize[8], format[2], dataType[9]
             [INFO]  dimcount:[1],dims:[1]
             [INFO]  start to print output tensor desc:
-            [INFO]  index[0]: name[layer82-conv:0:layer82-conv], outputSize[1379040], fotmat[0], dataType[0]
+            [INFO]  index[0]: name[layer82-conv:0:layer82-conv], outputSize[1379040], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[8][255][13][13]
-            [INFO]  index[1]: name[layer94-conv:0:layer94-conv], outputSize[5516160], fotmat[0], dataType[0]
+            [INFO]  index[1]: name[layer94-conv:0:layer94-conv], outputSize[5516160], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[8][255][26][26]
-            [INFO]  index[2]: name[layer106-conv:0:layer106-conv], outputSize[22064640], fotmat[0], dataType[0]
+            [INFO]  index[2]: name[layer106-conv:0:layer106-conv], outputSize[22064640], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[8][255][52][52]
             [INFO]  start to print model dynamic batch info:
             [INFO]  dynamic batch count:[4],dims:{[1][2][4][8]}
@@ -311,13 +310,13 @@
             ```
 
 
-        -   动态分辨率场景下，可执行程序的第一个、第二个入参需要分别替换为实际的高、宽，必须为模型转换时通过--dynamic\_image\_size参数指定的其中一档分辨率：
+        -   In the dynamic image size scenario, run the following command. Replace the input arguments with the actual image height and width, which should be among the choices specified by the  **--dynamic\_image\_size**  argument in the model conversion command.
 
             ```
             ./main 416 416
             ```
 
-            执行成功后，在屏幕上的关键提示信息示例如下：
+            The following messages indicate that the file is successfully executed.
 
             ```
             [INFO]  1: ./main [param], [param] is dynamic batch. It should be 1,2,4 or 8. For example: ./main 8;
@@ -336,16 +335,16 @@
             [INFO]  set dynamic hw[416, 416] success.
             [INFO]  model input num[2], output num[3].
             [INFO]  start to print input tensor desc:
-            [INFO]  index[0]: name[data], inputSize[18690048], fotmat[0], dataType[0]
+            [INFO]  index[0]: name[data], inputSize[18690048], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[1][3][-1][-1]
-            [INFO]  index[1]: name[ascend_mbatch_shape_data], inputSize[16], fotmat[2], dataType[9]
+            [INFO]  index[1]: name[ascend_mbatch_shape_data], inputSize[16], format[2], dataType[9]
             [INFO]  dimcount:[1],dims:[2]
             [INFO]  start to print output tensor desc:
-            [INFO]  index[0]: name[layer82-conv:0:layer82-conv], outputSize[1551420], fotmat[0], dataType[0]
+            [INFO]  index[0]: name[layer82-conv:0:layer82-conv], outputSize[1551420], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[1][255][39][39]
-            [INFO]  index[1]: name[layer94-conv:0:layer94-conv], outputSize[6205680], fotmat[0], dataType[0]
+            [INFO]  index[1]: name[layer94-conv:0:layer94-conv], outputSize[6205680], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[1][255][78][78]
-            [INFO]  index[2]: name[layer106-conv:0:layer106-conv], outputSize[24822720], fotmat[0], dataType[0]
+            [INFO]  index[2]: name[layer106-conv:0:layer106-conv], outputSize[24822720], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[1][255][156][156]
             [INFO]  start to print model dynamic hw info:
             [INFO]  dynamic hw count:[3],dims:{[416, 416][832, 832][1248, 1248]}
@@ -368,41 +367,42 @@
 
 
 
-## 编译运行（Atlas 200 DK）<a name="section518661623815"></a>
+## Build and Run \(Atlas 200 DK\)<a name="section518661623815"></a>
 
-1.  模型转换。
-    1.  以运行用户登录开发环境。
-    2.  参考《ATC工具使用指南》中的“使用入门”，执行“准备动作“，包括获取工具、设置环境变量。
-    3.  准备数据。
+1.  Convert your model.
+    1.  Log in to the  development environment  as the running user.
+    2.  Complete  **Preparations**, including obtaining the tool and setting environment variables, as described in "Getting Started with ATC" in  _ATC Tool Instructions_.
+    3.  Prepare data.
 
-        您可以从以下链接中获取yolov3网络的模型文件（\*.prototxt）、预训练模型文件（\*.caffemodel），并以运行用户将获取的文件上传至开发环境的“样例目录/caffe\_model“目录下。如果目录不存在，需要自行创建。
+        Download the .prototxt model file and .caffemodel pre-trained model file of the YOLOv3 network and upload the files to  **/caffe\_model**  under the sample directory in the  development environment  as the running user. If the directory does not exist, create it.
 
-        -   https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/object\_detect/yolov3
-        -   https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/object\_detect/yolov3，获取\*.prototxt文件，再查看README.\*.md，查找获取\*.caffemodel文件的链接
+        [https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/object\_detect/yolov3](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/object_detect/yolov3)
 
-    4.  切换到样例目录，将yolov3网络转换为适配昇腾AI处理器的离线模型（\*.om文件）。
+        Find the download link in the  **README\_en.md**  file.
 
-        如果模型推理的输入数据是动态Batch的，执行如下命令转换模型：
+    4.  Go to the sample directory and convert the YOLOv3 network into an .om offline model that adapts to the Ascend AI Processor.
+
+        If the input for model inference allows a dynamic batch size, run the following command to convert the model:
 
         ```
         atc --model=caffe_model/yolov3.prototxt --weight=caffe_model/yolov3.caffemodel --framework=0 --input_shape="data:-1,3,416,416" --input_format=NCHW --dynamic_batch_size="1,2,4,8" --soc_version=${soc_version} --output=model/yolov3_dynamic_batch 
         ```
 
-        如果模型推理的输入数据是动态分辨率的，执行如下命令转换模型：
+        If the input for model inference allows a dynamic image size, run the following command to convert the model:
 
         ```
         atc --model=caffe_model/yolov3.prototxt --weight=caffe_model/yolov3.caffemodel --framework=0 --input_shape="data:1,3,-1,-1" --input_format=NCHW --dynamic_image_size="416,416;832,832;1248,1248" --soc_version=${soc_version} --output=model/yolov3_dynamic_hw 
         ```
 
-        -   --model：原始模型文件路径。
-        -   --weight：权重文件路径。
-        -   --framework：原始框架类型。0：表示Caffe；1：表示MindSpore；3：表示TensorFlow；5：表示ONNX。
-        -   --input\_shape：模型输入数据的Shape。
-        -   --input\_format：模型输入数据的Format。
-        -   --dynamic\_batch\_size：设置动态Batch档位参数，适用于执行推理时，每次处理图片数量不固定的场景。
-        -   --dynamic\_image\_size：设置输入图片的动态分辨率参数，适用于执行推理时，每次处理图片宽和高不固定的场景。
-        -   --soc\_version：Ascend310芯片，此处配置为Ascend310；Ascend710芯片，此处配置为Ascend710。
-        -   --output：生成的yolov3\_dynamic\_batch.om或者yolov3\_dynamic\_hw.om文件存放在“样例目录/model“目录下。建议使用命令中的默认设置，否则在编译代码前，您还需要修改sample\_process.cpp中的omModelPath参数值。
+        -   **--model**: directory of the source model file.
+        -   **--weight**: directory of the weight file.
+        -   **--framework**: source framework type, selected from  **0**  \(Caffe\),  **1**  \(MindSpore\),  **3**  \(TensorFlow\), and  **5**  \(ONNX\).
+        -   **--input\_shape**: input shape.
+        -   **--input\_format**: input format.
+        -   **--dynamic\_batch\_size**: dynamic batch size choices. Applies to the scenario where image count per inference batch is unfixed.
+        -   **--dynamic\_image\_size**: dynamic image size choices. Applies to the scenario where image size per inference batch is unfixed.
+        -   **--soc\_version**: SoC version, either  **Ascend310**  or  **Ascend710**.
+        -   **--output**: directory for storing the generated  **yolov3\_dynamic\_batch.om**  or  **yolov3\_dynamic\_hw.om**  file, that is,  **/model**  under the sample directory. The default path in the command example is recommended. To specify another path, you need to change the value of  **omModelPath**  in  **sample\_process.cpp**  before building the code.
 
             ```
             string omModelPath = "../model/yolov3_dynamic_batch.om";
@@ -412,62 +412,62 @@
 
 
 
-2.  编译代码。
-    1.  以运行用户登录开发环境。
-    2.  切换到样例目录下，执行tools\_generate\_data.py脚本，可以在“样例目录/data“目录下生成各种不同Batch或者不同分辨率场景下的的测试bin文件。
+2.  Build the code.
+    1.  Log in to the  development environment  as the running user.
+    2.  Run the  **tools\_generate\_data.py **script in the sample directory. The test bin files corresponding to different batch sizes or image sizes are generated in  **/data**  under the sample directory.
 
-        示例命令如下，可以生成Batch数为1，通道数为3，宽、高都为416像素，数据类型是float32的bin文件input\_float32\_1x3x416x416.bin.in。
+        For example, run the following command to generate the  **input\_float32\_1x3x416x416.bin.in**  file for: batch size = 1, channel number = 3, image size = 416 x 416 pixels, and data type = float32.
 
         ```
         python3.7 tools_generate_data.py input -s [1,3,416,416] -r [2,3] -d float32
         ```
 
-        tools\_generate\_data.py脚本参数说明如下：
+        The configuration options in  **tools\_generate\_data.py**  are described as follows:
 
-        -   input：bin文件前缀名。
-        -   s：输入数据的Shape信息。
-        -   r：每个通道像素取值范围，该取值范围中的最小值、最大值必须在\[0,255\]范围。执行tools\_generate\_data.py脚本，会在-r参数指定的取值范围内随机生成每个通道的像素值。
-        -   d：数据格式，支持int8、uint8、float16、float32、int32、uint32。
+        -   **input**: prefix of the .bin file name.
+        -   **s**: shape of the input data.
+        -   **r**: pixel value range of each channel. The value range is \[0, 255\]. After the  **tools\_generate\_data.py**  script is executed, the pixel value of each channel is randomly generated within the value range specified by the  **-r**  argument.
+        -   **d**: data format, selected from  **int8**,  **uint8**,  **float16**,  **float32**,  **int32**, and  **uint32**.
 
-    3.  切换到样例目录，创建目录用于存放编译文件，例如，本文中，创建的目录为“build/intermediates/minirc“。
+    3.  Go to the sample directory and create a directory for storing build outputs. For example, the directory created in this sample is  **build/intermediates/minirc**.
 
         ```
         mkdir -p build/intermediates/minirc
         ```
 
-    4.  切换到“build/intermediates/minirc“目录，执行**cmake**生成编译文件。
+    4.  Go to the  **build/intermediates/minirc**  directory and run the  **cmake**  command.
 
-        “../../../src“表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
+        Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
 
         ```
         cd build/intermediates/minirc
         cmake ../../../src -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SKIP_RPATH=TRUE
         ```
 
-    5.  执行**make**命令，生成的可执行文件main在“样例目录/out“目录下。
+    5.  Run the  **make **command. The  **main**  executable file is generated in  **/out**  under the sample directory.
 
         ```
         make
         ```
 
 
-3.  运行应用。
-    1.  以运行用户将开发环境的样例目录及目录下的文件上传到板端环境，例如“$HOME/acl\_yolov3\_dynamic\_batch”。
-    2.  以运行用户登录板端环境。
-    3.  切换到可执行文件main所在的目录，例如“$HOME/acl\_yolov3\_dynamic\_batch/out”，给该目录下的main文件加执行权限。
+3.  Run the app.
+    1.  As the running user, upload the sample folder in the  development environment  to the  board environment, for example,  **$HOME/acl\_yolov3\_dynamic\_batch**.
+    2.  Log in to the  board environment  as the running user.
+    3.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_yolov3\_dynamic\_batch/out**\) and grant execute permission on the  **main**  file in the directory.
 
         ```
         chmod +x main
         ```
 
-    4.  切换到可执行文件main所在的目录，例如“$HOME/acl\_yolov3\_dynamic\_batch/out”，运行可执行文件。
-        -   动态Batch场景下，执行如下命令，可执行程序的入参需替换为实际的Batch数，必须为模型转换时通过--dynamic\_batch\_size参数指定的其中一档Batch数：
+    4.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_yolov3\_dynamic\_batch/out**\) and run the executable file.
+        -   In the dynamic batch size scenario, run the following command. Replace the input argument with the actual batch size, which should be among the choices specified by the  **--dynamic\_batch\_size**  argument in the model conversion command.
 
             ```
             ./main 1
             ```
 
-            执行成功后，在屏幕上的关键提示信息示例如下：
+            The following messages indicate that the file is successfully executed.
 
             ```
             [INFO]  1: ./main [param], [param] is dynamic batch. It should be 1,2,4 or 8. For example: ./main 8;
@@ -484,16 +484,16 @@
             [INFO]  set dynamic batch size[1] success.
             [INFO]  model input num[2], output num[3].
             [INFO]  start to print input tensor desc:
-            [INFO]  index[0]: name[data], inputSize[16613376], fotmat[0], dataType[0]
+            [INFO]  index[0]: name[data], inputSize[16613376], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[-1][3][416][416]
-            [INFO]  index[1]: name[ascend_mbatch_shape_data], inputSize[8], fotmat[2], dataType[9]
+            [INFO]  index[1]: name[ascend_mbatch_shape_data], inputSize[8], format[2], dataType[9]
             [INFO]  dimcount:[1],dims:[1]
             [INFO]  start to print output tensor desc:
-            [INFO]  index[0]: name[layer82-conv:0:layer82-conv], outputSize[1379040], fotmat[0], dataType[0]
+            [INFO]  index[0]: name[layer82-conv:0:layer82-conv], outputSize[1379040], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[8][255][13][13]
-            [INFO]  index[1]: name[layer94-conv:0:layer94-conv], outputSize[5516160], fotmat[0], dataType[0]
+            [INFO]  index[1]: name[layer94-conv:0:layer94-conv], outputSize[5516160], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[8][255][26][26]
-            [INFO]  index[2]: name[layer106-conv:0:layer106-conv], outputSize[22064640], fotmat[0], dataType[0]
+            [INFO]  index[2]: name[layer106-conv:0:layer106-conv], outputSize[22064640], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[8][255][52][52]
             [INFO]  start to print model dynamic batch info:
             [INFO]  dynamic batch count:[4],dims:{[1][2][4][8]}
@@ -512,13 +512,13 @@
             ```
 
 
-        -   动态分辨率场景下，可执行程序的第一个、第二个入参需要分别替换为实际的高、宽，必须为模型转换时通过--dynamic\_image\_size参数指定的其中一档分辨率：
+        -   In the dynamic image size scenario, run the following command. Replace the input arguments with the actual image height and width, which should be among the choices specified by the  **--dynamic\_image\_size**  argument in the model conversion command.
 
             ```
             ./main 416 416
             ```
 
-            执行成功后，在屏幕上的关键提示信息示例如下：
+            The following messages indicate that the file is successfully executed.
 
             ```
             [INFO]  1: ./main [param], [param] is dynamic batch. It should be 1,2,4 or 8. For example: ./main 8;
@@ -537,16 +537,16 @@
             [INFO]  set dynamic hw[416, 416] success.
             [INFO]  model input num[2], output num[3].
             [INFO]  start to print input tensor desc:
-            [INFO]  index[0]: name[data], inputSize[18690048], fotmat[0], dataType[0]
+            [INFO]  index[0]: name[data], inputSize[18690048], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[1][3][-1][-1]
-            [INFO]  index[1]: name[ascend_mbatch_shape_data], inputSize[16], fotmat[2], dataType[9]
+            [INFO]  index[1]: name[ascend_mbatch_shape_data], inputSize[16], format[2], dataType[9]
             [INFO]  dimcount:[1],dims:[2]
             [INFO]  start to print output tensor desc:
-            [INFO]  index[0]: name[layer82-conv:0:layer82-conv], outputSize[1551420], fotmat[0], dataType[0]
+            [INFO]  index[0]: name[layer82-conv:0:layer82-conv], outputSize[1551420], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[1][255][39][39]
-            [INFO]  index[1]: name[layer94-conv:0:layer94-conv], outputSize[6205680], fotmat[0], dataType[0]
+            [INFO]  index[1]: name[layer94-conv:0:layer94-conv], outputSize[6205680], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[1][255][78][78]
-            [INFO]  index[2]: name[layer106-conv:0:layer106-conv], outputSize[24822720], fotmat[0], dataType[0]
+            [INFO]  index[2]: name[layer106-conv:0:layer106-conv], outputSize[24822720], format[0], dataType[0]
             [INFO]  dimcount:[4],dims:[1][255][156][156]
             [INFO]  start to print model dynamic hw info:
             [INFO]  dynamic hw count:[3],dims:{[416, 416][832, 832][1248, 1248]}

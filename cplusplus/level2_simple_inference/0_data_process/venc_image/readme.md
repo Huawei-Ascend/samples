@@ -1,92 +1,92 @@
-# 媒体数据处理（视频编码）<a name="ZH-CN_TOPIC_0302602980"></a>
+# Media Data Processing \(Video Encoding\)<a name="EN-US_TOPIC_0302602980"></a>
 
-## 功能描述<a name="section7940919203810"></a>
+## Overview<a name="section7940919203810"></a>
 
-该样例将一张YUV420SP NV12格式的图片连续编码n次，生成一个H265格式的视频码流（n可配，通过运行应用时设置入参来配置，默认为16次）。
+In this sample, a YUV420SP \(NV12\) image is encoded for  _n_  consecutive times to generate a video stream in H.265 format. \(_n_  is default to 16 and is configurable before running the app.\)
 
-## 原理介绍<a name="section6271153719394"></a>
+## Principles<a name="section6271153719394"></a>
 
-在该样例中，涉及的关键功能点，如下所示：
+The following lists the key functions involved in this sample.
 
--   初始化
-    -   调用aclInit接口初始化AscendCL配置。
-    -   调用aclFinalize接口实现AscendCL去初始化。
+-   Initialization
+    -   **aclInit**: initializes AscendCL.
+    -   **aclFinalize**: deinitializes AscendCL.
 
--   Device管理
-    -   调用aclrtSetDevice接口指定用于运算的Device。
-    -   调用aclrtGetRunMode接口获取昇腾AI软件栈的运行模式，根据运行模式的不同，内部处理流程不同。
-    -   调用aclrtResetDevice接口复位当前运算的Device，回收Device上的资源。
+-   Device management
+    -   **aclrtSetDevice**: sets the compute device.
+    -   **aclrtGetRunMode**: obtains the run mode of the  Ascend AI Software Stack. The internal processing varies with the run mode.
+    -   **aclrtResetDevice**: resets the compute device and cleans up all resources associated with the device.
 
--   Context管理
-    -   调用aclrtCreateContext接口创建Context。
-    -   调用aclrtDestroyContext接口销毁Context。
+-   Context management
+    -   **aclrtCreateContext**: creates a context.
+    -   **aclrtDestroyContext**: destroys a context.
 
--   内存管理
-    -   调用aclrtMallocHost接口申请Host上内存。
-    -   调用aclrtFreeHost释放Host上的内存。
-    -   调用aclrtMalloc接口申请Device上的内存。
-    -   调用aclrtFree接口释放Device上的内存。
-    -   执行数据预处理时，若需要申请Device上的内存存放输入或输出数据，需调用acldvppMalloc申请内存、调用acldvppFree接口释放内存。
+-   Memory management
+    -   **aclrtMallocHost**: allocates host memory.
+    -   **aclrtFreeHost**: frees host memory.
+    -   **aclrtMalloc**: allocates device memory.
+    -   **aclrtFree**: frees device memory.
+    -   In data preprocessing, if you need to allocate device memory to store the input or output data, call  **acldvppMalloc**  to allocate memory and call  **acldvppFree**  to free memory.
 
--   数据传输
+-   Data transfer
 
-    调用aclrtMemcpy接口通过内存复制的方式实现数据传输。
+    **aclrtMemcpy**: copies memory.
 
--   数据预处理
+-   Data preprocessing
 
-    视频编码，调用aclvencSendFrame接口将将待编码的图片传到编码器进行编码。
+    **aclvencSendFrame**: sends the images to be encoded to the encoder.
 
 
-## 目录结构<a name="section1394162513386"></a>
+## Directory Structure<a name="section1394162513386"></a>
 
-样例代码结构如下所示。
+The sample directory is organized as follows:
 
 ```
 ├── data
-│   ├── dvpp_venc_128x128_nv12.yuv            //测试数据,需要按指导获取测试图片，放到data目录下
+│   ├── dvpp_venc_128x128_nv12.yuv            //Test image. Obtain the test image according to the guide and save it to the data directory.
 
 ├── inc
-│   ├── venc_process.h               //声明数据预处理相关函数的头文件
-│   ├── sample_process.h               //声明模型处理相关函数的头文件                  
-│   ├── utils.h                       //声明公共函数（例如：文件读取函数）的头文件
+│   ├── venc_process.h               //Header file that declares functions related to data preprocessing
+│   ├── sample_process.h               //Header file that declares functions related to model processing
+│   ├── utils.h                       //Header file that declares common functions (such as file reading function)
 
 ├── src
-│   ├── acl.json               //系统初始化的配置文件
-│   ├── CMakeLists.txt         //编译脚本
-│   ├── main.cpp               //主函数，多图多框抠图功能的实现文件
-│   ├── sample_process.cpp     //资源初始化/销毁相关函数的实现文件                                       
-│   ├── utils.cpp              //公共函数（例如：文件读取函数）的实现文件
-│   ├── venc_process.cpp       //数据预处理相关函数的实现文件
+│   ├── acl.json              //Configuration file for system initialization
+│   ├── CMakeLists.txt         //Build script
+│   ├── main.cpp               //Main function, which is the implementation file of multi-image, multi-ROI cropping
+│   ├── sample_process.cpp     //Implementation file of functions related to resource initialization and destruction
+│   ├── utils.cpp              //Implementation file of common functions (such as the file reading function)
+│   ├── venc_process.cpp       //Implementation file of functions related to video processing
 
-├── CMakeLists.txt    //编译脚本，调用src目录下的CMakeLists文件
+├── CMakeLists.txt    //Build script that calls the CMakeLists file in the src directory
 ```
 
-## 环境要求<a name="section3833348101215"></a>
+## Environment Requirements<a name="section3833348101215"></a>
 
--   操作系统及架构：CentOS 7.6 x86\_64、CentOS aarch64、Ubuntu 18.04 x86\_64
--   版本：20.2
--   编译器：
-    -   Ascend310 EP/Ascend710 EP形态编译器：g++
-    -   Ascend310开发者板编译器：aarch64-linux-gnu-g++
+-   OS and architecture: CentOS 7.6 x86\_64, CentOS AArch64, or Ubuntu 18.04 x86\_64
+-   Version: 20.2
+-   Compiler:
+    -   Ascend 310 EP/Ascend 710: g++
+    -   Atlas 200 DK: aarch64-linux-gnu-g++
 
--   芯片：Ascend310、Ascend710
--   已完成昇腾AI软件栈在开发环境、运行环境上的部署。
+-   SoC: Ascend 310 AI Processor or Ascend 710 AI Processor
+-   Ascend AI Software Stack deployed
 
-## 配置环境变量<a name="section145174543134"></a>
+## Environment Variables<a name="section145174543134"></a>
 
--   **Ascend310 EP/Ascend710 EP：**
-    1.  开发环境上，设置环境变量，编译脚本src/CMakeLists.txt通过环境变量所设置的头文件、库文件的路径来编译代码。
+-   **Ascend 310 EP/Ascend 710:**
+    1.  Set the header file path and library file path environment variables for the  **src/CMakeLists.txt**  build script in the development environment.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_替换为开发套件包Ascend-cann-toolkit下对应架构的ACLlib的路径。
+        The following is an example. Replace  **$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_**  with the ACLlib path in  Ascend-CANN-Toolkit  of the corresponding architecture.
 
-        -   当运行环境操作系统架构为x86时，执行以下命令：
+        -   x86 operating environment:
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux
             export NPU_HOST_LIB=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux/acllib/lib64/stub
             ```
 
-        -   当运行环境操作系统架构为Arm时，执行以下命令：
+        -   ARM operating environment:
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
@@ -94,53 +94,53 @@
             ```
 
 
-        使用“$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_/acllib/lib64/stub”目录下的\*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件（例如Driver）的任何\*.so库。编译通过后，在Host上运行应用时，通过配置环境变量，应用会链接到Host上“$HOME/Ascend/nnrt/latest/acllib/lib64”目录下的\*.so库，运行时会自动链接到依赖其它组件的\*.so库。
+        The .so library files in the  **$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_/acllib/lib64/stub**  directory are required to build the code logic based on the AscendCL APIs, without depending on any .so library files of other components \(such as Driver\). After successful build, when you run an app on the host, the app can be linked to the .so library files in the  **$HOME/Ascend/nnrt/latest/acllib/lib64**  directory on the host by configuring corresponding environment variables. The app is automatically linked to the dependent .so library files of other components during runtime.
 
-    2.  运行环境上，设置环境变量，运行应用时需要根据环境变量找到对应的库文件。
+    2.  Set the library path environment variable in the operating environment for app execution.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/nnrt/latest替换为ACLlib的路径。
+        The following is an example. Replace  **$HOME/Ascend/nnrt/latest**  with the path of ACLlib.
 
         ```
         export LD_LIBRARY_PATH=$HOME/Ascend/nnrt/latest/acllib/lib64
         ```
 
 
--   **Ascend310开发者板：**
+-   **Atlas 200 DK:**
 
-    仅需在开发环境上设置环境变量，运行环境上的环境变量在制卡时已配置，此处无需单独配置。
+    You only need to set environment variables in the development environment. Environment variables in the operating environment have been set in the phase of preparing a bootable SD card.
 
-    如下为设置环境变量的示例，请将$HOME/Ascend/ascend-toolkit/latest/arm64-linux替换为开发套件包Ascend-cann-toolkit下Arm架构的ACLlib的路径。
+    The following is an example. Replace  **$HOME/Ascend/ascend-toolkit/latest/arm64-linux**  with the ACLlib path in  Ascend-CANN-Toolkit  of the ARM architecture.
 
     ```
     export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
     export NPU_HOST_LIB=$HOME/Ascend/ascend-toolkit/latest/arm64-linux/acllib/lib64/stub
     ```
 
-    使用“$HOME/Ascend/ascend-toolkit/latest/arm64-linux/acllib/lib64/stub”目录下的\*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件（例如Driver）的任何\*.so库。编译通过后，在板端环境上运行应用时，通过配置环境变量，应用会链接到板端环境上“$HOME/Ascend/acllib/lib64”目录下的\*.so库，运行时会自动链接到依赖其它组件的\*.so库。
+    The .so library files in the  **$HOME/Ascend/ascend-toolkit/latest/arm64-linux/acllib/lib64/stub**  directory are required to build the code logic based on the AscendCL APIs, without depending on any .so library files of other components \(such as Driver\). At run time, the app links to the .so library files in the  **$HOME/Ascend/acllib/lib64**  directory on the board through the configured environment variable and automatically links to the .so library files of other components.
 
 
-## 编译运行（Ascend310 EP/Ascend710 EP）<a name="section492582041817"></a>
+## Build and Run \(Ascend310 EP/Ascend 710\)<a name="section492582041817"></a>
 
-1.  编译代码。
-    1.  以运行用户登录开发环境。
-    2.  切换到样例目录，创建目录用于存放编译文件，例如，本文中，创建的目录为“build/intermediates/host“。
+1.  Build the code.
+    1.  Log in to the  development environment  as the running user.
+    2.  Go to the sample directory and create a directory for storing build outputs. For example, the directory created in this sample is  **build/intermediates/host**.
 
         ```
         mkdir -p build/intermediates/host
         ```
 
-    3.  切换到“build/intermediates/host“目录，执行**cmake**生成编译文件。
+    3.  Go to the  **build/intermediates/host**  directory and run the  **cmake**  command.
 
-        “../../../src“表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
+        Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
 
-        -   当开发环境与运行环境操作系统架构相同时，执行如下命令编译。
+        -   If the development environment and operating environment have the same OS architecture, run the following commands to perform compilation.
 
             ```
             cd build/intermediates/host
             cmake ../../../src -DCMAKE_CXX_COMPILER=g++ -DCMAKE_SKIP_RPATH=TRUE
             ```
 
-        -   当开发环境与运行环境操作系统架构不同时，执行以下命令进行交叉编译。
+        -   If development environment and operating environment have different OS architectures, run the following commands to perform cross compilation.
 
             ```
             cd build/intermediates/host
@@ -148,39 +148,39 @@
             ```
 
 
-    4.  执行**make**命令，生成的可执行文件main在“样例目录/out“目录下。
+    4.  Run the  **make **command. The  **main**  executable file is generated in  **/out**  under the sample directory.
 
         ```
         make
         ```
 
 
-2.  准备输入图片。
+2.  Prepare input images.
 
-    请从以下链接获取该样例的输入图片，并以运行用户将获取的文件上传至开发环境的“样例目录/data“目录下。如果目录不存在，需自行创建。
+    Obtain the input images of the sample from the following link and upload the obtained images to  **/data**  under the sample directory in the  development environment  as the running user. If the directory does not exist, create it.
 
-    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dvpp_venc_128x128_nv12.yuv](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dvpp_venc_128x128_nv12.yuv)
+    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dvpp\_venc\_128x128\_nv12.yuv](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dvpp_venc_128x128_nv12.yuv)
 
-3.  运行应用。
-    1.  以运行用户将开发环境的样例目录及目录下的文件上传到运行环境（Host），例如“$HOME/acl\_venc”。
-    2.  以运行用户登录运行环境（Host）。
-    3.  切换到可执行文件main所在的目录，例如“$HOME/acl\_venc/out”，给该目录下的main文件加执行权限。
+3.  Run the app.
+    1.  As the running user, upload the sample folder in the  development environment  to the  operating environment  \(host\), for example,  **$HOME/acl\_venc**.
+    2.  Log in to the  operating environment  \(host\) as the running user.
+    3.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_venc/out**\) and grant execute permission on the  **main**  file in the directory.
 
         ```
         chmod +x main
         ```
 
-    4.  切换到可执行文件main所在的目录，例如“$HOME/acl\_venc/out”，运行可执行文件。
+    4.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_venc/out**\) and run the executable file.
 
-        执行可执行文件成功后，同时会在main文件同级output目录下生成编码结果文件dvpp\_venc\_128x128.h265，便于后期查看。
+        After the file is executed successfully, the result file  **dvpp\_venc\_128x128.h265**  is generated in the  **output **directory at the same level as the  **main**  file for later query.
 
-        执行可执行文件时，可以增加入参来配置编码的次数，例如“./main 20”，如果不增加入参，则默认编码次数为16次。
+        When executing an executable file, you can add an argument to configure the number of encoding times, for example,** ./main 20**. If no argument is added, the image is encoded 16 times by default.
 
         ```
         ./main
         ```
 
-        执行成功后，在屏幕上的关键提示信息示例如下。
+        The following messages indicate that the file is successfully executed.
 
         ```
         [INFO]  ./main param, param is execute venc times(default 16)
@@ -212,7 +212,7 @@
         [INFO]  success to callback, stream size:905
         [INFO]  venc process success
         [INFO]  execute sample success
-        [INFO]  destory process callback thread success
+        [INFO]  destroy process callback thread success
         [INFO]  end to destroy context
         [INFO]  end to reset device is 0
         [INFO]  end to finalize acl
@@ -220,58 +220,58 @@
 
 
 
-## 编译运行（Ascend310开发者板）<a name="section313154671820"></a>
+## Build and Run \(Atlas 200 DK\)<a name="section313154671820"></a>
 
-1.  编译代码。
-    1.  以运行用户登录开发环境。
-    2.  切换到样例目录，创建目录用于存放编译文件，例如，本文中，创建的目录为“build/intermediates/minirc“。
+1.  Build the code.
+    1.  Log in to the  development environment  as the running user.
+    2.  Go to the sample directory and create a directory for storing build outputs. For example, the directory created in this sample is  **build/intermediates/minirc**.
 
         ```
         mkdir -p build/intermediates/minirc
         ```
 
-    3.  切换到“build/intermediates/minirc“目录，执行**cmake**生成编译文件。
+    3.  Go to the  **build/intermediates/minirc**  directory and run the  **cmake**  command.
 
-        “../../../src“表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
+        Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
 
         ```
         cd build/intermediates/minirc
         cmake ../../../src -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SKIP_RPATH=TRUE
         ```
 
-    4.  执行**make**命令，生成的可执行文件main在“样例目录/out“目录下。
+    4.  Run the  **make **command. The  **main**  executable file is generated in  **/out**  under the sample directory.
 
         ```
         make
         ```
 
 
-2.  准备输入图片。
+2.  Prepare input images.
 
-    请从以下链接获取该样例的输入图片，并以运行用户将获取的文件上传至开发环境的“样例目录/data“目录下。如果目录不存在，需自行创建。
+    Obtain the input images of the sample from the following link and upload the obtained images to  **/data**  under the sample directory in the  development environment  as the running user. If the directory does not exist, create it.
 
-    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dvpp_venc_128x128_nv12.yuv](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dvpp_venc_128x128_nv12.yuv)
+    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dvpp\_venc\_128x128\_nv12.yuv](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dvpp_venc_128x128_nv12.yuv)
 
-3.  运行应用。
-    1.  以运行用户将开发环境的样例目录及目录下的文件上传到板端环境，例如“$HOME/acl\_venc”。
-    2.  以运行用户登录板端环境。
-    3.  切换到可执行文件main所在的目录，例如“$HOME/acl\_venc/out”，给该目录下的main文件加执行权限。
+3.  Run the app.
+    1.  As the running user, upload the sample folder in the  development environment  to the  board environment, for example,  **$HOME/acl\_venc**.
+    2.  Log in to the  board environment  as the running user.
+    3.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_venc/out**\) and grant execute permission on the  **main**  file in the directory.
 
         ```
         chmod +x main
         ```
 
-    4.  切换到可执行文件main所在的目录，例如“$HOME/acl\_venc/out”，运行可执行文件。
+    4.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_venc/out**\) and run the executable file.
 
-        执行可执行文件成功后，同时会在main文件同级output目录下生成编码结果文件dvpp\_venc\_128x128.h265，便于后期查看。
+        After the file is executed successfully, the result file  **dvpp\_venc\_128x128.h265**  is generated in the  **output **directory at the same level as the  **main**  file for later query.
 
-        执行可执行文件时，可以增加入参来配置编码的次数，例如“./main 20”，如果不增加入参，则默认编码次数为16次。
+        When executing an executable file, you can add an argument to configure the number of encoding times, for example,** ./main 20**. If no argument is added, the image is encoded 16 times by default.
 
         ```
         ./main
         ```
 
-        执行成功后，在屏幕上的关键提示信息示例如下。
+        The following messages indicate that the file is successfully executed.
 
         ```
         [INFO]  ./main param, param is execute venc times(default 16)
@@ -303,7 +303,7 @@
         [INFO]  success to callback, stream size:905
         [INFO]  venc process success
         [INFO]  execute sample success
-        [INFO]  destory process callback thread success
+        [INFO]  destroy process callback thread success
         [INFO]  end to destroy context
         [INFO]  end to reset device is 0
         [INFO]  end to finalize acl

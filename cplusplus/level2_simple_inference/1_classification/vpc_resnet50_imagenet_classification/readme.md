@@ -1,142 +1,142 @@
-# 基于Caffe ResNet-50网络实现图片分类（图片解码+缩放+同步推理）<a name="ZH-CN_TOPIC_0302603667"></a>
+# Image Classification with Caffe ResNet-50 \(Image Decoding+Resizing+Synchronous Inference\)<a name="EN-US_TOPIC_0302603667"></a>
 
-## 功能描述<a name="section7940919203810"></a>
+## Overview<a name="section7940919203810"></a>
 
-该样例主要是基于Caffe ResNet-50网络（单输入、单Batch）实现图片分类的功能。
+This sample shows how to classify images based on the Caffe ResNet-50 network \(single input with batch size = 1\).
 
-在该样例中：
+Specifically,
 
-1.  先将2张\*.jpg图片分别解码，得到2张YUV420SP格式的图片，再将YUV420SP格式的图片都缩放成分辨率为224\*224的图片。
-2.  加载离线模型om文件，对2张图片进行推理，分别得到推理结果，再对推理结果进行处理，输出最大置信度的类别标识。
+1.  Decodes two .jpg images into the YUV420SP format and resizes them to 224 x 224.
+2.  Loads the .om offline model to perform inference on the two images, processes the obtained inference results, and outputs the class index with the top confidence value of each image.
 
-    在加载离线模型前，提前将Caffe ResNet-50网络的模型文件转换为适配昇腾AI处理器的离线模型，转换模型时，需配置色域转换参数，用于将YUV420SP格式的图片转换为RGB格式的图片，才能符合模型的输入要求。
-
-
-## 原理介绍<a name="section6271153719394"></a>
-
-在该样例中，涉及的关键功能点，如下所示：
-
--   **初始化**
-    -   调用aclInit接口初始化AscendCL配置。
-    -   调用aclFinalize接口实现AscendCL去初始化。
-
--   **Device管理**
-    -   调用aclrtSetDevice接口指定用于运算的Device。
-    -   调用aclrtGetRunMode接口获取昇腾AI软件栈的运行模式，根据运行模式的不同，内部处理流程不同。
-    -   调用aclrtResetDevice接口复位当前运算的Device，回收Device上的资源。
-
--   **Context管理**
-    -   调用aclrtCreateContext接口创建Context。
-    -   调用aclrtDestroyContext接口销毁Context。
-
--   **Stream管理**
-    -   调用aclrtCreateStream接口创建Stream。
-    -   调用aclrtDestroyStream接口销毁Stream。
-    -   调用aclrtSynchronizeStream接口阻塞程序运行，直到指定stream中的所有任务都完成。
-
--   **内存管理**
-    -   调用aclrtMallocHost接口申请Host上内存。
-    -   调用aclrtFreeHost释放Host上的内存。
-    -   调用aclrtMalloc接口申请Device上的内存。
-    -   调用aclrtFree接口释放Device上的内存。
-    -   执行数据预处理时，若需要申请Device上的内存存放输入或输出数据，需调用acldvppMalloc申请内存、调用acldvppFree接口释放内存。
-
--   **数据传输**
-
-    调用aclrtMemcpy接口通过内存复制的方式实现数据传输。
-
--   **数据预处理**
-    -   调用acldvppJpegDecodeAsync接口将\*.jpg图片解码成YUV420SP格式图片。
-    -   调用acldvppVpcResizeAsync接口将YUV420SP格式图片缩小成分辨率为224\*224的图片。
-
--   **模型推理**
-    -   调用aclmdlLoadFromFileWithMem接口从\*.om文件加载模型。
-    -   调用aclmdlExecute接口执行模型推理。
-
-        推理前，通过\*.om文件中的色域转换参数将YUV420SP格式的图片转换为RGB格式的图片。
-
-    -   调用aclmdlUnload接口卸载模型。
-
--   **数据后处理（单算子调用）**
-
-    处理模型推理的结果，通过调用算子Cast将推理结果的数据类型从float32转成float16，再调用ArgMaxD算子从推理结果中查找最大置信度的类别标识。
-
-    通过aclopExecute接口加载与执行算子。
+    Convert the Caffe ResNet-50 model file into an offline model that adapts to the Ascend AI Processor in advance. During model conversion, you need to set color space conversion \(CSC\) parameters to convert YUV420SP images into RGB images to meet the input requirements of the model.
 
 
-## 目录结构<a name="section1394162513386"></a>
+## Principles<a name="section6271153719394"></a>
 
-样例代码结构如下所示。
+The following lists the key functions involved in this sample.
+
+-   Initialization
+    -   **aclInit**: initializes AscendCL.
+    -   **aclFinalize**: deinitializes AscendCL.
+
+-   Device management
+    -   **aclrtSetDevice**: sets the compute device.
+    -   **aclrtGetRunMode**: obtains the run mode of the  Ascend AI Software Stack. The internal processing varies with the run mode.
+    -   **aclrtResetDevice**: resets the compute device and cleans up all resources associated with the device.
+
+-   **Context management**
+    -   **aclrtCreateContext**: creates a context.
+    -   **aclrtDestroyContext**: destroys a context.
+
+-   Stream management
+    -   **aclrtCreateStream**: creates a stream.
+    -   **aclrtDestroyStream**: destroys a stream.
+    -   **aclrtSynchronizeStream**: waits for stream tasks to complete.
+
+-   Memory management
+    -   **aclrtMallocHost**: allocates host memory.
+    -   **aclrtFreeHost**: frees host memory.
+    -   **aclrtMalloc**: allocates device memory.
+    -   **aclrtFree**: frees device memory.
+    -   In data preprocessing, if you need to allocate device memory to store the input or output data, call  **acldvppMalloc**  to allocate memory and call  **acldvppFree**  to free memory.
+
+-   Data transfer
+
+    **aclrtMemcpy**: copies memory.
+
+-   **Data preprocessing**
+    -   **acldvppJpegDecodeAsync**: decodes .jpg images into YUV420SP images.
+    -   **acldvppVpcResizeAsync**: resizes YUV420SP images to 224 x 224.
+
+-   Model inference
+    -   **aclmdlLoadFromFileWithMem**: loads a model from an .om file.
+    -   **aclmdlExecute**: performs model inference.
+
+        Before inference, use the CSC parameters in the .om file to convert a YUV420SP image into an RGB image.
+
+    -   **aclmdlUnload**: unloads a model.
+
+-   Data postprocessing \(single-operator execution\)
+
+    **Cast**: casts the data type of the inference result from float32 to float16;  **ArgMaxD**: searches for the class indexes with the top confidence values in the inference result.
+
+    **aclopExecuteV2**: loads and executes an operator.
+
+
+## Directory Structure<a name="section1394162513386"></a>
+
+The sample directory is organized as follows:
 
 ```
 ├── caffe_model
-│   ├── aipp.cfg        //带色域转换参数的配置文件，模型转换时使用
+│   ├── aipp.cfg        //Configuration file with CSC parameters, used for model conversion
 
 ├── data
-│   ├── dog1_1024_683.jpg            //测试数据,需要按指导获取测试图片，放到data目录下
-│   ├── dog2_1024_683.jpg            //测试数据,需要按指导获取测试图片，放到data目录下
+│   ├── dog1_1024_683.jpg            //Test image. Obtain the test image according to the guide and save it to the data directory.
+│   ├── dog2_1024_683.jpg            //Test image. Obtain the test image according to the guide and save it to the data directory.
 
 ├── inc
-│   ├── dvpp_process.h               //声明数据预处理相关函数的头文件
-│   ├── model_process.h              //声明模型处理相关函数的头文件
-│   ├── sample_process.h               //声明资源初始化/销毁相关函数的头文件
-│   ├── singleOp_process.h              //声明单算子执行相关函数的头文件                   
-│   ├── utils.h                       //声明公共函数（例如：文件读取函数）的头文件
+│   ├── dvpp_process.h               //Header file that declares functions related to data preprocessing
+│   ├── model_process.h              //Header file that declares functions related to model processing
+│   ├── sample_process.h               //Header file that declares functions related to resource initialization and destruction
+│   ├── singleOp_process.h              //Header file that declares the functions related to single-operator execution
+│   ├── utils.h                       //Header file that declares common functions (such as file reading function)
 
 ├── out
 │   ├── op_models
-│   ├──├──op_list.json              //Cast算子和ArgMaxD算子的算子描述信息
+│   ├──├──op_list.json              //Description information of operators ArgMaxD and Cast
 
 ├── src
-│   ├── acl.json         //系统初始化的配置文件
-│   ├── CMakeLists.txt         //编译脚本
-│   ├── dvpp_process.cpp       //数据预处理相关函数的实现文件
-│   ├── main.cpp               //主函数，图片分类功能的实现文件
-│   ├── model_process.cpp      //模型处理相关函数的实现文件
-│   ├── sample_process.cpp     //资源初始化/销毁相关函数的实现文件
-│   ├── singleOp_process.cpp   //单算子执行相关函数的实现文件                                          
-│   ├── utils.cpp              //公共函数（例如：文件读取函数）的实现文件
+│   ├── acl.json         //Configuration file for system initialization
+│   ├── CMakeLists.txt         //Build script
+│   ├── dvpp_process.cpp       //Implementation file of functions related to video processing
+│   ├── main.cpp               //Main function, which is the implementation file of image classification
+│   ├── model_process.cpp      //Implementation file of model processing functions
+│   ├── sample_process.cpp     //Implementation file of functions related to resource initialization and destruction
+│   ├── singleOp_process.cpp   //Implementation file of functions related to single-operator execution
+│   ├── utils.cpp              //Implementation file of common functions (such as the file reading function)
 
-├── .project     //工程信息文件，包含工程类型、工程描述、运行目标设备类型等
-├── CMakeLists.txt    //编译脚本，调用src目录下的CMakeLists文件
+├── .project     //Project information file, including the project type, project description, and type of the target device
+├── CMakeLists.txt    //Build script that calls the CMakeLists file in the src directory
 ```
 
-## 环境要求<a name="section3833348101215"></a>
+## Environment Requirements<a name="section3833348101215"></a>
 
--   操作系统及架构：CentOS 7.6 x86\_64、CentOS aarch64、Ubuntu 18.04 x86\_64
--   版本：20.2
--   编译器：
-    -   Ascend310 EP/Ascend710形态编译器：g++
-    -   Atlas 200 DK编译器：aarch64-linux-gnu-g++
+-   OS and architecture: CentOS 7.6 x86\_64, CentOS AArch64, or Ubuntu 18.04 x86\_64
+-   Version: 20.2
+-   Compiler:
+    -   Ascend 310 EP/Ascend 710: g++
+    -   Atlas 200 DK: aarch64-linux-gnu-g++
 
--   芯片：Ascend310、Ascend710
--   python及依赖的库：python3.7.5
--   已完成昇腾AI软件栈在开发环境、运行环境上的部署。
+-   SoC: Ascend 310 AI Processor or Ascend 710 AI Processor
+-   Python version and dependency library: Python 3.7.5
+-   Ascend AI Software Stack deployed
 
-## 配置环境变量<a name="section1270920211277"></a>
+## Environment Variables<a name="section1270920211277"></a>
 
--   **Ascend310 EP/Ascend710：**
-    1.  开发环境上，设置模型转换依赖的环境变量。
+-   **Ascend 310 EP/Ascend 710:**
+    1.  In the development environment, set the environment variables on which model conversion depends.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit所在的路径。
+        Replace  _**$\{install\_path\}**_  with the actual  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    2.  开发环境上，设置环境变量，编译脚本src/CMakeLists.txt通过环境变量所设置的头文件、库文件的路径来编译代码。
+    2.  Set the header file path and library file path environment variables for the  **src/CMakeLists.txt**  build script in the development environment.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_替换为开发套件包Ascend-cann-toolkit下对应架构的ACLlib的路径。
+        The following is an example. Replace  ****_$HOME/Ascend_**_**/ascend-toolkit/latest**_/_\{os\_arch\}_**  with the ACLlib path under the  Ascend-CANN-Toolkit  directory of the corresponding architecture.
 
-        -   当运行环境操作系统架构为x86时，执行以下命令：
+        -   x86 operating environment:
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux
             export NPU_HOST_LIB=$HOME/Ascend/ascend-toolkit/latest/x86_64-linux/acllib/lib64/stub
             ```
 
-        -   当运行环境操作系统架构为Arm时，执行以下命令：
+        -   ARM operating environment:
 
             ```
             export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
@@ -144,116 +144,117 @@
             ```
 
 
-        使用“$HOME/Ascend/ascend-toolkit/latest/_\{os\_arch\}_/acllib/lib64/stub”目录下的\*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件（例如Driver）的任何\*.so库。编译通过后，在Host上运行应用时，通过配置环境变量，应用会链接到Host上“$HOME/Ascend/nnrt/latest/acllib/lib64”目录下的\*.so库，运行时会自动链接到依赖其它组件的\*.so库。
+        Use the .so library files in the  ****_$HOME/Ascend_**_**/ascend-toolkit/latest**_/_\{os\_arch\}_/acllib/lib64/stub**  directory to build the code logic using AscendCL APIs, without depending on any .so library files of other components \(such as Driver\). At run time on the host, the app links to the .so library files in the  ****_$HOME/Ascend_**_**/nnrt/latest**_/acllib/lib64**  directory on the host through the configured environment variable and automatically links to the .so library files of other components.
 
-    3.  运行环境上，设置环境变量，运行应用时需要根据环境变量找到对应的库文件。
+    3.  Set the library path environment variable in the operating environment for app execution.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/nnrt/latest替换为ACLlib的路径。
+        The following is an example. Replace  ****_$HOME/Ascend_**_**/nnrt/latest**_**  with the ACLlib path.
 
         ```
         export LD_LIBRARY_PATH=$HOME/Ascend/nnrt/latest/acllib/lib64
         ```
 
 
--   **Atlas 200 DK：**
+-   **Atlas 200 DK:**
 
-    仅需在开发环境上设置环境变量，运行环境上的环境变量在制卡时已配置，此处无需单独配置。
+    You only need to set environment variables in the development environment. Environment variables in the operating environment have been set in the phase of preparing a bootable SD card.
 
-    1.  开发环境上，设置模型转换依赖的环境变量。
+    1.  In the development environment, set the environment variables on which model conversion depends.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit所在的路径。
+        Replace  _**$\{install\_path\}**_  with the actual  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    2.  开发环境上，设置环境变量，编译脚本src/CMakeLists.txt通过环境变量所设置的头文件、库文件的路径来编译代码。
+    2.  Set the header file path and library file path environment variables for the  **src/CMakeLists.txt**  build script in the development environment.
 
-        如下为设置环境变量的示例，请将$HOME/Ascend/ascend-toolkit/latest/arm64-linux替换为开发套件包Ascend-cann-toolkit下Arm架构的ACLlib的路径。
+        The following is an example. Replace  ****_$HOME/Ascend_**_**/ascend-toolkit/latest**_/arm64-linux**  with the ACLlib path under the ARM  Ascend-CANN-Toolkit  directory.
 
         ```
         export DDK_PATH=$HOME/Ascend/ascend-toolkit/latest/arm64-linux
         export NPU_HOST_LIB=$HOME/Ascend/ascend-toolkit/latest/arm64-linux/acllib/lib64/stub
         ```
 
-        使用“$HOME/Ascend/ascend-toolkit/latest/arm64-linux/acllib/lib64/stub”目录下的\*.so库，是为了编译基于AscendCL接口的代码逻辑时，不依赖其它组件（例如Driver）的任何\*.so库。编译通过后，在板端环境上运行应用时，通过配置环境变量，应用会链接到板端环境上“$HOME/Ascend/acllib/lib64”目录下的\*.so库，运行时会自动链接到依赖其它组件的\*.so库。
+        The .so library files in the  **_$HOME/Ascend_**_**/ascend-toolkit/latest**_**/arm64-linux/acllib/lib64/stub**  directory are required to build code using AscendCL APIs, without depending on any .so library files of other components \(such as Driver\). At run time in the  board environment, the app links to the .so library files in the  **$HOME/Ascend/acllib/lib64**  directory in the open-form ACLlib installation path in the  board environment  through the configured environment variable and automatically links to the .so library files of other components.
 
 
 
-## 编译运行（Ascend310 EP/Ascend710）<a name="section13133171616172"></a>
+## Build and Run \(Ascend310 EP/Ascend 710\)<a name="section13133171616172"></a>
 
-1.  模型转换。
-    1.  以运行用户登录开发环境。
-    2.  设置环境变量。
+1.  Convert your model.
+    1.  Log in to the  development environment  as the running user.
+    2.  Set environment variables.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit的安装路径。
+        Replace  _**$\{install\_path\}**_  with the  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    3.  准备数据。
+    3.  Prepare data.
 
-        您可以从以下链接中获取ResNet-50网络的模型文件（\*.prototxt）、预训练模型文件（\*.caffemodel），并以运行用户将获取的文件上传至开发环境的“样例目录/caffe\_model“目录下。如果目录不存在，需要自行创建。
+        Download the .prototxt model file and .caffemodel pre-trained model file of the ResNet-50 network and upload the files to  **/caffe\_model**  under the sample directory in the  development environment  as the running user. If the directory does not exist, create it.
 
-        -   [https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/classification/resnet50](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/classification/resnet50)
-        -   [https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/classification/resnet50](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/classification/resnet50)，查看README.\*.md，查找获取文件的链接
+        [https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/classification/resnet50](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/classification/resnet50)
 
-    4.  将ResNet-50网络转换为适配昇腾AI处理器的离线模型（\*.om文件），转换模型时，需配置色域转换参数，用于将YUV420SP格式的图片转换为RGB格式的图片。
+        Find the download links in the  **README\_en.md**  file.
 
-        切换到样例目录，执行如下命令：
+    4.  Convert the ResNet-50 network into an offline model \(.om file\) that adapts to Ascend AI Processors. During model conversion, you need to set CSC parameters to convert YUV420SP images to RGB images.
+
+        Go to the sample directory and run the following command:
 
         ```
         atc --model=caffe_model/resnet50.prototxt --weight=caffe_model/resnet50.caffemodel --framework=0 --soc_version=${soc_version} --insert_op_conf=caffe_model/aipp.cfg --output=model/resnet50_aipp 
         ```
 
-        -   --model：原始模型文件路径。
-        -   --weight：权重文件路径。
-        -   --framework：原始框架类型。0：表示Caffe；1：表示MindSpore；3：表示TensorFlow；5：表示ONNX。
-        -   --soc\_version：Ascend310芯片，此处配置为Ascend310；Ascend710芯片，此处配置为Ascend710。
-        -   --insert\_op\_conf：插入AIPP（AI Preprocessing）算子的配置文件路径，用于在AI Core上完成图像预处理，包括改变图像尺寸、色域转换（转换图像格式）、减均值/乘系数（改变图像像素），数据处理之后再进行真正的模型推理。
-        -   --output：生成的resnet50\_aipp.om文件存放在“样例目录/model“目录下。建议使用命令中的默认设置，否则在编译代码前，您还需要修改sample\_process.cpp中的omModelPath参数值。
+        -   **--model**: directory of the source model file.
+        -   **--weight**: directory of the weight file.
+        -   **--framework**: source framework type, selected from  **0**  \(Caffe\),  **1**  \(MindSpore\),  **3**  \(TensorFlow\), and  **5**  \(ONNX\).
+        -   **--soc\_version**: SoC version, either  **Ascend310**  or  **Ascend710**.
+        -   **--insert\_op\_conf**: path of the configuration file for inserting the AI Pre-Processing \(AIPP\) operator for AI Core–based image preprocessing including image resizing, CSC, and mean subtraction and factor multiplication \(for pixel changing\), prior to model inference.
+        -   **--output**: directory for storing the generated  **resnet50\_aipp.om**  file, that is,  **/model**  under the sample directory. The default path in the command example is recommended. To specify another path, you need to change the value of  **omModelPath**  in  **sample\_process.cpp**  before building the code.
 
             ```
             const char* omModelPath = "../model/resnet50_aipp.om";
             ```
 
 
-    5.  将Cast和ArgMaxD两个算子的算子描述信息（\*.json文件）编译成适配昇腾AI处理器的离线模型（\*.om文件），用于运行算子时使用。
+    5.  Build the operator description information \(.json files\) of the Cast and ArgMaxD operators into offline models \(.om files\) that adapt to the Ascend AI Processor for running the operators.
 
-        切换到样例目录，执行如下命令：
+        Go to the sample directory and run the following command:
 
         ```
         atc --singleop=out/op_models/op_list.json --soc_version=${soc_version} --output=out/op_models
         ```
 
-        -   --singleop：单算子定义文件（\*.json文件）。
-        -   --soc\_version：Ascend310芯片，此处配置为Ascend310；Ascend710芯片，此处配置为Ascend710。
-        -   --output参数：生成的om文件必须放在“out/op\_models“目录下。
+        -   **--singleop**: directory of the single-operator definition file \(.json\)
+        -   **--soc\_version**: SoC version, either  **Ascend310**  or  **Ascend710**.
+        -   **--output**: directory for storing the generated .om file, that is, the  **out/op\_models**  directory.
 
 
-2.  编译代码。
-    1.  以运行用户登录开发环境。
-    2.  切换到样例目录，创建目录用于存放编译文件，例如，本文中，创建的目录为“build/intermediates/host“。
+2.  Build the code.
+    1.  Log in to the  development environment  as the running user.
+    2.  Go to the sample directory and create a directory for storing build outputs. For example, the directory created in this sample is  **build/intermediates/host**.
 
         ```
         mkdir -p build/intermediates/host
         ```
 
-    3.  切换到“build/intermediates/host“目录，执行**cmake**生成编译文件。
+    3.  Go to the  **build/intermediates/host**  directory and run the  **cmake**  command.
 
-        “../../../src“表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
+        Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
 
-        -   当开发环境与运行环境操作系统架构相同时，执行如下命令编译。
+        -   If the development environment and operating environment have the same OS architecture, run the following commands to perform compilation.
 
             ```
             cd build/intermediates/host
             cmake ../../../src -DCMAKE_CXX_COMPILER=g++ -DCMAKE_SKIP_RPATH=TRUE
             ```
 
-        -   当开发环境与运行环境操作系统架构不同时，执行以下命令进行交叉编译。
+        -   If development environment and operating environment have different OS architectures, run the following commands to perform cross compilation.
 
             ```
             cd build/intermediates/host
@@ -261,37 +262,37 @@
             ```
 
 
-    4.  执行**make**命令，生成的可执行文件main在“样例目录/out“目录下。
+    4.  Run the  **make **command. The  **main**  executable file is generated in  **/out**  under the sample directory.
 
         ```
         make
         ```
 
 
-3.  准备输入图片。
+3.  Prepare input images.
 
-    请从以下链接获取该样例的输入图片，并以运行用户将获取的文件上传至开发环境的“样例目录/data“目录下。如果目录不存在，需自行创建。
+    Obtain the input images of the sample from the following link and upload the obtained images to  **/data**  under the sample directory in the  development environment  as the running user. If the directory does not exist, create it.
 
-    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog1_1024_683.jpg](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog1_1024_683.jpg)
+    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog1\_1024\_683.jpg](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog1_1024_683.jpg)
 
-    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog2_1024_683.jpg](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog2_1024_683.jpg)
+    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog2\_1024\_683.jpg](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog2_1024_683.jpg)
 
-4.  运行应用。
-    1.  以运行用户将开发环境的样例目录及目录下的文件上传到运行环境（Host），例如“$HOME/acl\_dvpp\_resnet50”。
-    2.  以运行用户登录运行环境（Host）。
-    3.  切换到可执行文件main所在的目录，例如“$HOME/acl\_dvpp\_resnet50/out”，给该目录下的main文件加执行权限。
+4.  Run the app.
+    1.  As the running user, upload the sample folder in the  development environment  to the  operating environment  \(host\), for example,  **$HOME/acl\_dvpp\_resnet50**.
+    2.  Log in to the  operating environment  \(host\) as the running user.
+    3.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_dvpp\_resnet50/out**\) and grant execute permission on the  **main**  file in the directory.
 
         ```
         chmod +x main
         ```
 
-    4.  切换到可执行文件main所在的目录，例如“$HOME/acl\_dvpp\_resnet50/out”，运行可执行文件。
+    4.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_dvpp\_resnet50/out**\) and run the executable file.
 
         ```
         ./main
         ```
 
-        执行成功后，在屏幕上显示最大置信度的类别标识，示例如下。
+        After the command is executed successfully, the class indexes with the top confidence values are displayed.
 
         ```
         [INFO] acl init success
@@ -325,107 +326,108 @@
 
 
 
-## 编译运行（Atlas 200 DK）<a name="section34427631818"></a>
+## Build and Run \(Atlas 200 DK\)<a name="section34427631818"></a>
 
-1.  模型转换。
-    1.  以运行用户登录开发环境。
-    2.  设置环境变量。
+1.  Convert your model.
+    1.  Log in to the  development environment  as the running user.
+    2.  Set environment variables.
 
-        $\{install\_path\}表示开发套件包Ascend-cann-toolkit的安装路径。
+        Replace  _**$\{install\_path\}**_  with the  Ascend-CANN-Toolkit  installation path.
 
         ```
         export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
         export ASCEND_OPP_PATH=${install_path}/opp
         ```
 
-    3.  准备数据。
+    3.  Prepare data.
 
-        您可以从以下链接中获取ResNet-50网络的模型文件（\*.prototxt）、预训练模型文件（\*.caffemodel），并以运行用户将获取的文件上传至开发环境的“样例目录/caffe\_model“目录下。如果目录不存在，需要自行创建。
+        Download the .prototxt model file and .caffemodel pre-trained model file of the ResNet-50 network and upload the files to  **/caffe\_model**  under the sample directory in the  development environment  as the running user. If the directory does not exist, create it.
 
-        -   [https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/classification/resnet50](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/classification/resnet50)
-        -   [https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/classification/resnet50](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/classification/resnet50)，查看README.\*.md，查找获取文件的链接
+        [https://github.com/Ascend-Huawei/models/tree/master/computer\_vision/classification/resnet50](https://github.com/Ascend-Huawei/models/tree/master/computer_vision/classification/resnet50)
 
-    4.  将ResNet-50网络转换为适配昇腾AI处理器的离线模型（\*.om文件），转换模型时，需配置色域转换参数，用于将YUV420SP格式的图片转换为RGB格式的图片。
+        Find the download links in the  **README\_en.md**  file.
 
-        切换到样例目录，执行如下命令：
+    4.  Convert the ResNet-50 network into an offline model \(.om file\) that adapts to Ascend AI Processors. During model conversion, you need to set CSC parameters to convert YUV420SP images to RGB images.
+
+        Go to the sample directory and run the following command:
 
         ```
         atc --model=caffe_model/resnet50.prototxt --weight=caffe_model/resnet50.caffemodel --framework=0 --soc_version=${soc_version} --insert_op_conf=caffe_model/aipp.cfg --output=model/resnet50_aipp 
         ```
 
-        -   --model：原始模型文件路径。
-        -   --weight：权重文件路径。
-        -   --framework：原始框架类型。0：表示Caffe；1：表示MindSpore；3：表示TensorFlow；5：表示ONNX。
-        -   --soc\_version：Ascend310芯片，此处配置为Ascend310；Ascend710芯片，此处配置为Ascend710。
-        -   --insert\_op\_conf：插入AIPP（AI Preprocessing）算子的配置文件路径，用于在AI Core上完成图像预处理，包括改变图像尺寸、色域转换（转换图像格式）、减均值/乘系数（改变图像像素），数据处理之后再进行真正的模型推理。
-        -   --output：生成的resnet50\_aipp.om文件存放在“样例目录/model“目录下。建议使用命令中的默认设置，否则在编译代码前，您还需要修改sample\_process.cpp中的omModelPath参数值。
+        -   **--model**: directory of the source model file.
+        -   **--weight**: directory of the weight file.
+        -   **--framework**: source framework type, selected from  **0**  \(Caffe\),  **1**  \(MindSpore\),  **3**  \(TensorFlow\), and  **5**  \(ONNX\).
+        -   **--soc\_version**: SoC version, either  **Ascend310**  or  **Ascend710**.
+        -   **--insert\_op\_conf**: path of the configuration file for inserting the AI Pre-Processing \(AIPP\) operator for AI Core–based image preprocessing including image resizing, CSC, and mean subtraction and factor multiplication \(for pixel changing\), prior to model inference.
+        -   **--output**: directory for storing the generated  **resnet50\_aipp.om**  file, that is,  **/model**  under the sample directory. The default path in the command example is recommended. To specify another path, you need to change the value of  **omModelPath**  in  **sample\_process.cpp**  before building the code.
 
             ```
             const char* omModelPath = "../model/resnet50_aipp.om";
             ```
 
 
-    5.  将Cast和ArgMaxD两个算子的算子描述信息（\*.json文件）编译成适配昇腾AI处理器的离线模型（\*.om文件），用于运行算子时使用。
+    5.  Build the operator description information \(.json files\) of the Cast and ArgMaxD operators into offline models \(.om files\) that adapt to the Ascend AI Processor for running the operators.
 
-        切换到样例目录，执行如下命令：
+        Go to the sample directory and run the following command:
 
         ```
         atc --singleop=out/op_models/op_list.json --soc_version=${soc_version} --output=out/op_models
         ```
 
-        -   --singleop：单算子定义文件（\*.json文件）。
-        -   --soc\_version：Ascend310芯片，此处配置为Ascend310；Ascend710芯片，此处配置为Ascend710。
-        -   --output参数：生成的om文件必须放在“out/op\_models“目录下。
+        -   **--singleop**: directory of the single-operator definition file \(.json\)
+        -   **--soc\_version**: SoC version, either  **Ascend310**  or  **Ascend710**.
+        -   **--output**: directory for storing the generated .om file, that is, the  **out/op\_models**  directory.
 
 
-2.  编译代码。
-    1.  以运行用户登录开发环境。
-    2.  切换到样例目录，创建目录用于存放编译文件，例如，本文中，创建的目录为“build/intermediates/minirc“。
+2.  Build the code.
+    1.  Log in to the  development environment  as the running user.
+    2.  Go to the sample directory and create a directory for storing build outputs. For example, the directory created in this sample is  **build/intermediates/minirc**.
 
         ```
         mkdir -p build/intermediates/minirc
         ```
 
-    3.  切换到“build/intermediates/minirc“目录，执行**cmake**生成编译文件。
+    3.  Go to the  **build/intermediates/minirc**  directory and run the  **cmake**  command.
 
-        “../../../src“表示CMakeLists.txt文件所在的目录，请根据实际目录层级修改。
+        Replace  **../../../src**  with the actual directory of  **CMakeLists.txt**.
 
         ```
         cd build/intermediates/minirc
         cmake ../../../src -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SKIP_RPATH=TRUE
         ```
 
-    4.  执行**make**命令，生成的可执行文件main在“样例/out“目录下。
+    4.  Run the  **make **command. The  **main**  executable file is generated in  **/out**  under the sample directory.
 
         ```
         make
         ```
 
 
-3.  准备输入图片。
+3.  Prepare input images.
 
-    请从以下链接获取该样例的输入图片，并以运行用户将获取的文件上传至开发环境的“样例目录/data“目录下。如果目录不存在，需自行创建。
+    Obtain the input images of the sample from the following link and upload the obtained images to  **/data**  under the sample directory in the  development environment  as the running user. If the directory does not exist, create it.
 
-    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog1_1024_683.jpg](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog1_1024_683.jpg)
+    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog1\_1024\_683.jpg](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog1_1024_683.jpg)
 
-    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog2_1024_683.jpg](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog2_1024_683.jpg)
+    [https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog2\_1024\_683.jpg](https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/aclsample/dog2_1024_683.jpg)
 
-4.  运行应用。
-    1.  以运行用户将开发环境的样例目录及目录下的文件上传到板端环境，例如“$HOME/acl\_dvpp\_resnet50”。
-    2.  以运行用户登录板端环境。
-    3.  切换到可执行文件main所在的目录，例如“$HOME/acl\_dvpp\_resnet50/out”，给该目录下的main文件加执行权限。
+4.  Run the app.
+    1.  As the running user, upload the sample folder in the  development environment  to the  board environment, for example,  **$HOME/acl\_dvpp\_resnet50**.
+    2.  Log in to the  board environment  as the running user.
+    3.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_dvpp\_resnet50/out**\) and grant execute permission on the  **main**  file in the directory.
 
         ```
         chmod +x main
         ```
 
-    4.  切换到可执行文件main所在的目录，例如“$HOME/acl\_dvpp\_resnet50/out”，运行可执行文件。
+    4.  Go to the directory where the executable file  **main**  is located \(for example,  **$HOME/acl\_dvpp\_resnet50/out**\) and run the executable file.
 
         ```
         ./main
         ```
 
-        执行成功后，在屏幕上显示最大置信度的类别标识，示例如下。
+        After the command is executed successfully, the class indexes with the top confidence values are displayed.
 
         ```
         [INFO] acl init success

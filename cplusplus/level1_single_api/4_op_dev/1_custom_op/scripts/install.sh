@@ -147,7 +147,7 @@ changemode()
     if [ -d ${targetdir} ];then
         subdirs=$(ls "${targetdir}" 2> /dev/null)
         for dir in ${subdirs}; do
-            if [[ ${dir} != "Ascend310" ]] && [[ ${dir} != "Ascend910" ]] && [[ ${dir} != "Ascend710" ]] && [[ ${dir} != "Ascend310" ]] && [[ ${dir} != "aicpu" ]]; then
+            if [[ ${dir} != "Ascend310" ]] && [[ ${dir} != "Ascend310RC" ]]&& [[ ${dir} != "Ascend910" ]] && [[ ${dir} != "Ascend710" ]] && [[ ${dir} != "Ascend310" ]] && [[ ${dir} != "aicpu" ]]; then
                 chmod -R 550 "${targetdir}/${dir}" >/dev/null 2>&1
             fi
         done
@@ -161,6 +161,9 @@ if [ $? -ne 0 ];then
     exit 1
 fi
 
+if [ -d ${targetdir}/op_impl/custom/cpu/aicpu_kernel/custom_impl/ ]; then
+    chmod -R 440 ${targetdir}/op_impl/custom/cpu/aicpu_kernel/custom_impl/*
+fi
 if [ -f ${targetdir}/ascend_install.info ]; then
     chmod -R 440 ${targetdir}/ascend_install.info
 fi

@@ -1,4 +1,4 @@
-中文|[English](README_EN.md)
+中文|[English](README.md)
 
 **本样例为大家学习昇腾软件栈提供参考，非商业目的！**
 
@@ -66,6 +66,8 @@
     1. 设置LD_LIBRARY_PATH环境变量。
 
         由于LD_LIBRARY_PATH环境变量在转使用atc工具和运行样例时会产生冲突，所以需要在命令行单独设置此环境变量，方便修改。
+
+        **export install_path=$HOME/Ascend/ascend-toolkit/latest**
 
         **export LD_LIBRARY_PATH=\\${install_path}/atc/lib64**  
 

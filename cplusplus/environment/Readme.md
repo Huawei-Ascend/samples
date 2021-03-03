@@ -7,20 +7,25 @@ Introduction
 
 
 ### Step
-Please perform the following three steps in sequence, please click the corresponding link to install according to the device type.
+Please perform the following four steps in sequence, please click the corresponding link to install according to the device type.
 
-1.Basic environment configuration
-- [for_atlas200dk](./prepare_ENV/README_200DK_EN.md)  
-- [for_atlas300](./prepare_ENV/README_300_EN.md)
+- for_atlas200dk  
 
-2.Install ffmpeg and opencv
-- [for_atlas200dk](./opencv_install/README_200DK_EN.md)  
-- [for_atlas300](./opencv_install/README_300_EN.md)
+    [1.Basic environment configuration](./prepare_ENV/README_200DK_EN.md)： configure the basic environment, including the sudo permission, apt source, environment variables and deploying the Media Module  
 
-3.Install atlasutil 
-- [for_atlas200dk](./atlasutil_install/README_200DK_EN.md)  
-- [for_atlas300](./atlasutil_install/README_300_EN.md) 
+    [2.Install ffmpeg and opencv](./opencv_install/README_200DK_EN.md)： install ffmpeg and opencv  
 
-4.Install Presenter Agent
-- [for_atlas200dk](./presenteragent_install/README_200DK_EN.md)  
-- [for_atlas300](./presenteragent_install/README_300_EN.md)
+    [3.Install atlasutil](./atlasutil_install/README_200DK_EN.md)： The Atlasutil library encapsulates the ACL portion of the API.   
+
+    [4.Install Presenter Agent](./presenteragent_install/README_200DK_EN.md)： The Presenter Agent provides a series of APIs that users can call to push media messages to the presenter server.  
+
+- for_atlas300
+
+    [1.Basic environment configuration](./prepare_ENV/README_300_EN.md)： configure the basic environment, including the sudo permission, apt source and environment variables  
+
+    [2.Install ffmpeg and opencv](./opencv_install/README_300_EN.md)： install ffmpeg and opencv  
+
+    [3.Install atlasutil](./atlasutil_install/README_300_EN.md)： The Atlasutil library encapsulates the ACL portion of the API.   
+
+    [4.Install Presenter Agent](./presenteragent_install/README_300_EN.md)： The Presenter Agent provides a series of APIs that users can call to push media messages to the presenter server.  
+
